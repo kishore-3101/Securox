@@ -245,6 +245,7 @@ class DataStore:
                 ("traffic", "traffic_operator", "Traffic Operator"),
                 ("finance", "finance_investigator", "Finance Investigator"),
                 ("emergency", "emergency_commander", "Emergency Commander"),
+                ("health", "health_operator", "Healthcare & Hospital IT Operator"),
             ]:
                 conn.execute(
                     """

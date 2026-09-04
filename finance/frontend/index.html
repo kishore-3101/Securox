@@ -252,6 +252,64 @@ button { cursor: pointer; font-family: var(--font); }
   border:1px solid var(--border); background:var(--bg-deep); border-radius:6px; padding:5px 9px;
 }
 
+/* ══════════════════════════════════════ RBAC & USAGE-BASED CONTROLS */
+.rbac-switcher-wrap { position: relative; display: inline-block; }
+.rbac-pill {
+  display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700;
+  padding: 5px 11px; border-radius: 6px; cursor: pointer; transition: all .15s ease;
+  background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); font-family: var(--font-mono);
+}
+.rbac-pill:hover { border-color: var(--accent); transform: translateY(-1px); }
+.rbac-pill-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+
+.rbac-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 320px;
+  background: #090d16; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+  padding: 8px; z-index: 1000; display: none; flex-direction: column; gap: 4px;
+}
+.rbac-dropdown.open { display: flex; animation: fadeIn .15s ease; }
+.rbac-option {
+  display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 6px;
+  cursor: pointer; transition: all .12s ease; border: 1px solid transparent;
+}
+.rbac-option:hover { background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.2); }
+.rbac-option.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); }
+.rbac-opt-title { font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; width:100%; }
+.rbac-opt-desc { font-size: 10px; color: var(--text-dim); margin-top: 2px; line-height: 1.3; }
+
+/* Login Screen Persona Grid */
+.persona-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0;
+}
+.persona-btn {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg-deep); color: var(--text);
+  font-size: 11px; font-weight: 600; cursor: pointer; text-align: left; transition: all .15s ease;
+}
+.persona-btn:hover { border-color: var(--accent); background: rgba(56, 189, 248, 0.08); transform: translateY(-1px); }
+.persona-badge { font-size: 8px; padding: 2px 5px; border-radius: 3px; font-weight: 700; margin-left: auto; }
+
+/* Sector Banner in Sidebar */
+#sector-banner {
+  padding: 10px 12px; margin: 10px 14px 14px; border-radius: 6px;
+  border: 1px solid var(--border); background: rgba(15,23,42,0.6);
+  font-size: 11px; display: flex; flex-direction: column; gap: 4px; transition: all .2s ease;
+}
+#sector-banner-title { font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+#sector-banner-desc { font-size: 10px; color: var(--text-dim); line-height: 1.3; }
+#sector-banner-actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.sector-quick-btn {
+  font-size: 9px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text); cursor: pointer; font-weight: 600;
+}
+.sector-quick-btn:hover { border-color: var(--accent); color: #fff; }
+.nav-item.sector-highlighted {
+  border-left-color: var(--accent) !important;
+  background: rgba(56, 189, 248, 0.08) !important;
+  box-shadow: inset 3px 0 0 var(--accent) !important;
+}
+
 /* ═══════════════════════════════════════════════════════ LOADING */
 .loading { display:flex; align-items:center; gap:8px; color:var(--text-dim); font-size:13px; }
 .spinner { width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--accent);
@@ -610,7 +668,45 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
     </div>
     <div id="login-error" class="login-error"></div>
     <button class="btn btn-accent" id="login-button" type="submit" style="width:100%;height:42px">Sign In</button>
-    <div class="login-meta">Default local accounts: admin, analyst, traffic, finance, emergency. Password: admin123.</div>
+    <div style="margin-top:16px;">
+      <div style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>1-Click Sector RBAC Access</span>
+        <span style="font-size:9px; color:var(--accent); font-weight:600;">PASS: admin123</span>
+      </div>
+      <div class="persona-grid">
+        <button type="button" class="persona-btn" onclick="quickFillLogin('admin', 'admin123', true)" title="Full Pan-City Operations & Architecture">
+          <i data-feather="shield" style="width:14px;height:14px;color:#38bdf8;"></i>
+          <span>Global CISO</span>
+          <span class="persona-badge" style="background:rgba(56,189,248,0.2);color:#38bdf8;">ALL</span>
+        </button>
+        <button type="button" class="persona-btn" onclick="quickFillLogin('health', 'admin123', true)" title="Healthcare & Hospital IT (CAREGUARD)">
+          <i data-feather="heart" style="width:14px;height:14px;color:#f87171;"></i>
+          <span>Healthcare</span>
+          <span class="persona-badge" style="background:rgba(239,68,68,0.2);color:#f87171;">HEALTH</span>
+        </button>
+        <button type="button" class="persona-btn" onclick="quickFillLogin('traffic', 'admin123', true)" title="Traffic Grid & Mobility (26-View SOC)">
+          <i data-feather="camera" style="width:14px;height:14px;color:#0ea5e9;"></i>
+          <span>Traffic Operator</span>
+          <span class="persona-badge" style="background:rgba(14,165,233,0.2);color:#0ea5e9;">TRANSIT</span>
+        </button>
+        <button type="button" class="persona-btn" onclick="quickFillLogin('finance', 'admin123', true)" title="Fintech Core & ATM Defense">
+          <i data-feather="dollar-sign" style="width:14px;height:14px;color:#f59e0b;"></i>
+          <span>Fintech Analyst</span>
+          <span class="persona-badge" style="background:rgba(245,158,11,0.2);color:#f59e0b;">FINANCE</span>
+        </button>
+        <button type="button" class="persona-btn" onclick="quickFillLogin('emergency', 'admin123', true)" title="Civil Defense & Multi-Agency Responder">
+          <i data-feather="alert-triangle" style="width:14px;height:14px;color:#ef4444;"></i>
+          <span>Emergency Cmd</span>
+          <span class="persona-badge" style="background:rgba(239,68,68,0.2);color:#ef4444;">CIVIL</span>
+        </button>
+        <button type="button" class="persona-btn" onclick="quickFillLogin('analyst', 'admin123', true)" title="Threat Hunter & Campaign Forensics">
+          <i data-feather="crosshair" style="width:14px;height:14px;color:#a855f7;"></i>
+          <span>SOC Analyst</span>
+          <span class="persona-badge" style="background:rgba(168,85,247,0.2);color:#a855f7;">THREAT</span>
+        </button>
+      </div>
+    </div>
+    <div class="login-meta">Default accounts: admin (CISO), health (CAREGUARD), traffic (26-View), finance (Core/ATM), emergency (Civil), analyst (Threats). Password: admin123.</div>
   </form>
 </div>
 
@@ -622,6 +718,19 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
       <div>
         <div class="logo-text">Securox</div>
         <div class="logo-sub">v1.0.0 · Core System</div>
+      </div>
+    </div>
+    <!-- Dynamic Sector RBAC Banner -->
+    <div id="sector-banner">
+      <div id="sector-banner-title">
+        <i data-feather="shield" style="width:13px;height:13px;color:var(--accent);" id="sector-banner-icon"></i>
+        <span id="sector-banner-role">PAN-CITY CISO</span>
+      </div>
+      <div id="sector-banner-desc">Global Smart City digital infrastructure oversight across all 12 assets.</div>
+      <div id="sector-banner-actions">
+        <button class="sector-quick-btn" onclick="showPage('overview')">Global View</button>
+        <button class="sector-quick-btn" onclick="showPage('fintech')">Live SOC</button>
+        <button class="sector-quick-btn" onclick="showPage('whatif')">What-If Sim</button>
       </div>
     </div>
         <nav class="nav">
@@ -762,6 +871,61 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
       <div id="incident-banner" style="display:none; margin-left:8px; font-weight:600; background:rgba(239,68,68,.12); color:var(--red); padding:4px 10px; border:1px solid rgba(239,68,68,.3); border-radius:6px; font-family:var(--font); display:flex; align-items:center; gap:6px; font-size:11px; animation:pulse 1s infinite;"><i data-feather="alert-octagon" style="width:14px;height:14px"></i> CRITICAL INCIDENT DETECTED</div>
 
       <div class="topbar-right">
+        <!-- Sleek Sector RBAC Persona Switcher -->
+        <div class="rbac-switcher-wrap" id="rbac-switcher-wrap">
+          <div class="rbac-pill" id="rbac-active-pill" onclick="toggleRbacDropdown()" title="Switch Active Sector RBAC Persona">
+            <span class="rbac-pill-dot" id="rbac-pill-dot" style="background:var(--accent);"></span>
+            <i data-feather="user-check" style="width:12px;height:12px;" id="rbac-pill-icon"></i>
+            <span id="rbac-pill-title">CISO (Global)</span>
+            <i data-feather="chevron-down" style="width:11px;height:11px;color:var(--text-dim);"></i>
+          </div>
+          <div class="rbac-dropdown" id="rbac-dropdown">
+            <div style="font-size:10px; font-weight:700; color:var(--text-dim); padding:4px 8px; text-transform:uppercase; letter-spacing:0.5px;">Switch Active Sector Role</div>
+            <div class="rbac-option" onclick="switchRbacPersona('admin')">
+              <i data-feather="shield" style="width:14px;height:14px;color:#38bdf8;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">Global CISO / Administrator <span style="font-size:9px;color:#38bdf8;margin-left:auto;">PAN-CITY</span></div>
+                <div class="rbac-opt-desc">Full visibility across all 12 assets, multi-stage campaigns, and what-if simulation.</div>
+              </div>
+            </div>
+            <div class="rbac-option" onclick="switchRbacPersona('health')">
+              <i data-feather="heart" style="width:14px;height:14px;color:#f87171;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">Healthcare Defense Specialist <span style="font-size:9px;color:#f87171;margin-left:auto;">CAREGUARD</span></div>
+                <div class="rbac-opt-desc">Tailored to clinical device security, hospital IT, and standalone Healthcare Portal.</div>
+              </div>
+            </div>
+            <div class="rbac-option" onclick="switchRbacPersona('traffic')">
+              <i data-feather="camera" style="width:14px;height:14px;color:#0ea5e9;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">Traffic &amp; Mobility Operator <span style="font-size:9px;color:#0ea5e9;margin-left:auto;">26-VIEW</span></div>
+                <div class="rbac-opt-desc">Tailored to STIG signal grids, CCTV feeds, green corridors, and 26-view Traffic SOC.</div>
+              </div>
+            </div>
+            <div class="rbac-option" onclick="switchRbacPersona('finance')">
+              <i data-feather="dollar-sign" style="width:14px;height:14px;color:#f59e0b;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">Fintech &amp; Treasury Analyst <span style="font-size:9px;color:#f59e0b;margin-left:auto;">CORE BANKING</span></div>
+                <div class="rbac-opt-desc">Tailored to banking core, ATM fraud, crypto vault keys, and transaction monitoring.</div>
+              </div>
+            </div>
+            <div class="rbac-option" onclick="switchRbacPersona('emergency')">
+              <i data-feather="alert-triangle" style="width:14px;height:14px;color:#ef4444;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">Emergency &amp; Civil Commander <span style="font-size:9px;color:#ef4444;margin-left:auto;">FIRST RESPONDER</span></div>
+                <div class="rbac-opt-desc">Tailored to public safety, cross-sector cascading failure, and emergency resilience.</div>
+              </div>
+            </div>
+            <div class="rbac-option" onclick="switchRbacPersona('analyst')">
+              <i data-feather="crosshair" style="width:14px;height:14px;color:#a855f7;margin-top:2px;"></i>
+              <div style="width:100%">
+                <div class="rbac-opt-title">SOC Threat Hunter <span style="font-size:9px;color:#a855f7;margin-left:auto;">FORENSICS</span></div>
+                <div class="rbac-opt-desc">Tailored to MITRE ATT&amp;CK kill chains, XAI models, and forensic timeline replay.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <span id="user-chip" class="user-chip"><i data-feather="user" style="width:13px;height:13px"></i><span id="user-chip-text">Not signed in</span></span>
         <span id="ws-status" class="ws-badge disconnected">● Connecting…</span>
 
@@ -4063,12 +4227,226 @@ async function verifySavedSession() {
   }
 }
 
+function quickFillLogin(username, password, autoSubmit = false) {
+  const uInput = document.getElementById('login-username');
+  const pInput = document.getElementById('login-password');
+  if (uInput) uInput.value = username;
+  if (pInput) pInput.value = password;
+  if (autoSubmit) {
+    const btn = document.getElementById('login-button');
+    if (btn) btn.click();
+  }
+}
+
+function toggleRbacDropdown() {
+  const dd = document.getElementById('rbac-dropdown');
+  if (dd) dd.classList.toggle('open');
+}
+
+function closeRbacDropdown() {
+  const dd = document.getElementById('rbac-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('rbac-switcher-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    closeRbacDropdown();
+  }
+});
+
+async function switchRbacPersona(personaKey) {
+  try {
+    const res = await fetch(`${API}/api/auth/switch-role`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role_or_username: personaKey })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      state.token = data.access_token;
+      localStorage.setItem('securox_token', data.access_token);
+      state.user = { username: data.username, role: data.role };
+      localStorage.setItem('securox_user', JSON.stringify(state.user));
+      applyRbacPersona(data.role, true);
+    } else {
+      if (typeof showToast === 'function') showToast(`Failed to switch role: ${res.statusText}`, 'error');
+    }
+  } catch (e) {
+    console.error("Error switching role:", e);
+    if (typeof showToast === 'function') showToast("Role switch connection error", 'error');
+  }
+  closeRbacDropdown();
+}
+
+function applyRbacPersona(role, notify = true) {
+  if (!state.user) state.user = { username: 'operator', role: role || 'admin' };
+  state.currentRole = role;
+
+  const pill = document.getElementById('rbac-pill-title');
+  const dot = document.getElementById('rbac-pill-dot');
+  const banner = document.getElementById('sector-banner');
+  const bannerRole = document.getElementById('sector-banner-role');
+  const bannerDesc = document.getElementById('sector-banner-desc');
+  const bannerActions = document.getElementById('sector-banner-actions');
+  const userChipText = document.getElementById('user-chip-text');
+
+  const profiles = {
+    'admin': {
+      title: 'CISO (Global)',
+      color: '#38bdf8',
+      roleText: 'PAN-CITY CISO',
+      desc: 'Global Smart City digital infrastructure oversight across all 12 assets.',
+      defaultPage: 'overview',
+      toast: 'Switched to Global CISO Mode — Full Pan-City Access',
+      actions: [
+        { label: 'Global View', page: 'overview' },
+        { label: 'Live SOC', page: 'fintech' },
+        { label: 'What-If Sim', page: 'whatif' }
+      ]
+    },
+    'health_operator': {
+      title: 'Healthcare Specialist',
+      color: '#f87171',
+      roleText: 'HEALTHCARE SECTOR',
+      desc: 'CAREGUARD clinical infrastructure, MIMIC-IV feeds, and IoMT safeguards.',
+      defaultPage: 'healthcare',
+      toast: 'Switched to Healthcare Operator — CAREGUARD & Hospital Defense View',
+      actions: [
+        { label: '🏥 CAREGUARD', page: 'healthcare' },
+        { label: '↗ Portal', url: '/healthcare' },
+        { label: '🚨 Incidents', page: 'alerts' }
+      ]
+    },
+    'traffic_operator': {
+      title: 'Traffic Operator',
+      color: '#0ea5e9',
+      roleText: 'TRAFFIC COMMAND',
+      desc: 'STIG adaptive signal grid, ANPR sensors, CCTV AI, and 26-view Traffic SOC.',
+      defaultPage: 'cctv',
+      toast: 'Switched to Traffic & Mobility Operator — 26-View Command View',
+      actions: [
+        { label: '🚦 CCTV AI', page: 'cctv' },
+        { label: '↗ 26-View SOC', url: '/traffic' },
+        { label: '🚑 Green Corridor', onclick: 'triggerGreenCorridor()' }
+      ]
+    },
+    'finance_investigator': {
+      title: 'Fintech Analyst',
+      color: '#f59e0b',
+      roleText: 'FINTECH & TREASURY',
+      desc: 'Core banking defense, ATM network integrity, credential stuffing mitigation.',
+      defaultPage: 'fintech',
+      toast: 'Switched to Fintech Investigator — Banking & Crypto Defense View',
+      actions: [
+        { label: '💳 Financial SOC', page: 'fintech' },
+        { label: '🔐 Vault', page: 'vault' },
+        { label: '⚖️ Decision', page: 'decision' }
+      ]
+    },
+    'emergency_commander': {
+      title: 'Emergency Commander',
+      color: '#ef4444',
+      roleText: 'CIVIL DEFENSE',
+      desc: 'Multi-agency disaster coordination, cascading resilience, and public safety.',
+      defaultPage: 'executive',
+      toast: 'Switched to Emergency Commander — Multi-Agency Command View',
+      actions: [
+        { label: '🚨 Command', page: 'executive' },
+        { label: '🌐 Cascade Sim', page: 'whatif' },
+        { label: '🛡️ Response', page: 'response' }
+      ]
+    },
+    'soc_analyst': {
+      title: 'SOC Threat Hunter',
+      color: '#a855f7',
+      roleText: 'THREAT OPERATIONS',
+      desc: 'MITRE ATT&CK mapping, multi-stage attack campaigns, and XAI feature analysis.',
+      defaultPage: 'campaigns',
+      toast: 'Switched to SOC Threat Hunter — Campaign Dossiers & Forensics',
+      actions: [
+        { label: '🎯 Campaigns', page: 'campaigns' },
+        { label: '🔍 Forensic XAI', page: 'investigation' },
+        { label: '🧪 Data Lab', page: 'datalab' }
+      ]
+    },
+    'analyst': {
+      title: 'SOC Threat Hunter',
+      color: '#a855f7',
+      roleText: 'THREAT OPERATIONS',
+      desc: 'MITRE ATT&CK mapping, multi-stage attack campaigns, and XAI feature analysis.',
+      defaultPage: 'campaigns',
+      toast: 'Switched to SOC Threat Hunter — Campaign Dossiers & Forensics',
+      actions: [
+        { label: '🎯 Campaigns', page: 'campaigns' },
+        { label: '🔍 Forensic XAI', page: 'investigation' },
+        { label: '🧪 Data Lab', page: 'datalab' }
+      ]
+    }
+  };
+
+  const prof = profiles[role] || profiles['admin'];
+  if (pill) pill.textContent = prof.title;
+  if (dot) dot.style.background = prof.color;
+  if (banner) {
+    banner.style.borderColor = prof.color;
+    banner.style.boxShadow = `0 0 12px ${prof.color}22`;
+  }
+  if (bannerRole) {
+    bannerRole.textContent = prof.roleText;
+    bannerRole.style.color = prof.color;
+  }
+  if (bannerDesc) bannerDesc.textContent = prof.desc;
+  if (bannerActions) {
+    bannerActions.innerHTML = prof.actions.map(act => {
+      if (act.url) {
+        return `<button class="sector-quick-btn" onclick="window.open('${act.url}', '_blank')">${act.label}</button>`;
+      } else if (act.onclick) {
+        return `<button class="sector-quick-btn" onclick="${act.onclick}">${act.label}</button>`;
+      } else {
+        return `<button class="sector-quick-btn" onclick="showPage('${act.page}')">${act.label}</button>`;
+      }
+    }).join('');
+  }
+  if (userChipText && state.user) {
+    userChipText.textContent = `${state.user.username} · ${prof.title}`;
+  }
+
+  // Highlight specific sidebar navigation item for the active sector
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('sector-highlighted'));
+  if (role === 'health_operator') {
+    const el = document.getElementById('nav-healthcare');
+    if (el) el.classList.add('sector-highlighted');
+  } else if (role === 'traffic_operator') {
+    const el = document.querySelector('[onclick*="cctv"]');
+    if (el) el.classList.add('sector-highlighted');
+  } else if (role === 'finance_investigator') {
+    const el = document.querySelector('[onclick*="fintech"]');
+    if (el) el.classList.add('sector-highlighted');
+  } else if (role === 'soc_analyst' || role === 'analyst') {
+    const el = document.querySelector('[onclick*="campaigns"]');
+    if (el) el.classList.add('sector-highlighted');
+  } else if (role === 'emergency_commander') {
+    const el = document.querySelector('[onclick*="executive"]');
+    if (el) el.classList.add('sector-highlighted');
+  }
+
+  // Auto-navigate to sector default page
+  if (prof.defaultPage) {
+    showPage(prof.defaultPage);
+  }
+
+  if (notify && typeof showToast === 'function') {
+    showToast(prof.toast, 'info');
+  }
+  if (typeof feather !== 'undefined') feather.replace();
+}
+
 function showAuthenticatedApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-shell').style.display = 'flex';
-  document.getElementById('user-chip-text').textContent = `${state.user.username} · ${state.user.role}`;
   bootCommandCenter();
-  showPage('fintech');
+  applyRbacPersona(state.user.role, false);
 }
 
 function logout(reload = true) {

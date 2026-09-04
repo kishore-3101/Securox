@@ -748,7 +748,7 @@ class RegisterRequest(BaseModel):
 async def register_user(req: RegisterRequest, current_user: dict = Depends(require_admin)):
     allowed_roles = {
         "admin", "analyst", "soc_analyst", "traffic_operator",
-        "finance_investigator", "emergency_commander", "viewer",
+        "finance_investigator", "emergency_commander", "health_operator", "viewer",
     }
     if req.role not in allowed_roles:
         raise HTTPException(400, f"Unsupported role. Valid roles: {sorted(allowed_roles)}")
@@ -768,6 +768,133 @@ async def register_user(req: RegisterRequest, current_user: dict = Depends(requi
         "full_name": user["full_name"],
         "created_at": user["created_at"],
     }
+
+
+class SwitchRoleRequest(BaseModel):
+    role_or_username: str
+
+
+@app.get("/api/auth/roles", tags=["Auth"])
+async def list_rbac_roles():
+    """List available RBAC personas with sector assignments and UI permissions."""
+    return {
+        "roles": [
+            {
+                "id": "admin",
+                "name": "Global CISO / SOC Administrator",
+                "sector": "global",
+                "sector_name": "Pan-City Infrastructure",
+                "username": "admin",
+                "badge_color": "#38bdf8",
+                "icon": "shield",
+                "landing_page": "overview",
+                "allowed_pages": ["all"],
+                "description": "Unrestricted pan-city visibility across all 12 smart city digital infrastructure assets."
+            },
+            {
+                "id": "health_operator",
+                "name": "Healthcare Defense Specialist",
+                "sector": "healthcare",
+                "sector_name": "Healthcare & Hospital IT",
+                "username": "health",
+                "badge_color": "#f87171",
+                "icon": "heart",
+                "landing_page": "healthcare",
+                "external_portal": "/healthcare",
+                "allowed_pages": ["healthcare", "alerts", "response", "twin", "risk"],
+                "description": "Focused on CAREGUARD clinical defense, MIMIC-IV feeds, medical IoT quarantine, and HL7 integrity."
+            },
+            {
+                "id": "traffic_operator",
+                "name": "Traffic & Mobility Operator",
+                "sector": "transport",
+                "sector_name": "Traffic & Transit Grids",
+                "username": "traffic",
+                "badge_color": "#0ea5e9",
+                "icon": "camera",
+                "landing_page": "cctv",
+                "external_portal": "/traffic",
+                "allowed_pages": ["cctv", "alerts", "response", "twin", "risk"],
+                "description": "Focused on STIG traffic grids, 26-view Traffic SOC, ANPR feeds, signal overrides, and emergency corridors."
+            },
+            {
+                "id": "finance_investigator",
+                "name": "Fintech & Treasury Investigator",
+                "sector": "finance",
+                "sector_name": "Financial Core & Municipal Billing",
+                "username": "finance",
+                "badge_color": "#f59e0b",
+                "icon": "dollar-sign",
+                "landing_page": "fintech",
+                "allowed_pages": ["fintech", "vault", "disparity", "alerts", "investigation"],
+                "description": "Focused on core banking, ATM fraud prevention, credential stuffing defense, and crypto vault security."
+            },
+            {
+                "id": "emergency_commander",
+                "name": "Emergency & Civil Commander",
+                "sector": "emergency",
+                "sector_name": "Public Safety & Civil Defense",
+                "username": "emergency",
+                "badge_color": "#ef4444",
+                "icon": "alert-triangle",
+                "landing_page": "executive",
+                "allowed_pages": ["executive", "whatif", "simlab", "alerts", "response"],
+                "description": "Focused on cascading citywide resilience, multi-agency incident response, and public safety continuity."
+            },
+            {
+                "id": "soc_analyst",
+                "name": "SOC Threat Hunter & Forensic Analyst",
+                "sector": "threat_ops",
+                "sector_name": "Threat Intelligence Operations",
+                "username": "analyst",
+                "badge_color": "#a855f7",
+                "icon": "crosshair",
+                "landing_page": "campaigns",
+                "allowed_pages": ["campaigns", "investigation", "alerts", "timeline", "datalab"],
+                "description": "Focused on deep packet inspection, multi-stage kill chains, MITRE ATT&CK mapping, and XAI."
+            }
+        ]
+    }
+
+
+@app.post("/api/auth/switch-role", response_model=Token, tags=["Auth"])
+async def switch_rbac_role(req: SwitchRoleRequest):
+    """Switch active RBAC persona for evaluation and interactive demonstration."""
+    role_map = {
+        "admin": ("admin", "admin"),
+        "health": ("health", "health_operator"),
+        "health_operator": ("health", "health_operator"),
+        "healthcare": ("health", "health_operator"),
+        "traffic": ("traffic", "traffic_operator"),
+        "traffic_operator": ("traffic", "traffic_operator"),
+        "finance": ("finance", "finance_investigator"),
+        "finance_investigator": ("finance", "finance_investigator"),
+        "emergency": ("emergency", "emergency_commander"),
+        "emergency_commander": ("emergency", "emergency_commander"),
+        "analyst": ("analyst", "soc_analyst"),
+        "soc_analyst": ("analyst", "soc_analyst"),
+    }
+    key = req.role_or_username.lower().strip()
+    if key not in role_map:
+        raise HTTPException(400, f"Unknown role or username: {req.role_or_username}. Valid: {list(role_map.keys())}")
+    
+    uname, rname = role_map[key]
+    user = store.get_user(uname)
+    if not user:
+        # Fallback create user if not yet initialized in DB
+        pwd_hash = get_password_hash("admin123")
+        await store.create_user(uname, pwd_hash, rname, f"{uname.capitalize()} Operator")
+        user = store.get_user(uname)
+    
+    await store.touch_login(uname)
+    await store.audit(uname, "auth.switch_role", "users", {"role": rname})
+    token = create_access_token({"sub": uname, "role": rname})
+    return Token(
+        access_token=token,
+        token_type="bearer",
+        role=rname,
+        username=uname,
+    )
 
 
 @app.get("/api/me", tags=["Auth"])

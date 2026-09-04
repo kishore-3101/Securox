@@ -140,3 +140,32 @@ def test_incident_report_generation():
     assert "classification" in data
     assert "mitre_tactics" in data
     assert "merkle_proof" in data
+
+def test_rbac_roles_and_persona_switching():
+    """Verify sector RBAC role listing and persona switching."""
+    # List roles
+    resp = client.get("/api/auth/roles")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "roles" in data
+    assert len(data["roles"]) >= 6
+    role_ids = [r["id"] for r in data["roles"]]
+    assert "admin" in role_ids
+    assert "health_operator" in role_ids
+    assert "traffic_operator" in role_ids
+    assert "finance_investigator" in role_ids
+
+    # Switch to Healthcare
+    h_resp = client.post("/api/auth/switch-role", json={"role_or_username": "health"})
+    assert h_resp.status_code == 200
+    assert h_resp.json().get("role") == "health_operator"
+
+    # Switch to Traffic
+    t_resp = client.post("/api/auth/switch-role", json={"role_or_username": "traffic"})
+    assert t_resp.status_code == 200
+    assert t_resp.json().get("role") == "traffic_operator"
+
+    # Switch to Finance
+    f_resp = client.post("/api/auth/switch-role", json={"role_or_username": "finance"})
+    assert f_resp.status_code == 200
+    assert f_resp.json().get("role") == "finance_investigator"
