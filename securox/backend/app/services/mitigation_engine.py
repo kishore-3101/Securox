@@ -3,6 +3,7 @@ Autonomous mitigation workflow wrapper with approval/rollback state.
 """
 
 import uuid
+from typing import List
 from datetime import datetime, timezone
 
 

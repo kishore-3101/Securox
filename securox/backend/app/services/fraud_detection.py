@@ -5,8 +5,11 @@ Includes Cyber-Physical-Financial Correlation & Impossible Travel Detection.
 """
 
 import uuid
+from typing import List
 import math
+from typing import List
 import logging
+from typing import List
 from datetime import datetime, timezone
 
 logger = logging.getLogger("securox.fraud_detection")

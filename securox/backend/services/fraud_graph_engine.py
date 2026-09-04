@@ -4,6 +4,7 @@ Detects circular transactions, fan-in/fan-out money laundering patterns, and com
 """
 
 from collections import defaultdict
+from typing import List, Dict, Tuple
 
 
 class FraudGraphEngine:
