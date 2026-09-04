@@ -1,0 +1,53 @@
+{
+  "dynamic_risk_weights": {
+    "anomaly": 0.15,
+    "fraud": 0.3,
+    "aml": 0.2,
+    "graph": 0.15,
+    "propagation": 0.1,
+    "criticality": 0.1
+  },
+  "risk_level_thresholds": {
+    "LOW": [
+      0,
+      25
+    ],
+    "MEDIUM": [
+      25,
+      50
+    ],
+    "HIGH": [
+      50,
+      75
+    ],
+    "CRITICAL": [
+      75,
+      100
+    ]
+  },
+  "propagation_defaults": {
+    "max_depth": 3,
+    "decay_per_hop": 0.5,
+    "min_risk_to_propagate": 5.0,
+    "criticality_boost_cap": 1.5,
+    "max_affected_entities": 200
+  },
+  "graph_risk_weights": {
+    "degree": 25.0,
+    "fan_in_fan_out": 25.0,
+    "suspicious_neighbors": 30.0,
+    "centrality": 20.0
+  },
+  "cyber_exposure_impact_factors": {
+    "confirmed_fraud": 1.0,
+    "high_confidence_fraud_flag": 0.7,
+    "aml_flag": 0.5,
+    "anomaly_only": 0.25,
+    "unknown": 0.4
+  },
+  "dbscan_incident_defaults": {
+    "eps": 1.5,
+    "min_samples": 3
+  },
+  "disclaimer": "All weights/thresholds above are ENGINEERING CONFIGURATION set by initial judgment for this hackathon-scale system. They are NOT the output of a fitted/validated statistical model and should be tuned against real incident outcomes before any production use."
+}

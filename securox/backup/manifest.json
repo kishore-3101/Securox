@@ -1,0 +1,17 @@
+{
+  "backup_time": "2026-09-04T17:14:49.478834+00:00",
+  "files": [
+    {
+      "source": "C:\\Users\\praja\\Downloads\\Securox-main (1)\\Securox-main\\securox\\backend\\app\\core\\securox.db",
+      "destination": "C:\\Users\\praja\\Downloads\\Securox-main (1)\\Securox-main\\securox\\backup\\securox_pre_migration.db",
+      "size_bytes": 81080320,
+      "sha256": "4bb087f1ca6f586f5dcde22a515f5b7130279bb0d43ad810b20d9fca754d4981"
+    },
+    {
+      "source": "C:\\Users\\praja\\Downloads\\Securox-main (1)\\Securox-main\\securox\\backend\\app\\domains\\traffic\\traffic.db",
+      "destination": "C:\\Users\\praja\\Downloads\\Securox-main (1)\\Securox-main\\securox\\backup\\traffic_pre_migration.db",
+      "size_bytes": 331776,
+      "sha256": "bbf046535337ae10e1887e6bccd79ea291e5f2013de8f5a8af2271331008d40b"
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+name: Securox Unified CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  SECUROX_ENV: testing
+  SECRET_KEY: ci-cd-testing-cryptographically-secure-random-key-32-chars-long
+  POSTGRES_DB: securox_test
+  POSTGRES_USER: securox_user
+  POSTGRES_PASSWORD: test_postgres_password_12345
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  # ── 1. LINTING ──────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & Code Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python Linters
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff compileall
+
+      - name: Python Syntax & Bytecode Compilation Check
+        run: |
+          python -m compileall securox/backend/app securox/tests
+
+      - name: Python Ruff Linter Check
+        run: |
+          ruff check securox/backend/app securox/tests --exit-zero
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: securox/frontend/package.json
+
+      - name: Install Frontend Dependencies
+        working-directory: securox/frontend
+        run: npm install
+
+      - name: Frontend Oxlint Linter
+        working-directory: securox/frontend
+        run: npm run lint
+
+  # ── 2. TYPE CHECKING ────────────────────────────────────────────────────────
+  typecheck:
+    name: Static Type Checking
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: securox/frontend/package.json
+
+      - name: Install Frontend Dependencies
+        working-directory: securox/frontend
+        run: npm install
+
+      - name: TypeScript Type Checking (tsc --noEmit)
+        working-directory: securox/frontend
+        run: npx tsc --noEmit
+
+  # ── 3. UNIT TESTS ───────────────────────────────────────────────────────────
+  unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Fail-Safe Secrets & Cyber-Risk Engine Unit Tests
+        run: |
+          python -m pytest securox/tests/test_production_fail_safe_secrets.py \
+                           securox/tests/test_central_cyber_risk_engine.py \
+                           securox/tests/test_demo_center_engine.py -v
+
+  # ── 4. INTEGRATION TESTS ────────────────────────────────────────────────────
+  integration-tests:
+    name: Postgres & Redis Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: securox_test
+          POSTGRES_USER: securox_user
+          POSTGRES_PASSWORD: test_postgres_password_12345
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Integration Test Suites against Postgres and Redis
+        env:
+          DATABASE_URL: postgresql://securox_user:test_postgres_password_12345@localhost:5432/securox_test
+          REDIS_URL: redis://localhost:6379/0
+        run: |
+          python -m pytest securox/tests/test_unified_soc_and_correlation.py \
+                           securox/tests/test_unified_authorization_and_safety.py \
+                           securox/tests/test_unified_ai_models_integration.py -v
+
+  # ── 5. FRONTEND PRODUCTION BUILD & TESTS ───────────────────────────────────
+  frontend-tests:
+    name: Frontend Production Build & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: securox/frontend/package.json
+
+      - name: Install Dependencies
+        working-directory: securox/frontend
+        run: npm install
+
+      - name: Production Vite Build
+        working-directory: securox/frontend
+        run: npm run build
+
+      - name: Verify Build Artifacts
+        working-directory: securox/frontend
+        run: |
+          test -f dist/index.html || exit 1
+          echo "Frontend dist bundle verified successfully."
+
+  # ── 6. BROWSER-LEVEL END-TO-END TESTS (PLAYWRIGHT) ──────────────────────────
+  e2e-tests:
+    name: Playwright E2E Tests & Strict Invariants
+    runs-on: ubuntu-latest
+    needs: [unit-tests, frontend-tests]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: securox/frontend/package.json
+
+      - name: Install Python Dependencies & Playwright
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Install Frontend Dependencies & Build
+        working-directory: securox/frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Launch Backend API Server
+        run: |
+          cd securox/backend/app
+          python -m uvicorn main:app --host 127.0.0.1 --port 8000 &
+          echo "Backend launched in background."
+
+      - name: Launch Frontend Preview Server
+        working-directory: securox/frontend
+        run: |
+          npx vite preview --port 5174 --host 127.0.0.1 &
+          echo "Frontend launched in background."
+
+      - name: Wait for Services Healthy
+        run: |
+          for i in {1..30}; do
+            curl -s http://127.0.0.1:8000/api/assets > /dev/null && curl -s http://127.0.0.1:5174 > /dev/null && break
+            echo "Waiting for services... ($i/30)"
+            sleep 2
+          done
+
+      - name: Execute Full Playwright E2E Test Suite (All 17 Tests)
+        run: |
+          python -m pytest securox/tests/e2e/ -v --tb=short
+
+  # ── 7. DOCKER BUILD & COMPOSE VALIDATION ────────────────────────────────────
+  docker-build:
+    name: Docker Image Build & Compose Validation
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, unit-tests, frontend-tests]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Validate Docker Compose Configuration
+        env:
+          SECRET_KEY: ci-cd-testing-cryptographically-secure-random-key-32-chars-long
+          POSTGRES_PASSWORD: test_postgres_password_12345
+          REDIS_PASSWORD: test_redis_password_12345
+        run: |
+          docker compose config --quiet
+          echo "Docker compose file syntax and configuration verified."
+
+      - name: Build securox-api Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./securox
+          file: ./securox/Dockerfile.api
+          push: false
+          tags: securox-api:latest
+
+      - name: Build securox-web Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./securox/frontend
+          file: ./securox/frontend/Dockerfile.web
+          push: false
+          tags: securox-web:latest
+
+      - name: Verify Built Images
+        run: |
+          docker images | grep securox

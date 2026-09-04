@@ -1117,6 +1117,11 @@ class DataStore:
             rows = conn.execute("SELECT * FROM traffic_signals ORDER BY id ASC").fetchall()
             return [dict(r) for r in rows]
 
+    async def get_traffic_signal(self, signal_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM traffic_signals WHERE id = ?", (signal_id,)).fetchone()
+            return dict(row) if row else None
+
     async def update_traffic_signal(
         self, signal_id: str, state: str, mode: str = "MANUAL", override_by: str = "OPERATOR"
     ) -> bool:
@@ -1140,6 +1145,11 @@ class DataStore:
             else:
                 rows = conn.execute("SELECT * FROM bank_accounts ORDER BY id ASC").fetchall()
             return [dict(r) for r in rows]
+
+    async def get_bank_account(self, account_id: str) -> Optional[dict]:
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM bank_accounts WHERE id = ?", (account_id,)).fetchone()
+            return dict(row) if row else None
 
     async def get_bank_transactions(self, account_id: Optional[str] = None, limit: int = 50) -> list[dict]:
         with self._connect() as conn:

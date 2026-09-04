@@ -142,8 +142,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[ResourceType, Set[Action]]] = {
         ResourceType.PATIENT_RECORD: {Action.VIEW},
         ResourceType.AMBULANCE_DISPATCH: {Action.VIEW},
         ResourceType.BILLING_INVOICE: {Action.VIEW, Action.APPROVE},
-        ResourceType.HOSPITAL_IT_ASSET: {Action.VIEW},
-        ResourceType.SECURITY_INCIDENT: {Action.VIEW},
+        ResourceType.HOSPITAL_IT_ASSET: {Action.VIEW, Action.UPDATE, Action.RESOLVE},
+        ResourceType.SECURITY_INCIDENT: {Action.VIEW, Action.UPDATE, Action.RESOLVE},
     },
     "doctor": {
         ResourceType.PATIENT_RECORD: {Action.VIEW, Action.UPDATE},

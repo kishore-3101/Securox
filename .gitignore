@@ -28,6 +28,10 @@ build/
 *.sqlite3
 database/
 
+# Node.js
+node_modules/
+**/node_modules/
+
 # Binaries & Executables
 backend/bin/
 **/bin/
@@ -40,4 +44,20 @@ Thumbs.db
 # User Uploaded Media
 finance/frontend/uploads/*
 !finance/frontend/uploads/.gitkeep
+finance/data/uploads/
+securox/frontend/uploads/
 
+# Backup databases
+securox/backup/*.db
+finance/backup/*.db
+
+# Runtime / Build artifacts
+*.mp4
+*.avi
+*.mkv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

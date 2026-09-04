@@ -1,0 +1,50 @@
+# ==============================================================================
+# SECUROX API — HARDENED PRODUCTION DOCKERFILE
+# FastAPI + PostgreSQL + Redis + Central Cyber-Risk Engine
+# ==============================================================================
+
+FROM python:3.11-slim
+
+LABEL maintainer="Securox Engineering Team"
+LABEL description="Securox Smart City Cyber Risk & Security Operations Platform"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app:/app/backend:/app/backend/app
+
+# Install native compilation dependencies for C-extensions (psycopg2, scikit-learn, curl)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create dedicated non-root application user for defense-in-depth
+RUN groupadd -g 10001 securox && \
+    useradd -u 10001 -g securox -m -s /bin/bash securox
+
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy platform source code
+COPY . .
+
+# Ensure data and runtime directories exist with appropriate ownership
+RUN mkdir -p /app/data /app/reports /app/models /app/backend/database /app/backend/app/core && \
+    chown -R securox:securox /app
+
+EXPOSE 8000
+
+# Healthcheck testing live REST endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:8000/api/assets || exit 1
+
+USER securox
+
+WORKDIR /app/backend/app
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

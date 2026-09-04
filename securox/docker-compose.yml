@@ -1,0 +1,130 @@
+# ==============================================================================
+# SECUROX UNIFIED CYBER-PHYSICAL ENTERPRISE DEPLOYMENT
+# ==============================================================================
+
+services:
+  # ── 1. Database: PostgreSQL 16 ───────────────────────────────────────────────
+  securox-db:
+    image: postgres:16-alpine
+    container_name: securox-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-securox}
+      POSTGRES_USER: ${POSTGRES_USER:-securox_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password must be provided in .env}
+    volumes:
+      - securox_pg_data:/var/lib/postgresql/data
+    networks:
+      - securox-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-securox_user} -d $${POSTGRES_DB:-securox}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── 2. Cache & Pub/Sub: Redis 7 ─────────────────────────────────────────────
+  securox-redis:
+    image: redis:7-alpine
+    container_name: securox-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-securox_redis_secret}
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+    volumes:
+      - securox_redis_data:/data
+    networks:
+      - securox-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-securox_redis_secret}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ── 3. Backend API: FastAPI + Risk Engine ───────────────────────────────────
+  securox-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: securox-api
+    restart: unless-stopped
+    environment:
+      SECUROX_ENV: ${SECUROX_ENV:-production}
+      HOST: 0.0.0.0
+      PORT: 8000
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be provided in .env}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-securox_user}:${POSTGRES_PASSWORD}@securox-db:5432/${POSTGRES_DB:-securox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-securox_redis_secret}@securox-redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-securox_redis_secret}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      TELEMETRY_SPEED: ${TELEMETRY_SPEED:-1.0}
+      ENABLE_SAFETY_GUARD: "true"
+      ENABLE_HARDWARE_ATTESTATION: "true"
+      ENABLE_MERKLE_VAULT: "true"
+    volumes:
+      - securox_api_data:/app/data
+      - securox_api_reports:/app/reports
+    ports:
+      - "${PORT:-8000}:8000"
+    networks:
+      - securox-internal
+      - securox-public
+    depends_on:
+      securox-db:
+        condition: service_healthy
+      securox-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/assets"]
+      interval: 20s
+      timeout: 10s
+      retries: 4
+      start_period: 25s
+
+  # ── 4. Frontend Web: React SPA + Nginx Reverse Proxy ────────────────────────
+  securox-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.web
+    container_name: securox-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks:
+      - securox-public
+    depends_on:
+      securox-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80/healthz"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# ── Network Topology & Strict Network Isolation ──────────────────────────────
+networks:
+  securox-public:
+    name: securox-public
+    driver: bridge
+
+  securox-internal:
+    name: securox-internal
+    driver: bridge
+    internal: true
+
+# ── Persistent Storage Volumes ───────────────────────────────────────────────
+volumes:
+  securox_pg_data:
+    name: securox_pg_data
+  securox_redis_data:
+    name: securox_redis_data
+  securox_api_data:
+    name: securox_api_data
+  securox_api_reports:
+    name: securox_api_reports

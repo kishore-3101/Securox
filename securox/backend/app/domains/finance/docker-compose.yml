@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  finance-api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: finance-cyber-risk-api:local
+    container_name: finance-cyber-risk-api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+      - ./data/processed:/app/data/processed:ro
+    restart: unless-stopped
+
+# Placeholder for future smart-city subsystems (traffic, energy, water, etc.)
+# to be added as sibling services sharing this same docker-compose file.
