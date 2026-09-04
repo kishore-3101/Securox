@@ -42,6 +42,7 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 # ── internal modules ──────────────────────────────────────────────────────────
+from auth.access_control import access_engine, Action, ResourceType, AccessContext, Decision
 from auth.jwt_auth import (
     Token, authenticate_user, create_access_token, get_current_user,
     get_password_hash, require_admin,
@@ -3927,6 +3928,686 @@ async def camera_relay_ws(websocket: WebSocket, role: str = "receiver"):
                     relay_manager.broadcasters.discard(d)
     except WebSocketDisconnect:
         relay_manager.disconnect(websocket)
+
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# ENTERPRISE RBAC + ABAC + ADAPTIVE ACCESS CONTROL ROUTES
+# ═══════════════════════════════════════════════════════════════════════
+
+def _utcnow() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+class AccessEvaluateRequest(BaseModel):
+    user_id: str = "doctor"
+    username: str = "doctor"
+    role: str = "doctor"
+    domain: str = "HEALTHCARE"
+    department: Optional[str] = "Cardiology"
+    resource_type: str = "PATIENT_RECORD"
+    action: str = "VIEW"
+    device_id: Optional[str] = "DEV-HOSP-01"
+    device_trust: float = 100.0
+    is_known_device: bool = True
+    client_ip: str = "10.0.4.12"
+    geo_location: str = "Bengaluru, IN"
+    previous_geo: Optional[str] = None
+    record_count: int = 1
+    transaction_amount: float = 0.0
+    patient_assignment: Optional[str] = "assigned"
+    network_trust: str = "CORPORATE_SECURE"
+    auth_strength: str = "MFA_HARDWARE"
+
+
+@app.post("/api/access/evaluate", tags=["Access Control"])
+async def evaluate_access_endpoint(req: AccessEvaluateRequest):
+    """
+    Evaluates an access request against RBAC, ABAC context, and Adaptive Risk Policies.
+    Generates explainable factors, risk score (0-100), and automated incident if blocked.
+    """
+    try:
+        res_type = ResourceType(req.resource_type)
+        act = Action(req.action)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Invalid resource_type or action: {e}")
+
+    ctx = AccessContext(
+        user_id=req.user_id,
+        username=req.username,
+        role=req.role,
+        domain=req.domain,
+        department=req.department,
+        device_id=req.device_id,
+        device_trust=req.device_trust,
+        is_known_device=req.is_known_device,
+        client_ip=req.client_ip,
+        geo_location=req.geo_location,
+        previous_geo=req.previous_geo,
+        record_count=req.record_count,
+        transaction_amount=req.transaction_amount,
+        patient_assignment=req.patient_assignment,
+        network_trust=req.network_trust,
+        auth_strength=req.auth_strength
+    )
+
+    result = access_engine.evaluate_access(ctx, res_type, act)
+
+    # Immutable Audit Logging
+    audit_actor = req.username
+    audit_action = f"{req.action}_{req.resource_type}"
+    audit_target = f"{req.domain}:{req.department or 'GLOBAL'}"
+    audit_payload = {
+        "decision": result.decision.value,
+        "risk_score": result.risk_score,
+        "risk_category": result.risk_category,
+        "policy": result.policy_triggered,
+        "client_ip": req.client_ip,
+        "device_id": req.device_id,
+        "geo": req.geo_location,
+        "reason": result.reason,
+        "factors": result.factors
+    }
+    await store.audit(audit_actor, audit_action, audit_target, audit_payload)
+
+    # Automated Incident Creation for High/Critical Risks
+    incident_id = None
+    if result.decision == Decision.BLOCK or result.risk_score >= 75.0:
+        incident_id = f"INC-{req.domain[:2]}-{uuid.uuid4().hex[:6].upper()}"
+        result.incident_created = True
+        result.incident_id = incident_id
+        await store.add_incident({
+            "id": incident_id,
+            "title": f"Adaptive Block: {req.role} unauthorized or high-risk {req.action} on {req.resource_type}",
+            "severity": "CRITICAL" if result.risk_score >= 80 else "HIGH",
+            "asset": f"{req.domain}_SYSTEM",
+            "owner": req.username,
+            "status": "OPEN",
+            "payload": {
+                "incident_id": incident_id,
+                "domain": req.domain,
+                "risk_score": result.risk_score,
+                "reason": result.reason,
+                "factors": result.factors,
+                "client_ip": req.client_ip,
+                "device_id": req.device_id,
+                "geo": req.geo_location,
+                "status": "OPEN",
+                "timeline": [
+                    {"time": _utcnow(), "event": "Access Request Initiated"},
+                    {"time": _utcnow(), "event": f"Behavioral Anomaly Flagged (Risk: {result.risk_score})"},
+                    {"time": _utcnow(), "event": f"Adaptive Enforcement: {result.decision.value}"},
+                    {"time": _utcnow(), "event": f"Security Incident {incident_id} Dispatched to SOC"}
+                ]
+            }
+        })
+
+        # Broadcast High-Priority Alert to WebSocket clients
+        await manager.broadcast({
+            "type": "SECURITY_INCIDENT_CREATED",
+            "incident_id": incident_id,
+            "domain": req.domain,
+            "risk_score": result.risk_score,
+            "decision": result.decision.value,
+            "actor": req.username,
+            "reason": result.reason,
+            "timestamp": _utcnow()
+        })
+
+    return {
+        "status": "success",
+        "decision": result.decision.value,
+        "risk_score": result.risk_score,
+        "risk_category": result.risk_category,
+        "reason": result.reason,
+        "factors": result.factors,
+        "policy_triggered": result.policy_triggered,
+        "incident_created": result.incident_created,
+        "incident_id": result.incident_id,
+        "timestamp": _utcnow()
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# HEALTHCARE DOMAIN OPERATIONAL ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/healthcare/patients", tags=["Healthcare"])
+async def list_patients(assigned_doctor: Optional[str] = None, department: Optional[str] = None):
+    """Lists healthcare patients with department & clinician assignment scopes."""
+    patients = await store.get_patients(assigned_doctor_id=assigned_doctor, department=department)
+    return {"status": "ok", "total": len(patients), "patients": patients}
+
+
+@app.get("/api/healthcare/patients/{patient_id}", tags=["Healthcare"])
+async def get_patient_detail(patient_id: str):
+    patient = await store.get_patient(patient_id)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    records = await store.get_medical_records(patient_id)
+    return {"status": "ok", "patient": patient, "medical_records": records}
+
+
+@app.get("/api/healthcare/ambulances", tags=["Healthcare"])
+async def list_ambulances():
+    """Lists smart city emergency medical response ambulances."""
+    ambulances = await store.get_ambulances()
+    return {"status": "ok", "total": len(ambulances), "ambulances": ambulances}
+
+
+class AmbulanceStatusUpdateRequest(BaseModel):
+    status: str
+    location: Optional[str] = None
+    eta_minutes: Optional[int] = None
+
+
+@app.patch("/api/healthcare/ambulances/{ambulance_id}/status", tags=["Healthcare"])
+async def update_ambulance(ambulance_id: str, req: AmbulanceStatusUpdateRequest):
+    """Updates ambulance mission step (ACCEPT, EN_ROUTE, ARRIVED, PATIENT_PICKED_UP, AT_HOSPITAL, COMPLETED)."""
+    success = await store.update_ambulance_status(
+        ambulance_id=ambulance_id, status=req.status, location=req.location, eta=req.eta_minutes
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="Ambulance not found")
+    
+    await manager.broadcast({
+        "type": "AMBULANCE_STATUS_UPDATED",
+        "ambulance_id": ambulance_id,
+        "status": req.status,
+        "location": req.location,
+        "eta": req.eta_minutes,
+        "timestamp": _utcnow()
+    })
+    return {"status": "ok", "ambulance_id": ambulance_id, "mission_status": req.status}
+
+
+@app.post("/api/healthcare/simulate-exfiltration", tags=["Healthcare Demo"])
+async def simulate_healthcare_exfiltration():
+    """
+    DEMO SCENARIO 3-5: Compromised Doctor Device Mass Patient Record Exfiltration.
+    Simulates Dr. Sarah Chen accessing 2,000 records at 02:45 AM from an unregistered device in London.
+    Demonstrates AI risk escalation to 92/100, adaptive BLOCK, and automated incident creation.
+    """
+    req = AccessEvaluateRequest(
+        user_id="doctor",
+        username="doctor",
+        role="doctor",
+        domain="HEALTHCARE",
+        department="Cardiology",
+        resource_type="PATIENT_RECORD",
+        action="EXPORT",
+        device_id="DEV-ROGUE-EXT-88",
+        device_trust=18.0,
+        is_known_device=False,
+        client_ip="185.220.101.5",
+        geo_location="London, UK",
+        previous_geo="Bengaluru, IN",
+        record_count=2000,
+        patient_assignment="unassigned",
+        network_trust="PUBLIC_VPN",
+        auth_strength="PASSWORD_ONLY"
+    )
+    res = await evaluate_access_endpoint(req)
+    return {
+        "status": "simulation_executed",
+        "scenario": "Compromised Doctor Credential Mass Exfiltration",
+        "evaluation": res
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# SMART TRAFFIC DOMAIN OPERATIONAL ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/traffic/signals", tags=["Smart Traffic"])
+async def list_traffic_signals():
+    """Lists STIG adaptive traffic signals across city intersections."""
+    signals = await store.get_traffic_signals()
+    return {"status": "ok", "total": len(signals), "signals": signals}
+
+
+class TrafficSignalOverrideRequest(BaseModel):
+    state: str = "GREEN"
+    mode: str = "GREEN_CORRIDOR"
+    operator_role: str = "traffic_operator"
+    override_by: str = "Inspector Rajesh Kumar"
+
+
+@app.patch("/api/traffic/signals/{signal_id}/override", tags=["Smart Traffic"])
+async def override_traffic_signal(signal_id: str, req: TrafficSignalOverrideRequest):
+    """Overrides a traffic signal for emergency green corridors or maintenance."""
+    # RBAC Guard: Only traffic_operator or emergency_traffic can override signals
+    if req.operator_role not in ("traffic_operator", "emergency_traffic", "traffic_supervisor", "admin", "superadmin"):
+        # Log unauthorized attempt
+        await store.audit(req.override_by, "SIGNAL_OVERRIDE_ATTEMPT", signal_id, {"status": "BLOCKED", "reason": "Insufficient privilege"})
+        raise HTTPException(status_code=403, detail="Access Denied: Role not authorized for traffic signal modification.")
+
+    success = await store.update_traffic_signal(
+        signal_id=signal_id, state=req.state, mode=req.mode, override_by=req.override_by
+    )
+    if not success:
+        raise HTTPException(status_code=404, detail="Traffic signal not found")
+
+    await manager.broadcast({
+        "type": "TRAFFIC_SIGNAL_OVERRIDDEN",
+        "signal_id": signal_id,
+        "state": req.state,
+        "mode": req.mode,
+        "override_by": req.override_by,
+        "timestamp": _utcnow()
+    })
+    return {"status": "ok", "signal_id": signal_id, "state": req.state, "mode": req.mode}
+
+
+@app.get("/api/traffic/cameras", tags=["Smart Traffic"])
+async def list_traffic_cameras():
+    """Lists municipal traffic CCTV and OCR surveillance cameras."""
+    cameras = await store.get_traffic_cameras()
+    return {"status": "ok", "total": len(cameras), "cameras": cameras}
+
+
+@app.post("/api/traffic/simulate-signal-tamper", tags=["Smart Traffic Demo"])
+async def simulate_traffic_signal_tamper():
+    """
+    DEMO SCENARIO 7: Unauthorized SCADA Traffic Signal Grid Manipulation.
+    Simulates an attacker transmitting unauthorized cycle commands to force green across all junctions.
+    """
+    eval_req = AccessEvaluateRequest(
+        user_id="unauthorized_actor",
+        username="external_compromise",
+        role="camera_operator",  # Camera operator attempting signal write
+        domain="TRAFFIC",
+        department="Surveillance",
+        resource_type="TRAFFIC_SIGNAL",
+        action="UPDATE",
+        device_id="DEV-CCTV-SCADA-01",
+        device_trust=32.0,
+        is_known_device=True,
+        client_ip="198.51.100.77",
+        geo_location="Unknown SCADA Gantry",
+        record_count=6,
+        network_trust="GUEST_WIFI"
+    )
+    res = await evaluate_access_endpoint(eval_req)
+    return {
+        "status": "simulation_executed",
+        "scenario": "Unauthorized SCADA Traffic Signal Grid Manipulation",
+        "evaluation": res
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# FINANCE & FINTECH DOMAIN OPERATIONAL ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/finance/accounts", tags=["Finance"])
+async def list_bank_accounts(customer_id: Optional[str] = None):
+    """Lists bank accounts."""
+    accounts = await store.get_bank_accounts(customer_id=customer_id)
+    return {"status": "ok", "total": len(accounts), "accounts": accounts}
+
+
+@app.get("/api/finance/transactions", tags=["Finance"])
+async def list_bank_transactions(account_id: Optional[str] = None, limit: int = 50):
+    """Lists banking and treasury wire transactions."""
+    txs = await store.get_bank_transactions(account_id=account_id, limit=limit)
+    return {"status": "ok", "total": len(txs), "transactions": txs}
+
+
+class BankTransactionCreateRequest(BaseModel):
+    account_id: str
+    sender_name: str
+    receiver_account: str
+    amount: float
+    channel: str = "SWIFT_RTGS"
+    transaction_type: str = "WIRE_TRANSFER"
+    beneficiary_age_hours: int = 12
+
+
+@app.post("/api/finance/transactions", tags=["Finance"])
+async def create_transaction_endpoint(req: BankTransactionCreateRequest):
+    """Executes a transaction with real-time pre-settlement ML risk scoring & adaptive escrow hold."""
+    # Context risk evaluation
+    eval_req = AccessEvaluateRequest(
+        user_id="customer",
+        username=req.sender_name,
+        role="customer",
+        domain="FINANCE",
+        resource_type="TRANSACTION",
+        action="CREATE",
+        transaction_amount=req.amount,
+        network_trust="CORPORATE_SECURE"
+    )
+    eval_res = await evaluate_access_endpoint(eval_req)
+
+    decision = "ALLOWED"
+    is_fraud = 0
+    if req.amount > 1_000_000 and req.beneficiary_age_hours < 24:
+        decision = "ESCROW_HOLD"
+        is_fraud = 1
+    elif eval_res["risk_score"] >= 75.0:
+        decision = "BLOCKED"
+        is_fraud = 1
+
+    tx = await store.create_bank_transaction(
+        account_id=req.account_id,
+        sender_name=req.sender_name,
+        receiver_account=req.receiver_account,
+        amount=req.amount,
+        channel=req.channel,
+        transaction_type=req.transaction_type,
+        risk_score=eval_res["risk_score"],
+        decision=decision,
+        is_fraud=is_fraud
+    )
+
+    return {
+        "status": "ok",
+        "transaction": tx,
+        "access_decision": eval_res["decision"],
+        "risk_score": eval_res["risk_score"],
+        "escrow_hold_active": decision == "ESCROW_HOLD"
+    }
+
+
+@app.post("/api/finance/simulate-account-takeover", tags=["Finance Demo"])
+async def simulate_finance_takeover():
+    """
+    DEMO SCENARIO 8: Account Takeover & Rapid Fraudulent SWIFT Diversion.
+    Simulates high-velocity ₹4.5M wire transfer to a 1-hour-old offshore account via compromised session.
+    """
+    eval_req = AccessEvaluateRequest(
+        user_id="customer",
+        username="Tony Stark",
+        role="customer",
+        domain="FINANCE",
+        department="Retail Banking",
+        resource_type="TRANSACTION",
+        action="CREATE",
+        device_id="DEV-OFFSHORE-99",
+        device_trust=20.0,
+        is_known_device=False,
+        client_ip="198.51.100.77",
+        geo_location="Moscow, RU",
+        previous_geo="Bengaluru, IN",
+        transaction_amount=4500000.0,
+        network_trust="TOR_EXIT",
+        auth_strength="PASSWORD_ONLY"
+    )
+    res = await evaluate_access_endpoint(eval_req)
+    
+    # Create the intercepted transaction in escrow
+    tx = await store.create_bank_transaction(
+        account_id="ACC-9003",
+        sender_name="Municipal Water SCADA",
+        receiver_account="998877665544",
+        amount=4500000.0,
+        channel="SWIFT_RTGS",
+        transaction_type="WIRE_TRANSFER",
+        risk_score=res["risk_score"],
+        decision="BLOCKED",
+        is_fraud=1
+    )
+
+    return {
+        "status": "simulation_executed",
+        "scenario": "Account Takeover & High-Value SWIFT Treasury Diversion",
+        "transaction": tx,
+        "evaluation": res
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# SOC & CROSS-DOMAIN CYBERSECURITY INTELLIGENCE ENDPOINTS
+# ═══════════════════════════════════════════════════════════════════════
+
+@app.get("/api/security/policies", tags=["Security Governance"])
+async def list_security_policies():
+    """Lists active security & access control policies across all domains."""
+    policies = await store.get_security_policies()
+    return {"status": "ok", "total": len(policies), "policies": policies}
+
+
+@app.get("/api/security/cross-domain-threats", tags=["SOC Intelligence"])
+async def list_cross_domain_threats():
+    """Returns detected cross-domain cyber-physical correlation threats."""
+    threats = await store.get_cross_domain_threats()
+    return {"status": "ok", "total": len(threats), "threats": threats}
+
+
+@app.get("/api/security/posture-score", tags=["SOC Intelligence"])
+async def get_security_posture_score():
+    """
+    Returns city-wide Cybersecurity Posture Score:
+    Overall composite: 82 / 100
+    Healthcare: 88 / 100
+    Traffic: 74 / 100
+    Finance: 85 / 100
+    """
+    incidents = await store.get_incidents(status="OPEN")
+    total_open = len(incidents)
+
+    # Derived domain posture scores
+    hc_score = max(60, 92 - (total_open * 2))
+    traffic_score = 74.0
+    finance_score = 85.0
+    composite = round((hc_score * 0.35 + traffic_score * 0.30 + finance_score * 0.35), 1)
+
+    return {
+        "city_security_score": composite,
+        "status": "DEFENDED",
+        "domains": {
+            "healthcare": {
+                "score": hc_score,
+                "status": "OPTIMAL" if hc_score >= 80 else "DEGRADED",
+                "open_incidents": sum(1 for i in incidents if "HEALTHCARE" in str(i.get("payload", "")).upper()),
+                "iomt_compliance": "98.4%",
+                "lead_threat": "Clinical EHR Scraping / Ransomware Probing"
+            },
+            "traffic": {
+                "score": traffic_score,
+                "status": "MONITORED",
+                "open_incidents": sum(1 for i in incidents if "TRAFFIC" in str(i.get("payload", "")).upper()),
+                "scada_integrity": "94.2%",
+                "lead_threat": "STIG Signal Timing Tampering & ANPR Spoofing"
+            },
+            "finance": {
+                "score": finance_score,
+                "status": "SECURE",
+                "open_incidents": sum(1 for i in incidents if "FINANCE" in str(i.get("payload", "")).upper()),
+                "swift_integrity": "99.1%",
+                "lead_threat": "High-Velocity Wire Account Takeovers & Mule Ring Structuring"
+            }
+        },
+        "systemic_vulnerabilities": [
+            {"sector": "Traffic", "cve": "CVE-2024-38102", "severity": "HIGH", "component": "STIG Signal Controller Firmware"},
+            {"sector": "Healthcare", "cve": "CVE-2024-21413", "severity": "MEDIUM", "component": "DICOM PACS Image Gateway"},
+            {"sector": "Finance", "cve": "CVE-2024-43573", "severity": "CRITICAL", "component": "Interbank Wire Message Parser"}
+        ],
+        "timestamp": _utcnow()
+    }
+
+
+@app.get("/api/security/user-risk-profile/{username}", tags=["Security Governance"])
+async def get_user_profile(username: str):
+    """Returns comprehensive user security profile, trust score, and behavioral timeline."""
+    profile = await store.get_user_risk_profile(username)
+    return {"status": "ok", "profile": profile}
+
+
+@app.get("/api/security/devices", tags=["Security Governance"])
+async def list_devices(user_id: Optional[str] = None):
+    """Lists registered MDM devices and trust levels."""
+    devices = await store.get_devices(user_id=user_id)
+    return {"status": "ok", "total": len(devices), "devices": devices}
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 1-CLICK DEMO STORY CONTROLLER (10-STEP COMPLETE NARRATIVE)
+# ═══════════════════════════════════════════════════════════════════════
+
+@app.post("/api/demo/run-scenario/{scenario_step}", tags=["Demo Center"])
+async def run_demo_story_step(scenario_step: int):
+    """
+    Executes one of the 10 sequential presentation steps defined in the Master Build Prompt:
+    Step 1: Hospital Admin Posture
+    Step 2: Doctor Normal Patient Record Access
+    Step 3: Compromised Doctor Device / Mass Record Access
+    Step 4: AI Behavioral Anomaly Detection
+    Step 5: Policy Engine Adaptive Block
+    Step 6: Hospital Security Incident Dispatch
+    Step 7: Traffic Signal Manipulation Detection & Reversion
+    Step 8: Finance Account Takeover & Pre-Emptive Escrow Freeze
+    Step 9: Unified Pan-City SOC Alert Integration
+    Step 10: Cross-Domain Coordinated Attack Correlation
+    """
+    now = _utcnow()
+
+    if scenario_step == 1:
+        return {
+            "step": 1,
+            "title": "Hospital Administrator Posture Overview",
+            "role": "hospital_admin",
+            "domain": "HEALTHCARE",
+            "action": "VIEW_DASHBOARD",
+            "status": "NOMINAL",
+            "metrics": {"total_patients": 5, "icu_beds_occupied": 4, "ambulances_active": 3, "cyber_risk": 18.0},
+            "narration": "Hospital Admin logs in to review clinical operations, bed availability, and hospital security posture. All systems operating nominally."
+        }
+
+    elif scenario_step == 2:
+        return {
+            "step": 2,
+            "title": "Doctor Normal Patient Record Access",
+            "role": "doctor",
+            "domain": "HEALTHCARE",
+            "action": "PATIENT_RECORD_VIEW",
+            "target": "P-1001 (Aarav Sharma, Post-Op Cardiac)",
+            "decision": "ALLOWED",
+            "risk_score": 12.0,
+            "narration": "Dr. Sarah Chen accesses her assigned Cardiology patient P-1001 from her enrolled hospital tablet during morning rounds. Access is immediately granted."
+        }
+
+    elif scenario_step == 3:
+        # Step 3: Compromised device access
+        return {
+            "step": 3,
+            "title": "Compromised Doctor Device / Off-Hours Bulk Retrieval",
+            "role": "doctor",
+            "domain": "HEALTHCARE",
+            "action": "MASS_PATIENT_EXPORT",
+            "target": "2,000 Unassigned Patient Records",
+            "context": {"time": "02:45 AM", "device": "Unknown Device (London, UK)", "volume": 2000},
+            "narration": "An external adversary using compromised credentials attempts to export 2,000 patient records from an unrecognized device in London at 2:45 AM."
+        }
+
+    elif scenario_step == 4:
+        # Step 4: AI detects anomaly
+        return {
+            "step": 4,
+            "title": "AI Behavioral Anomaly Detection & Risk Escalation",
+            "risk_progression": [
+                {"stage": "Baseline", "score": 12.0, "status": "LOW"},
+                {"stage": "Unregistered Device", "score": 37.0, "status": "MEDIUM"},
+                {"stage": "Impossible Travel", "score": 72.0, "status": "HIGH"},
+                {"stage": "Mass Volume (2,000 records)", "score": 92.5, "status": "CRITICAL"}
+            ],
+            "top_xai_factors": [
+                {"factor": "Impossible Travel Anomaly (Bengaluru -> London)", "points": 35},
+                {"factor": "Unregistered External Device", "points": 25},
+                {"factor": "Mass Exfiltration Volume (2,000 records)", "points": 30},
+                {"factor": "Off-Hours Shift (02:45 AM)", "points": 18}
+            ],
+            "narration": "The AI Cyber Risk Engine detects the multi-dimensional anomaly in real time. Risk score spikes from 12.0 to 92.5 (CRITICAL)."
+        }
+
+    elif scenario_step == 5:
+        # Step 5: Policy engine adaptive block
+        res = await simulate_healthcare_exfiltration()
+        return {
+            "step": 5,
+            "title": "Policy Engine Adaptive Block & Pre-emptive Containment",
+            "decision": "BLOCKED",
+            "policy": "CRITICAL_RISK_CONTAINMENT_POLICY",
+            "result": res,
+            "narration": "Policy Engine triggers an immediate ADAPTIVE BLOCK. The malicious exfiltration is severed in-flight before any record leaves the hospital database."
+        }
+
+    elif scenario_step == 6:
+        # Step 6: Incident dispatched to Hospital Security
+        incidents = await store.get_incidents()
+        return {
+            "step": 6,
+            "title": "Hospital Security Officer Incident Dispatch",
+            "recipient": "hospital_sec (Alex Chen, Hospital IT Security)",
+            "incident_summary": {
+                "incident_id": incidents[0]["id"] if incidents else "INC-HC-0089",
+                "severity": "CRITICAL",
+                "evidence": "2,000 patient export blocked from 185.220.101.5 (London, UK)",
+                "recommended_action": "Revoke doctor session & force hardware credential rotation"
+            },
+            "narration": "Hospital Security Officer receives high-priority incident alert with complete forensic evidence and recommended playbooks."
+        }
+
+    elif scenario_step == 7:
+        # Step 7: Traffic signal manipulation blocked
+        res = await simulate_traffic_signal_tamper()
+        return {
+            "step": 7,
+            "title": "Smart Traffic Signal Manipulation Detection & Reversion",
+            "domain": "SMART_TRAFFIC",
+            "attacker_ip": "198.51.100.77",
+            "action": "SCADA_OVERRIDE_ALL_GREEN",
+            "decision": "BLOCKED",
+            "result": res,
+            "narration": "Simultaneously, an unauthorized actor probes the Central Zone Traffic Controller attempting to force all lights to GREEN. The anomaly is detected and blocked."
+        }
+
+    elif scenario_step == 8:
+        # Step 8: Finance takeover blocked
+        res = await simulate_finance_takeover()
+        return {
+            "step": 8,
+            "title": "Finance Account Takeover & Pre-Emptive Escrow Hold",
+            "domain": "FINANCE",
+            "attacker_ip": "198.51.100.77",
+            "action": "SWIFT_WIRE_4500000",
+            "decision": "BLOCKED_ESCROW_HOLD",
+            "result": res,
+            "narration": "A third attack initiates a ₹4.5M high-velocity wire diversion. ML fraud detector immediately triggers a Pre-Emptive Escrow Hold, protecting municipal funds."
+        }
+
+    elif scenario_step == 9:
+        # Step 9: Unified SOC view
+        score = await get_security_posture_score()
+        return {
+            "step": 9,
+            "title": "Unified Pan-City SOC Alert Integration",
+            "posture": score,
+            "active_alerts_count": 3,
+            "sectors_defended": ["Healthcare (EHR)", "Smart Traffic (STIG)", "Finance (Core Banking)"],
+            "narration": "The Tier-3 SOC Analyst opens the Pan-City Security Operations Center, viewing correlated alerts streaming across all three critical city sectors."
+        }
+
+    elif scenario_step == 10:
+        # Step 10: Cross-domain correlation
+        threats = await store.get_cross_domain_threats()
+        return {
+            "step": 10,
+            "title": "Cross-Domain Coordinated Attack Correlation",
+            "correlation_analysis": {
+                "threat_actor_ip": "198.51.100.77",
+                "common_device": "DEV-ROGUE-EXT-88",
+                "domains_correlated": ["HEALTHCARE", "SMART_TRAFFIC", "FINANCE"],
+                "attack_classification": "COORDINATED MULTI-STAGE SMART CITY HYBRID ATTACK",
+                "composite_risk_score": 96.8,
+                "mitigation_enforced": "City-Wide Perimeter IP Ban + High-Security Lockdown across Hospital, Signal Grid, and SWIFT Gateways"
+            },
+            "threats": threats,
+            "narration": "Differentiator: The Cross-Domain Correlation Engine correlates the common source IP 198.51.100.77 across Hospital, Traffic, and Finance. A unified P1 Pan-City Coordinated Incident is raised."
+        }
+
+    else:
+        raise HTTPException(status_code=400, detail="Invalid scenario step (must be 1 to 10)")
 
 
 @app.get("/", include_in_schema=False)
