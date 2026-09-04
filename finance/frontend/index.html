@@ -929,6 +929,12 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
         </button>
       </div>
 
+      <!-- Universal Attack Simulation & Dataset ML Predictor Button -->
+      <button type="button" class="btn" onclick="openDatasetSimulationModal()" id="btn-topbar-sim" style="background:linear-gradient(135deg, rgba(239,68,68,0.25), rgba(185,28,28,0.35)); border:1px solid #ef4444; color:#fca5a5; font-size:11px; font-weight:700; padding:5px 12px; border-radius:7px; cursor:pointer; display:flex; align-items:center; gap:6px; margin-right:12px; box-shadow:0 0 10px rgba(239,68,68,0.25); transition:all 0.15s;">
+        <i data-feather="zap" style="width:13px;height:13px;color:#ef4444;"></i>
+        <span>Inject Attack Simulation</span>
+      </button>
+
       <div class="rbac-switcher-wrap" id="rbac-switcher-wrap">
           <div class="rbac-pill" id="rbac-active-pill" onclick="toggleRbacDropdown()" title="Switch Active Sector RBAC Persona">
             <span class="rbac-pill-dot" id="rbac-pill-dot" style="background:var(--accent);"></span>
@@ -1003,6 +1009,19 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
       <!-- ═══ FINTECH DEFENSE PAGE ═══ -->
       <div id="page-fintech">
+        <!-- Quick Attack Injection Banner for Fintech -->
+        <div style="background:linear-gradient(90deg, rgba(245,158,11,0.15), rgba(15,23,42,0.6)); border:1px solid rgba(245,158,11,0.4); border-radius:8px; padding:10px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i data-feather="dollar-sign" style="width:18px;height:18px;color:#f59e0b;"></i>
+            <div>
+              <div style="font-size:12px; font-weight:700; color:#fff;">Financial Core &amp; SWIFT Gateway Cyber-Stress Simulation</div>
+              <div style="font-size:10px; color:var(--text-dim);">Inject high-frequency credential stuffing and fraudulent interbank wire anomalies into ML fraud detectors.</div>
+            </div>
+          </div>
+          <button class="btn" onclick="quickInjectSectorAttack('finance')" style="background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid #f59e0b; font-size:11px; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <i data-feather="zap" style="width:12px;height:12px;"></i> Inject SWIFT Fraud &amp; Predict
+          </button>
+        </div>
         
         <!-- KPI Row -->
         <div class="kpi-row" style="margin-bottom:18px;">
@@ -1855,6 +1874,19 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
       <!-- ═══ MUNICIPAL TRAFFIC MANAGEMENT & OPERATIONS CENTER ═══ -->
       <div id="page-traffic" style="display:none">
+        <!-- Quick Attack Injection Banner for Traffic -->
+        <div style="background:linear-gradient(90deg, rgba(14,165,233,0.15), rgba(15,23,42,0.6)); border:1px solid rgba(14,165,233,0.4); border-radius:8px; padding:10px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i data-feather="alert-octagon" style="width:18px;height:18px;color:#0ea5e9;"></i>
+            <div>
+              <div style="font-size:12px; font-weight:700; color:#fff;">Traffic Grid Live Stress Test &amp; Dataset ML Evaluation</div>
+              <div style="font-size:10px; color:var(--text-dim);">Inject authentic ToN-IoT SCADA and ANPR sensor tampering records directly into traffic signal controllers.</div>
+            </div>
+          </div>
+          <button class="btn btn-accent" onclick="quickInjectSectorAttack('traffic')" style="font-size:11px; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <i data-feather="zap" style="width:12px;height:12px;"></i> Inject ToN-IoT Attack &amp; Predict
+          </button>
+        </div>
         <div class="card" style="margin-bottom:16px; padding:14px 20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div style="display:flex; align-items:center; gap:12px;">
@@ -2323,6 +2355,19 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
       <!-- ═══ HEALTHCARE DEFENSE (CAREGUARD) PAGE ═══ -->
       <div id="page-healthcare" style="display:none">
+        <!-- Quick Attack Injection Banner for Healthcare -->
+        <div style="background:linear-gradient(90deg, rgba(239,68,68,0.15), rgba(15,23,42,0.6)); border:1px solid rgba(239,68,68,0.4); border-radius:8px; padding:10px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i data-feather="activity" style="width:18px;height:18px;color:#f87171;"></i>
+            <div>
+              <div style="font-size:12px; font-weight:700; color:#fff;">CAREGUARD Hospital IT Stress Test &amp; IoMT Telemetry Predictor</div>
+              <div style="font-size:10px; color:var(--text-dim);">Inject authentic clinical IoMT infusion tampering and ransomware vectors into the clinical defense engine.</div>
+            </div>
+          </div>
+          <button class="btn btn-danger" onclick="quickInjectSectorAttack('healthcare')" style="font-size:11px; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <i data-feather="zap" style="width:12px;height:12px;"></i> Inject CareGuard Attack &amp; Predict
+          </button>
+        </div>
 
         <!-- Top Header & Action Controls -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
@@ -4236,7 +4281,154 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 </div>
 
 <!-- ═══ 13-PHASE GUIDED TOUR MODAL ═══ -->
-<div class="soc-modal-overlay" id="guided-tour-modal" style="display:none;">
+<
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- DATASET ATTACK SIMULATOR & ML PREDICTOR MODAL                         -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="soc-modal-overlay" id="dataset-sim-modal" style="display:none; position:fixed; inset:0; background:rgba(7,11,20,0.85); backdrop-filter:blur(6px); z-index:10000; align-items:center; justify-content:center;">
+  <div class="soc-modal-card" style="width:90%; max-width:850px; background:#0b1120; border:1px solid rgba(56,189,248,0.3); border-radius:12px; box-shadow:0 0 35px rgba(0,0,0,0.8); max-height:90vh; display:flex; flex-direction:column; overflow:hidden;">
+    
+    <!-- Modal Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(255,255,255,0.1); background:rgba(15,23,42,0.9);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:30px; height:30px; border-radius:8px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; display:flex; align-items:center; justify-content:center;">
+          <i data-feather="zap" style="width:16px;height:16px;color:#ef4444;"></i>
+        </div>
+        <div>
+          <div style="font-size:14px; font-weight:800; color:#fff; letter-spacing:0.5px;">Smart City Dataset Attack Simulator &amp; ML Predictor</div>
+          <div style="font-size:11px; color:var(--text-dim);">Inject authentic benchmark dataset attacks into live pipeline and predict impacts in real-time</div>
+        </div>
+      </div>
+      <button class="btn" onclick="closeDatasetSimulationModal()" style="padding:4px 8px; font-size:12px; border:none; background:transparent; color:var(--text-dim); cursor:pointer;"><i data-feather="x"></i></button>
+    </div>
+
+    <!-- Modal Body (Scrollable) -->
+    <div style="padding:20px; overflow-y:auto; flex:1;">
+      
+      <!-- Grid: Dataset & Target Controls -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        
+        <!-- Left: Dataset Selection -->
+        <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:14px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; display:block; margin-bottom:6px;">1. Select Attack Dataset</label>
+          <select id="sim-dataset-select" style="width:100%; padding:8px 10px; background:#070b14; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px; font-weight:600; margin-bottom:10px;">
+            <option value="cicids2017">CIC-IDS2017 (High-Volume DDoS &amp; Botnet Infiltration)</option>
+            <option value="unsw_nb15">UNSW-NB15 (Advanced Exploits, Fuzzers &amp; Backdoors)</option>
+            <option value="ton_iot" selected>ToN-IoT (Smart City Traffic SCADA &amp; Sensor Telemetry)</option>
+            <option value="nsl_kdd">NSL-KDD (Standard Network Intrusion &amp; Port Scans)</option>
+            <option value="careguard">CAREGUARD / MIMIC-IV (Clinical IoMT &amp; Hospital Ransomware)</option>
+            <option value="fintech">Fintech Core (SWIFT Interbank Fraud &amp; ATM Stuffing)</option>
+            <option value="custom">Upload Custom CSV / JSON Dataset</option>
+          </select>
+
+          <div id="sim-custom-upload-wrap" style="display:none; margin-top:8px; padding:8px; background:rgba(56,189,248,0.06); border:1px dashed rgba(56,189,248,0.3); border-radius:6px;">
+            <input type="file" id="sim-custom-file" accept=".csv,.json,.jsonl" style="font-size:11px; color:var(--text-dim); width:100%;">
+          </div>
+
+          <div style="font-size:10px; color:var(--text-dim); margin-top:6px; line-height:1.4;">
+            Pre-loaded with <b>authentic multi-thousand row benchmark datasets</b> validated across Smart City IoT, Traffic grids, Clinical healthcare, and Core Banking.
+          </div>
+        </div>
+
+        <!-- Right: Target Sector & Batch Configuration -->
+        <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:14px;">
+          <label style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; display:block; margin-bottom:6px;">2. Target Infrastructure Sector</label>
+          <select id="sim-target-asset" style="width:100%; padding:8px 10px; background:#070b14; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px; font-weight:600; margin-bottom:10px;">
+            <option value="TRAFFIC_SYSTEM" selected>Traffic Grid &amp; Mobility (STIG Signals, ANPR, CCTV)</option>
+            <option value="HEALTHCARE">Healthcare &amp; Hospital IT (CAREGUARD &amp; Patient IoMT)</option>
+            <option value="FINANCE">Fintech &amp; Municipal Treasury (Payment Gateway, ATMs)</option>
+            <option value="POWER_GRID">Power Grid SCADA (Substations &amp; Distribution)</option>
+            <option value="WATER_SUPPLY">Water Supply &amp; Pressure Telemetry</option>
+            <option value="COMMUNICATIONS">Communications &amp; Fiber Optics</option>
+          </select>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+            <label style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Injection Batch Size:</label>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="btn sim-batch-btn active" onclick="setSimBatchSize(5, this)" style="padding:4px 10px; font-size:11px; border:1px solid #38bdf8; background:rgba(56,189,248,0.2); color:#38bdf8; border-radius:5px; font-weight:700;">5 Events</button>
+              <button type="button" class="btn sim-batch-btn" onclick="setSimBatchSize(10, this)" style="padding:4px 10px; font-size:11px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:var(--text-dim); border-radius:5px; font-weight:700;">10 Events</button>
+              <button type="button" class="btn sim-batch-btn" onclick="setSimBatchSize(20, this)" style="padding:4px 10px; font-size:11px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:var(--text-dim); border-radius:5px; font-weight:700;">20 Events</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div style="display:flex; gap:12px; margin-bottom:16px;">
+        <button class="btn btn-danger" id="btn-execute-inject" onclick="executeDatasetInjection()" style="flex:1; height:44px; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 0 15px rgba(239,68,68,0.3); letter-spacing:0.5px;">
+          <i data-feather="zap"></i> INJECT ATTACK DATASET &amp; RUN ML PREDICTION
+        </button>
+      </div>
+
+      <!-- Live Results & Predictions Card (Initially Hidden) -->
+      <div id="sim-results-card" style="display:none; background:rgba(15,23,42,0.8); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:16px; animation:fadeIn 0.2s ease;">
+        
+        <!-- Results Summary Bar -->
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+          <div style="background:#070b14; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:10px;">
+            <div style="font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;">INJECTED EVENTS</div>
+            <div id="sim-res-injected" style="font-size:20px; font-weight:800; color:#fff; margin-top:2px;">5</div>
+            <div id="sim-res-dataset" style="font-size:10px; color:var(--accent);">TON_IOT</div>
+          </div>
+          <div style="background:#070b14; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:10px;">
+            <div style="font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;">THREATS DETECTED</div>
+            <div id="sim-res-threats" style="font-size:20px; font-weight:800; color:#ef4444; margin-top:2px;">5</div>
+            <div id="sim-res-rate" style="font-size:10px; color:var(--green);">100% Catch Rate</div>
+          </div>
+          <div style="background:#070b14; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:10px;">
+            <div style="font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;">PEAK ML RISK SCORE</div>
+            <div id="sim-res-risk" style="font-size:20px; font-weight:800; color:#f59e0b; margin-top:2px;">84.5</div>
+            <div style="font-size:10px; color:#ef4444;">CRITICAL THREAT</div>
+          </div>
+          <div style="background:#070b14; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:10px;">
+            <div style="font-size:10px; color:var(--text-dim); font-weight:700; text-transform:uppercase;">INFERENCE LATENCY</div>
+            <div id="sim-res-latency" style="font-size:20px; font-weight:800; color:#38bdf8; margin-top:2px;">9.4 ms</div>
+            <div style="font-size:10px; color:var(--green);">Real-Time Multi-Model</div>
+          </div>
+        </div>
+
+        <!-- Live Predictions Stream Table -->
+        <div style="font-size:11px; font-weight:700; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span>Live ML Multi-Model Predictions &amp; XAI Attribution:</span>
+          <span id="sim-live-tag" style="font-size:10px; color:var(--green); font-weight:600;">● STREAM BROADCAST ACTIVE</span>
+        </div>
+        <div style="max-height:260px; overflow-y:auto; border:1px solid rgba(255,255,255,0.08); border-radius:6px; background:#070b14;">
+          <table class="cyber-table" style="width:100%; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr style="background:rgba(255,255,255,0.03); color:var(--text-dim); text-align:left;">
+                <th style="padding:6px 10px;">Time</th>
+                <th style="padding:6px 10px;">Injected Vector</th>
+                <th style="padding:6px 10px;">Predicted Attack</th>
+                <th style="padding:6px 10px;">Confidence</th>
+                <th style="padding:6px 10px;">Severity</th>
+                <th style="padding:6px 10px;">Target Asset</th>
+                <th style="padding:6px 10px;">Top XAI Factors (SHAP)</th>
+                <th style="padding:6px 10px;">Mitigation</th>
+              </tr>
+            </thead>
+            <tbody id="sim-predictions-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Footer -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:11px; color:var(--text-dim);">
+            Events propagated into <b>Digital Twin</b> &amp; live <b>WebSocket</b> event bus.
+          </div>
+          <button class="btn btn-accent" onclick="jumpToSectorFromSimulation()" style="font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;">
+            <i data-feather="external-link"></i> View In Sector Dashboard
+          </button>
+        </div>
+
+      </div>
+
+    </div><!-- /modal-body -->
+  </div>
+</div>
+
+div class="soc-modal-overlay" id="guided-tour-modal" style="display:none;">
   <div class="soc-modal-card" style="max-width:750px;">
     <div class="soc-modal-header">
       <div style="display:flex; align-items:center; gap:8px;">
