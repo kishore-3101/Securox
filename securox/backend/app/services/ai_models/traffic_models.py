@@ -12,11 +12,14 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import numpy as np
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 from services.ai_models.base import BaseAIModel, ModelInferenceResult, _utcnow
 
-ONNX_MODEL_PATH = Path("c:/Users/praja/Downloads/Securox-main (1)/Securox-main/securox/backend/app/ai/yolov8n.onnx")
+ONNX_MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "ai" / "yolov8n.onnx"
 
 
 class YOLOVehicleDetectionModel(BaseAIModel):
@@ -28,6 +31,9 @@ class YOLOVehicleDetectionModel(BaseAIModel):
         self._init_network()
 
     def _init_network(self):
+        if cv2 is None:
+            self.status = "DEGRADED"
+            return
         if ONNX_MODEL_PATH.exists():
             try:
                 self._net = cv2.dnn.readNetFromONNX(str(ONNX_MODEL_PATH))
