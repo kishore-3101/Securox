@@ -1,0 +1,13 @@
+{
+  "CAM_TRAFFIC_01": {
+    "id": "CAM_TRAFFIC_01",
+    "name": "Smart Highway CCTV - Sector 4",
+    "ip": "192.168.45.10",
+    "port": 8554,
+    "protocol": "rtsp",
+    "brand": "generic",
+    "username": "admin",
+    "encrypted_password": "gAAAAABqmvYdAv3Us04MWY8tnuaBF-VAh5tJBP3t2rYnA5ZMNYq7GVC54b134aIaVKxSRJuE0QISZouDhZMKN5hZiFleAsbq3g==",
+    "created_at": "2026-09-04T16:47:25.829417+00:00"
+  }
+}

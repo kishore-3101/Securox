@@ -26,7 +26,7 @@ build/
 *.db-shm
 *.sqlite
 *.sqlite3
-database/
+/database/
 
 # Node.js
 node_modules/
