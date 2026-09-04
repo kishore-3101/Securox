@@ -1,0 +1,24 @@
+# Render Blueprint — Securox Smart City Cybersecurity Platform
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: securox
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: |
+      chmod +x build.sh && ./build.sh
+    startCommand: |
+      cd securox/backend/app && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.12"
+      - key: NODE_VERSION
+        value: "20.19.3"
+      - key: SECUROX_SECRET_KEY
+        generateValue: true
+      - key: SECUROX_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
