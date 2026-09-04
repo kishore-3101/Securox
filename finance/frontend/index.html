@@ -665,9 +665,17 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
       <div class="nav-item" onclick="showPage('cctv')">
         <i data-feather="camera" class="nav-icon"></i> Traffic &amp; CCTV AI
       </div>
+      <div class="nav-item" onclick="window.open('/traffic', '_blank')" style="cursor:pointer;" title="Launch Complete 26-View Traffic Management System in Separate Window">
+        <i data-feather="external-link" class="nav-icon" style="color:#38bdf8;"></i> Traffic SOC Portal
+        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(56,189,248,0.2); color:#38bdf8; margin-left:auto; font-weight:700;">26-VIEW ↗</span>
+      </div>
       <div class="nav-item" id="nav-healthcare" onclick="showPage('healthcare')">
         <i data-feather="heart" class="nav-icon" style="color:#f87171;"></i> Healthcare Defense
         <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(239,68,68,0.2); color:#f87171; margin-left:auto; font-weight:700;">CAREGUARD</span>
+      </div>
+      <div class="nav-item" onclick="window.open('/healthcare', '_blank')" style="cursor:pointer;" title="Launch Healthcare SOC Portal in Separate Window">
+        <i data-feather="activity" class="nav-icon" style="color:var(--green);"></i> Healthcare SOC Portal
+        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">SEPARATE ↗</span>
       </div>
       <div class="nav-item" onclick="showPage('vault')">
         <i data-feather="key" class="nav-icon"></i> Crypto Vault
@@ -1613,6 +1621,9 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
                 <span id="cctv-status" style="margin-left:auto;font-size:11px;font-weight:500;color:var(--text-dim)">Model loading…</span>
                 <button class="btn" style="margin-left:12px" onclick="toggleCctvSource()" id="cctv-toggle-btn">Use Video File</button>
                 <button class="btn btn-accent" style="margin-left:8px" onclick="startCctv()" id="cctv-start-btn">Start Detection</button>
+                <button class="btn" style="margin-left:8px; border-color:rgba(56,189,248,0.4); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="window.open('/traffic', '_blank')" title="Open 26-View Standalone Traffic Management System in a separate window">
+                  <i data-feather="external-link" style="width:13px;height:13px;"></i> Standalone Traffic Center ↗
+                </button>
               </div>
 
               <!-- Video Container -->
