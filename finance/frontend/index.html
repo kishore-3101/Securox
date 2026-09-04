@@ -8,6 +8,7 @@
 <script src="https://unpkg.com/feather-icons"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════ RESET & VARS */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -210,6 +211,35 @@ button { cursor: pointer; font-family: var(--font); }
 .toast.high     { border-left-color: var(--orange); }
 
 /* ═══════════════════════════════════════════════════════ MODAL */
+
+/* Source Mode Segmented Tabs */
+.btn-source-tab {
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  user-select: none;
+}
+.btn-source-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+.btn-source-tab.active {
+  background: var(--accent);
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgba(2, 132, 199, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
 .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:1000;
                  display:none; align-items:center; justify-content:center; }
 .modal-overlay.open { display:flex; }
@@ -1797,6 +1827,12 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
               <button class="btn" style="border-color:rgba(16,185,129,0.3); color:var(--green); background:rgba(16,185,129,0.1);" onclick="triggerGreenCorridor()" title="Prioritize Emergency Vehicles on Active Corridors">
                 <i data-feather="zap" style="width:13px; height:13px;"></i> Green Corridor
               </button>
+              <button class="btn" style="border-color:rgba(14,165,233,0.4); color:#38bdf8; background:rgba(14,165,233,0.12);" onclick="launchTrafficMobileCam()" title="Connect Smartphone Camera via WebRTC for Live Field Demo">
+                <i data-feather="smartphone" style="width:13px; height:13px;"></i> Mobile WebRTC
+              </button>
+              <button class="btn" style="border-color:rgba(168,85,247,0.4); color:#c084fc; background:rgba(168,85,247,0.12);" onclick="launchTrafficVideoUpload()" title="Upload Video File for Vehicle & Speed AI Detection">
+                <i data-feather="upload-cloud" style="width:13px; height:13px;"></i> Upload Video
+              </button>
               <button class="btn" style="border-color:rgba(56,189,248,0.3); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="showPage('cctv')" title="Switch to Live CCTV Camera Feed & AI Object Detector">
                 <i data-feather="camera" style="width:13px; height:13px;"></i> CCTV Vision AI
               </button>
@@ -1822,18 +1858,47 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
           <div style="display:flex;flex-direction:column;gap:20px">
             <!-- Live Camera Feed + AI Canvas -->
             <div class="card">
-              <div class="card-title">
-                <i data-feather="camera"></i> <span id="current-cam-title">Smart Highway CCTV - Sector 4</span>
+              <div class="card-title" style="flex-wrap:wrap; gap:10px; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-feather="camera"></i> <span id="current-cam-title">Smart Highway CCTV - Sector 4</span>
+                  <span id="cctv-source-badge" style="background:rgba(2,132,199,0.15); color:var(--accent); border:1px solid rgba(2,132,199,0.3); font-size:10px; font-family:var(--font-mono); padding:2px 8px; border-radius:4px; font-weight:600;">WEBCAM</span>
+                </div>
+                
                 <span id="cctv-status" style="margin-left:auto;font-size:11px;font-weight:500;color:var(--text-dim)">Model loading…</span>
-                <button class="btn" style="margin-left:12px" onclick="toggleCctvSource()" id="cctv-toggle-btn">Use Video File</button>
-                <button class="btn btn-accent" style="margin-left:8px" onclick="startCctv()" id="cctv-start-btn">Start Detection</button>
-                <button class="btn" style="margin-left:8px; border-color:rgba(56,189,248,0.4); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="window.open('/traffic', '_blank')" title="Open 26-View Standalone Traffic Management System in a separate window">
-                  <i data-feather="external-link" style="width:13px;height:13px;"></i> Standalone Traffic Center
+
+                <!-- Source Switcher Segmented Tabs -->
+                <div id="cctv-source-toolbar" style="display:flex; align-items:center; gap:3px; background:rgba(0,0,0,0.4); padding:3px; border-radius:6px; border:1px solid var(--border);">
+                  <button class="btn-source-tab active" id="src-tab-webcam" onclick="switchCctvSource('webcam')" title="Local Laptop/USB Webcam">
+                    <i data-feather="video" style="width:12px;height:12px"></i> Webcam
+                  </button>
+                  <button class="btn-source-tab" id="src-tab-video" onclick="triggerVideoUpload()" title="Upload or Select Video File for AI Detection">
+                    <i data-feather="upload" style="width:12px;height:12px"></i> Upload Video
+                  </button>
+                  <button class="btn-source-tab" id="src-tab-mobile" onclick="openMobileCamModal()" title="Connect Smartphone Camera via WebRTC &amp; QR Code">
+                    <i data-feather="smartphone" style="width:12px;height:12px"></i> Mobile WebRTC
+                  </button>
+                  <button class="btn-source-tab" id="src-tab-mock" onclick="switchCctvSource('mock')" title="Simulated Traffic Loop">
+                    <i data-feather="activity" style="width:12px;height:12px"></i> Mock CCTV
+                  </button>
+                </div>
+
+                <button class="btn btn-accent" style="margin-left:4px" onclick="startCctv()" id="cctv-start-btn">Start Detection</button>
+                <button class="btn" style="margin-left:4px; border-color:rgba(56,189,248,0.4); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="window.open('/traffic', '_blank')" title="Open 26-View Standalone Traffic Management System in a separate window">
+                  <i data-feather="external-link" style="width:13px;height:13px;"></i> Traffic Center
                 </button>
               </div>
 
               <!-- Video Container -->
-              <div id="cctv-webcam-wrap" style="position:relative;width:100%;background:#000;border-radius:6px;overflow:hidden;aspect-ratio:16/9">
+              <div id="cctv-webcam-wrap" ondragover="handleVideoDragOver(event)" ondragleave="handleVideoDragLeave(event)" ondrop="handleVideoDrop(event)" style="position:relative;width:100%;background:#000;border-radius:6px;overflow:hidden;aspect-ratio:16/9">
+                <!-- Hidden File Input for Video Upload -->
+                <input type="file" id="cctv-video-file-input" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/*" style="display:none" onchange="handleVideoFileSelected(event)">
+
+                <!-- Drag-and-Drop Dropzone Overlay -->
+                <div id="cctv-dropzone" style="position:absolute;inset:0;background:rgba(2,132,199,0.85);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30;border:2px dashed #38bdf8;border-radius:6px;color:#fff;pointer-events:none;">
+                  <i data-feather="upload-cloud" style="width:44px;height:44px;margin-bottom:10px;"></i>
+                  <div style="font-size:15px;font-weight:700;letter-spacing:0.5px">DROP VIDEO FILE FOR AI DETECTION</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.85);margin-top:4px">Supports MP4, WebM, AVI, MOV &mdash; Real-time vehicle classification &amp; speeds</div>
+                </div>
                 <video id="cctv-video" autoplay muted playsinline
                        style="width:100%;height:100%;object-fit:cover;display:block;transition:filter 0.3s"></video>
                 <img id="cctv-img"
@@ -1942,6 +2007,26 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
                   <div style="color:var(--text-dim);font-size:14px">Loading COCO-SSD model…</div>
                 </div>
               </div>
+              <!-- Video File Playback Controls Bar (Visible in 'video' mode) -->
+              <div id="cctv-video-controls-bar" style="display:none;background:var(--bg-panel);border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;padding:8px 14px;align-items:center;gap:12px;font-family:var(--font-mono);font-size:11px;">
+                <button class="btn" id="video-play-btn" onclick="toggleVideoPlayback()" style="padding:4px 10px;" title="Play / Pause Video">
+                  <i data-feather="play" id="video-play-icon" style="width:12px;height:12px;"></i>
+                </button>
+                <span id="video-time-display" style="color:var(--text-dim);min-width:82px;font-size:10px;">00:00 / 00:00</span>
+                <input type="range" id="video-scrubber" min="0" max="100" value="0" step="0.1" oninput="scrubVideo(this.value)" style="flex:1;accent-color:var(--accent);cursor:pointer;height:4px;">
+                <div style="display:flex;gap:2px;background:rgba(0,0,0,0.3);border-radius:4px;padding:2px;border:1px solid var(--border);">
+                  <button class="btn" id="spd-btn-05" style="padding:2px 6px;font-size:10px;" onclick="setVideoSpeed(0.5)">0.5x</button>
+                  <button class="btn" id="spd-btn-10" style="padding:2px 6px;font-size:10px;background:var(--accent);color:#fff;" onclick="setVideoSpeed(1.0)">1x</button>
+                  <button class="btn" id="spd-btn-15" style="padding:2px 6px;font-size:10px;" onclick="setVideoSpeed(1.5)">1.5x</button>
+                  <button class="btn" id="spd-btn-20" style="padding:2px 6px;font-size:10px;" onclick="setVideoSpeed(2.0)">2x</button>
+                </div>
+                <button class="btn" id="video-loop-btn" onclick="toggleVideoLoop()" style="padding:4px 8px;color:var(--green);border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.1);" title="Continuous Detection Loop Mode">
+                  <i data-feather="repeat" style="width:12px;height:12px;"></i> Loop
+                </button>
+                <button class="btn" onclick="triggerVideoUpload()" style="padding:4px 10px;font-size:11px;" title="Upload or choose another video file">
+                  <i data-feather="folder" style="width:12px;height:12px;"></i> Choose File
+                </button>
+              </div>
             </div>
 
             <!-- KPIs -->
@@ -1995,8 +2080,8 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
                 <div style="font-size:11px;font-weight:600;margin-bottom:8px;letter-spacing:0.5px">SECURE REGISTRATION</div>
                 <!-- Mode Toggle -->
                 <div style="display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content">
-                  <button id="ncam-mode-ip" onclick="ncamSetMode('ip')" style="padding:5px 14px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer">&#128246; Direct IP</button>
-                  <button id="ncam-mode-p2p" onclick="ncamSetMode('p2p')" style="padding:5px 14px;font-size:11px;font-weight:600;background:var(--bg-deep);color:var(--text-dim);border:none;cursor:pointer">&#9729; P2P Cloud</button>
+                  <button id="ncam-mode-ip" onclick="ncamSetMode('ip')" style="padding:5px 14px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px"><i data-feather="wifi" style="width:12px;height:12px"></i> Direct IP</button>
+                  <button id="ncam-mode-p2p" onclick="ncamSetMode('p2p')" style="padding:5px 14px;font-size:11px;font-weight:600;background:var(--bg-deep);color:var(--text-dim);border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px"><i data-feather="cloud" style="width:12px;height:12px"></i> P2P Cloud</button>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:8px">
                   <input type="text" id="new-cam-name" placeholder="Camera Name" style="width:100%;padding:6px;background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:4px;color:#fff;font-size:12px">
@@ -2743,8 +2828,8 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
           <!-- Mode Toggle -->
           <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content">
-            <button id="lv-mode-ip" onclick="lvSetMode('ip')" style="padding:7px 22px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:all .2s">&#128246; Direct IP</button>
-            <button id="lv-mode-p2p" onclick="lvSetMode('p2p')" style="padding:7px 22px;font-size:12px;font-weight:600;background:var(--bg-panel);color:var(--text-dim);border:none;cursor:pointer;transition:all .2s">&#9729; P2P Cloud</button>
+            <button id="lv-mode-ip" onclick="lvSetMode('ip')" style="padding:7px 22px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px"><i data-feather="wifi" style="width:13px;height:13px"></i> Direct IP</button>
+            <button id="lv-mode-p2p" onclick="lvSetMode('p2p')" style="padding:7px 22px;font-size:12px;font-weight:600;background:var(--bg-panel);color:var(--text-dim);border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px"><i data-feather="cloud" style="width:13px;height:13px"></i> P2P Cloud</button>
           </div>
 
           <!-- Direct IP fields -->
@@ -6078,7 +6163,17 @@ const cctvState = {
   stream: null,
   animFrame: null,
   running: false,
+  sourceType: 'webcam', // 'webcam' | 'video' | 'mobile' | 'mock'
   useWebcam: true,
+  videoFileUrl: null,
+  videoFileName: null,
+  mobileWs: null,
+  mobileConnected: false,
+  mobilePeerConnection: null,
+  mobileLastFrameTime: 0,
+  mobileFpsCounter: 0,
+  mobileCurrentFps: 0,
+  lastFpsCalc: 0,
   sendInterval: null,
   lastFrameData: { vehicles:0, pedestrians:0, objects:[] },
   activeCameraId: 'CAM_TRAFFIC_01',
@@ -6252,24 +6347,47 @@ async function startCctv() {
   const isDefault = cctvState.activeCameraId === 'CAM_TRAFFIC_01';
 
   if (isDefault) {
-    if (cctvState.useWebcam) {
+    if (cctvState.sourceType === 'webcam') {
       try {
         cctvState.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
         video.srcObject = cctvState.stream;
         video.loop = false;
+        video.style.display = 'block';
+        img.style.display = 'none';
+        video.play().catch(() => {});
       } catch(e) {
-        alert('Camera permission denied. Please allow camera access or switch to Video File mode.');
+        alert('Camera permission denied. Please allow camera access or switch to Upload Video / Mobile WebRTC mode.');
         document.getElementById('cctv-start-btn').textContent = 'Start Detection';
         document.getElementById('cctv-start-btn').className = 'btn btn-accent';
         return;
       }
-    } else {
-      // video file already set by toggleCctvSource
+    } else if (cctvState.sourceType === 'video') {
+      video.style.display = 'block';
+      img.style.display = 'none';
+      video.play().catch(() => {});
+    } else if (cctvState.sourceType === 'mobile') {
+      if (video.srcObject) {
+        video.style.display = 'block';
+        img.style.display = 'none';
+        video.play().catch(() => {});
+      } else {
+        video.style.display = 'none';
+        img.style.display = 'block';
+      }
+    } else if (cctvState.sourceType === 'mock') {
+      video.style.display = 'block';
+      img.style.display = 'none';
+      if (!video.src && !video.srcObject) {
+        video.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+        video.loop = true;
+      }
       video.play().catch(() => {});
     }
   } else {
     // Non-default IP camera proxy stream
     img.src = `${API}/api/cameras/${cctvState.activeCameraId}/stream`;
+    video.style.display = 'none';
+    img.style.display = 'block';
   }
 
   cctvState.running = true;
@@ -6289,9 +6407,10 @@ function stopCctv() {
   clearInterval(cctvState.sendInterval);
   const video = document.getElementById('cctv-video');
   const img = document.getElementById('cctv-img');
-  video.srcObject = null;
+  if (cctvState.sourceType === 'webcam') {
+    video.srcObject = null;
+  }
   video.pause();
-  img.src = '';
   document.getElementById('cctv-start-btn').textContent = 'Start Detection';
   document.getElementById('cctv-start-btn').className = 'btn btn-accent';
 }
@@ -6348,18 +6467,25 @@ function checkCollision(boxA, boxB, classA, classB) {
 async function runDetectionLoop() {
   if (!cctvState.running || cctvState.frozen) return;
   const isDefault = cctvState.activeCameraId === 'CAM_TRAFFIC_01';
-  const sourceEl = isDefault ? document.getElementById('cctv-video') : document.getElementById('cctv-img');
+  let sourceEl;
+  if (!isDefault) {
+    sourceEl = document.getElementById('cctv-img');
+  } else if (cctvState.sourceType === 'mobile' && document.getElementById('cctv-img').style.display !== 'none') {
+    sourceEl = document.getElementById('cctv-img');
+  } else {
+    sourceEl = document.getElementById('cctv-video');
+  }
   const canvas = document.getElementById('cctv-canvas');
   const ctx    = canvas.getContext('2d');
 
-  // Sync canvas size to active feed
-  const width = isDefault ? (sourceEl.videoWidth || sourceEl.offsetWidth) : (sourceEl.naturalWidth || sourceEl.offsetWidth);
-  const height = isDefault ? (sourceEl.videoHeight || sourceEl.offsetHeight) : (sourceEl.naturalHeight || sourceEl.offsetHeight);
+  const isVideo = (sourceEl.tagName === 'VIDEO');
+  const width = isVideo ? (sourceEl.videoWidth || sourceEl.offsetWidth) : (sourceEl.naturalWidth || sourceEl.offsetWidth);
+  const height = isVideo ? (sourceEl.videoHeight || sourceEl.offsetHeight) : (sourceEl.naturalHeight || sourceEl.offsetHeight);
   canvas.width  = width || 640;
   canvas.height = height || 360;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const isReady = isDefault ? (sourceEl.readyState >= 2) : (sourceEl.complete && sourceEl.naturalWidth > 0);
+  const isReady = isVideo ? (sourceEl.readyState >= 2) : (sourceEl.complete && (sourceEl.naturalWidth > 0 || sourceEl.width > 0));
 
   if (isReady && cctvState.model) {
     const predictions = await cctvState.model.detect(sourceEl);
@@ -6663,29 +6789,513 @@ function handleCameraUpdate(data) {
   document.getElementById('cctv-spike').textContent = `Spike ratio: ${data.spike_ratio}x`;
 }
 
-function toggleCctvSource() {
-  cctvState.useWebcam = !cctvState.useWebcam;
-  const btn   = document.getElementById('cctv-toggle-btn');
-  const video = document.getElementById('cctv-video');
-  if (cctvState.useWebcam) {
-    btn.textContent = 'Use Video File';
-    video.src = '';
-    video.srcObject = null;
-  } else {
-    btn.textContent = 'Use Webcam';
-    // Prompt user to select a local video file
-    const input = document.createElement('input');
-    input.type  = 'file';
-    input.accept = 'video/*';
-    input.onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      video.srcObject = null;
-      video.src = URL.createObjectURL(file);
-      video.loop = true;
-    };
-    input.click();
+function switchCctvSource(type) {
+  if (cctvState.running) {
+    stopCctv();
   }
+  cctvState.sourceType = type;
+  
+  // Update segmented tabs
+  document.querySelectorAll('.btn-source-tab').forEach(b => b.classList.remove('active'));
+  const activeTab = document.getElementById(`src-tab-${type}`);
+  if (activeTab) activeTab.classList.add('active');
+
+  const badge = document.getElementById('cctv-source-badge');
+  const video = document.getElementById('cctv-video');
+  const img   = document.getElementById('cctv-img');
+  const controlsBar = document.getElementById('cctv-video-controls-bar');
+
+  if (type === 'webcam') {
+    if (badge) {
+      badge.textContent = 'WEBCAM';
+      badge.style.color = 'var(--accent)';
+      badge.style.borderColor = 'rgba(2,132,199,0.3)';
+      badge.style.background = 'rgba(2,132,199,0.15)';
+    }
+    if (controlsBar) controlsBar.style.display = 'none';
+    video.style.display = 'block';
+    img.style.display = 'none';
+    cctvState.useWebcam = true;
+  } else if (type === 'video') {
+    if (badge) {
+      badge.textContent = cctvState.videoFileName ? `VIDEO: ${cctvState.videoFileName.length > 20 ? cctvState.videoFileName.slice(0, 18) + '…' : cctvState.videoFileName}` : 'VIDEO FILE';
+      badge.style.color = '#c084fc';
+      badge.style.borderColor = 'rgba(168,85,247,0.3)';
+      badge.style.background = 'rgba(168,85,247,0.15)';
+    }
+    if (controlsBar) controlsBar.style.display = 'flex';
+    video.style.display = 'block';
+    img.style.display = 'none';
+    cctvState.useWebcam = false;
+    if (!video.src && !cctvState.videoFileUrl) {
+      triggerVideoUpload();
+    }
+  } else if (type === 'mobile') {
+    if (badge) {
+      badge.textContent = cctvState.mobileConnected ? 'MOBILE CAM (LIVE)' : 'MOBILE CAM (PAIRING)';
+      badge.style.color = cctvState.mobileConnected ? 'var(--green)' : 'var(--yellow)';
+      badge.style.borderColor = cctvState.mobileConnected ? 'rgba(16,185,129,0.4)' : 'rgba(245,158,11,0.4)';
+      badge.style.background = cctvState.mobileConnected ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)';
+    }
+    if (controlsBar) controlsBar.style.display = 'none';
+    cctvState.useWebcam = false;
+    initMobileRelayWs();
+    openMobileCamModal();
+  } else if (type === 'mock') {
+    if (badge) {
+      badge.textContent = 'MOCK SIMULATION';
+      badge.style.color = 'var(--orange)';
+      badge.style.borderColor = 'rgba(234,88,12,0.3)';
+      badge.style.background = 'rgba(234,88,12,0.15)';
+    }
+    if (controlsBar) controlsBar.style.display = 'none';
+    video.style.display = 'block';
+    img.style.display = 'none';
+    cctvState.useWebcam = false;
+  }
+  if (feather && feather.replace) feather.replace();
+}
+
+// Backward compatibility helper
+function toggleCctvSource() {
+  switchCctvSource(cctvState.sourceType === 'webcam' ? 'video' : 'webcam');
+}
+
+// ── Video Upload & Drag-and-Drop Operations ────────────────────────────────
+function triggerVideoUpload() {
+  const input = document.getElementById('cctv-video-file-input');
+  if (input) input.click();
+}
+
+function handleVideoFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (file) loadVideoFile(file);
+}
+
+function handleVideoDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dz = document.getElementById('cctv-dropzone');
+  if (dz) dz.style.display = 'flex';
+}
+
+function handleVideoDragLeave(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dz = document.getElementById('cctv-dropzone');
+  if (dz) dz.style.display = 'none';
+}
+
+function handleVideoDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dz = document.getElementById('cctv-dropzone');
+  if (dz) dz.style.display = 'none';
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    loadVideoFile(file);
+  }
+}
+
+function loadVideoFile(file) {
+  if (!file) return;
+  const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|avi|mov|mkv|m4v|ogg)$/i.test(file.name);
+  if (!isVideo) {
+    alert('Please select a valid video file (.mp4, .webm, .mov, etc.)');
+    return;
+  }
+
+  if (cctvState.running) stopCctv();
+
+  const objectUrl = URL.createObjectURL(file);
+  cctvState.videoFileUrl = objectUrl;
+  cctvState.videoFileName = file.name;
+  cctvState.sourceType = 'video';
+  cctvState.useWebcam = false;
+
+  const video = document.getElementById('cctv-video');
+  const img   = document.getElementById('cctv-img');
+  video.srcObject = null;
+  video.src = objectUrl;
+  video.loop = true;
+  video.style.display = 'block';
+  img.style.display = 'none';
+
+  // Update tabs & badges
+  document.querySelectorAll('.btn-source-tab').forEach(b => b.classList.remove('active'));
+  const vTab = document.getElementById('src-tab-video');
+  if (vTab) vTab.classList.add('active');
+
+  const badge = document.getElementById('cctv-source-badge');
+  if (badge) {
+    badge.textContent = `VIDEO: ${file.name.length > 20 ? file.name.slice(0, 18) + '…' : file.name}`;
+    badge.style.color = '#c084fc';
+    badge.style.borderColor = 'rgba(168,85,247,0.3)';
+    badge.style.background = 'rgba(168,85,247,0.15)';
+  }
+
+  const controlsBar = document.getElementById('cctv-video-controls-bar');
+  if (controlsBar) controlsBar.style.display = 'flex';
+
+  video.onloadedmetadata = () => {
+    updateVideoTimeDisplay(video);
+  };
+  video.ontimeupdate = () => {
+    updateVideoScrubberUI(video);
+  };
+
+  // Upload to backend in background for audit & dataset logging
+  uploadVideoToServer(file);
+
+  // Auto-start detection loop on newly loaded video
+  setTimeout(() => {
+    if (!cctvState.running && cctvState.model) {
+      startCctv();
+    }
+  }, 400);
+}
+
+async function uploadVideoToServer(file) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API}/api/traffic/upload-video`, {
+      method: 'POST',
+      body: formData
+    });
+    const result = await res.json();
+    if (result.status === 'success') {
+      console.log('Video staged on server:', result);
+      showToast({ severity: 'low', asset: 'TRAFFIC_AI', explanation: `Video '${file.name}' staged & analyzed.` });
+    }
+  } catch(e) {
+    console.warn('Background server video upload note:', e);
+  }
+}
+
+// ── Video Playback Controls ────────────────────────────────────────────────
+function toggleVideoPlayback() {
+  const video = document.getElementById('cctv-video');
+  const icon = document.getElementById('video-play-icon');
+  if (!video) return;
+  if (video.paused) {
+    video.play().catch(() => {});
+    if (icon) icon.setAttribute('data-feather', 'pause');
+  } else {
+    video.pause();
+    if (icon) icon.setAttribute('data-feather', 'play');
+  }
+  if (feather && feather.replace) feather.replace();
+}
+
+function scrubVideo(percent) {
+  const video = document.getElementById('cctv-video');
+  if (!video || !video.duration) return;
+  video.currentTime = (percent / 100) * video.duration;
+  updateVideoTimeDisplay(video);
+}
+
+function setVideoSpeed(speed) {
+  const video = document.getElementById('cctv-video');
+  if (video) video.playbackRate = speed;
+  ['05','10','15','20'].forEach(id => {
+    const btn = document.getElementById(`spd-btn-${id}`);
+    if (btn) {
+      btn.style.background = '';
+      btn.style.color = '';
+    }
+  });
+  const map = { 0.5: '05', 1.0: '10', 1.5: '15', 2.0: '20' };
+  const cur = document.getElementById(`spd-btn-${map[speed]}`);
+  if (cur) {
+    cur.style.background = 'var(--accent)';
+    cur.style.color = '#fff';
+  }
+}
+
+function toggleVideoLoop() {
+  const video = document.getElementById('cctv-video');
+  const btn = document.getElementById('video-loop-btn');
+  if (!video) return;
+  video.loop = !video.loop;
+  if (btn) {
+    btn.style.color = video.loop ? 'var(--green)' : 'var(--text-dim)';
+    btn.style.borderColor = video.loop ? 'rgba(16,185,129,0.4)' : 'var(--border)';
+    btn.style.background = video.loop ? 'rgba(16,185,129,0.1)' : 'transparent';
+  }
+}
+
+function formatMediaTime(sec) {
+  if (isNaN(sec) || !isFinite(sec)) return '00:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function updateVideoTimeDisplay(video) {
+  const disp = document.getElementById('video-time-display');
+  if (disp) {
+    disp.textContent = `${formatMediaTime(video.currentTime)} / ${formatMediaTime(video.duration || 0)}`;
+  }
+}
+
+function updateVideoScrubberUI(video) {
+  if (!video || !video.duration) return;
+  const scrubber = document.getElementById('video-scrubber');
+  if (scrubber && document.activeElement !== scrubber) {
+    scrubber.value = (video.currentTime / video.duration) * 100;
+  }
+  updateVideoTimeDisplay(video);
+}
+
+// ── Mobile WebRTC & Relay Operations ───────────────────────────────────────
+async function openMobileCamModal() {
+  const modal = document.getElementById('mobile-cam-modal');
+  if (modal) modal.classList.add('open');
+  if (feather && feather.replace) feather.replace();
+
+  try {
+    const res = await fetch(`${API}/api/traffic/mobile-cam-info`);
+    const info = await res.json();
+    const urlInput = document.getElementById('mobile-cam-url-input');
+    if (urlInput) urlInput.value = info.mobile_url;
+
+    // Render QR Code
+    const qrContainer = document.getElementById('mobile-cam-qrcode');
+    if (qrContainer) {
+      qrContainer.innerHTML = '';
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+          text: info.mobile_url,
+          width: 156,
+          height: 156,
+          colorDark: '#070b14',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        // High-res QR image fallback
+        qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=156x156&data=${encodeURIComponent(info.mobile_url)}" alt="Scan QR Code" style="width:156px;height:156px;display:block;border-radius:4px">`;
+      }
+    }
+  } catch(e) {
+    console.error('Failed to load mobile cam info:', e);
+  }
+
+  // Connect WebSocket relay receiver
+  initMobileRelayWs();
+}
+
+function closeMobileCamModal() {
+  const modal = document.getElementById('mobile-cam-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+function copyMobileCamUrl() {
+  const input = document.getElementById('mobile-cam-url-input');
+  if (!input) return;
+  input.select();
+  const markCopied = () => {
+    const label = document.getElementById('copy-btn-label');
+    if (label) {
+      label.textContent = 'Copied!';
+      setTimeout(() => { label.textContent = 'Copy URL'; }, 2000);
+    }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(input.value).then(markCopied).catch(markCopied);
+  } else {
+    document.execCommand('copy');
+    markCopied();
+  }
+}
+
+function testMobileCamDirectly() {
+  window.open('/mobile-cam', '_blank');
+}
+
+function initMobileRelayWs() {
+  if (cctvState.mobileWs && cctvState.mobileWs.readyState === WebSocket.OPEN) return;
+
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host || 'localhost:8000';
+  const wsUrl = `${proto}//${host}/api/traffic/camera-relay-ws?role=receiver`;
+
+  try {
+    const ws = new WebSocket(wsUrl);
+    cctvState.mobileWs = ws;
+
+    ws.onopen = () => {
+      console.log('Connected to camera relay WS as receiver');
+    };
+
+    ws.onmessage = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        handleMobileRelayMessage(data);
+      } catch(e) {}
+    };
+
+    ws.onclose = () => {
+      console.log('Mobile relay WS closed');
+      cctvState.mobileConnected = false;
+      updateMobileModalStatus(false);
+    };
+
+    ws.onerror = (err) => {
+      console.warn('Mobile relay WS error:', err);
+    };
+  } catch(e) {
+    console.error('Failed to create relay WS:', e);
+  }
+}
+
+async function handleMobileRelayMessage(data) {
+  const dot = document.getElementById('mobile-modal-status-dot');
+  const txt = document.getElementById('mobile-modal-status-text');
+  const stats = document.getElementById('mobile-modal-stream-stats');
+  const badge = document.getElementById('cctv-source-badge');
+
+  if (data.type === 'mobile_status') {
+    cctvState.mobileConnected = data.connected;
+    updateMobileModalStatus(data.connected);
+  } else if (data.type === 'mobile_connected') {
+    cctvState.mobileConnected = true;
+    updateMobileModalStatus(true);
+    showToast({ severity: 'low', asset: 'TRAFFIC_AI', explanation: 'Smartphone camera paired & streaming live.' });
+    if (cctvState.sourceType === 'mobile' && !cctvState.running) {
+      startCctv();
+    }
+  } else if (data.type === 'mobile_disconnected') {
+    cctvState.mobileConnected = false;
+    updateMobileModalStatus(false);
+  } else if (data.type === 'camera_frame') {
+    cctvState.mobileConnected = true;
+    const now = performance.now();
+    if (cctvState.mobileLastFrameTime > 0) {
+      const delta = now - cctvState.mobileLastFrameTime;
+      cctvState.mobileFpsCounter++;
+      if (now - (cctvState.lastFpsCalc || 0) > 1000) {
+        cctvState.mobileCurrentFps = cctvState.mobileFpsCounter;
+        cctvState.mobileFpsCounter = 0;
+        cctvState.lastFpsCalc = now;
+      }
+      const latency = data.timestamp ? Math.max(0, Date.now() - data.timestamp) : Math.round(delta);
+      if (stats) stats.textContent = `${cctvState.mobileCurrentFps || 25} fps / ${latency} ms`;
+    }
+    cctvState.mobileLastFrameTime = now;
+
+    if (dot && dot.style.background !== 'var(--green)') {
+      dot.style.background = 'var(--green)';
+      if (txt) txt.textContent = 'Mobile Camera Streaming Live (Relay Active)';
+    }
+
+    // Feed image to cctv-img
+    const img = document.getElementById('cctv-img');
+    const video = document.getElementById('cctv-video');
+    if (img && cctvState.sourceType === 'mobile') {
+      img.src = data.frame;
+      img.style.display = 'block';
+      video.style.display = 'none';
+
+      // Auto start detection if on mobile source and not running
+      if (!cctvState.running && cctvState.model) {
+        startCctv();
+      }
+    }
+  } else if (data.type === 'webrtc_offer') {
+    handleIncomingWebRtcOffer(data.offer);
+  } else if (data.type === 'webrtc_ice') {
+    if (cctvState.mobilePeerConnection) {
+      try {
+        await cctvState.mobilePeerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+      } catch(e) {}
+    }
+  }
+}
+
+function updateMobileModalStatus(connected) {
+  const dot = document.getElementById('mobile-modal-status-dot');
+  const txt = document.getElementById('mobile-modal-status-text');
+  const badge = document.getElementById('cctv-source-badge');
+
+  if (connected) {
+    if (dot) dot.style.background = 'var(--green)';
+    if (txt) txt.textContent = 'Mobile Phone Connected & Ready';
+    if (cctvState.sourceType === 'mobile' && badge) {
+      badge.textContent = 'MOBILE CAM (LIVE)';
+      badge.style.color = 'var(--green)';
+      badge.style.borderColor = 'rgba(16,185,129,0.4)';
+      badge.style.background = 'rgba(16,185,129,0.15)';
+    }
+  } else {
+    if (dot) dot.style.background = 'var(--yellow)';
+    if (txt) txt.textContent = 'Waiting for mobile phone connection...';
+    if (cctvState.sourceType === 'mobile' && badge) {
+      badge.textContent = 'MOBILE CAM (PAIRING)';
+      badge.style.color = 'var(--yellow)';
+      badge.style.borderColor = 'rgba(245,158,11,0.4)';
+      badge.style.background = 'rgba(245,158,11,0.15)';
+    }
+  }
+}
+
+async function handleIncomingWebRtcOffer(offer) {
+  if (!window.RTCPeerConnection) return;
+  try {
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+    });
+    cctvState.mobilePeerConnection = pc;
+
+    pc.ontrack = (event) => {
+      console.log('Received WebRTC P2P remote track from mobile:', event.streams[0]);
+      const video = document.getElementById('cctv-video');
+      const img   = document.getElementById('cctv-img');
+      video.srcObject = event.streams[0];
+      video.style.display = 'block';
+      img.style.display = 'none';
+      video.play().catch(() => {});
+      if (cctvState.sourceType === 'mobile' && !cctvState.running) {
+        startCctv();
+      }
+    };
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate && cctvState.mobileWs && cctvState.mobileWs.readyState === WebSocket.OPEN) {
+        cctvState.mobileWs.send(JSON.stringify({
+          type: 'webrtc_ice',
+          candidate: event.candidate
+        }));
+      }
+    };
+
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    if (cctvState.mobileWs && cctvState.mobileWs.readyState === WebSocket.OPEN) {
+      cctvState.mobileWs.send(JSON.stringify({
+        type: 'webrtc_answer',
+        answer: answer
+      }));
+    }
+  } catch(e) {
+    console.warn('WebRTC P2P negotiation note (using WS relay fallback):', e);
+  }
+}
+
+// Quick launchers from Municipal Traffic page
+function launchTrafficMobileCam() {
+  showPage('cctv');
+  switchCctvSource('mobile');
+  openMobileCamModal();
+}
+
+function launchTrafficVideoUpload() {
+  showPage('cctv');
+  switchCctvSource('video');
+  triggerVideoUpload();
 }
 
 // ── Camera Security & Registry Operations ──────────────────────────────────
@@ -6752,7 +7362,10 @@ async function selectCamera(camId) {
   }
 
   const isDefault = camId === 'CAM_TRAFFIC_01';
-  document.getElementById('cctv-toggle-btn').style.display = isDefault ? 'inline-block' : 'none';
+  const toolbar = document.getElementById('cctv-source-toolbar');
+  if (toolbar) toolbar.style.display = isDefault ? 'flex' : 'none';
+  const controlsBar = document.getElementById('cctv-video-controls-bar');
+  if (controlsBar && !isDefault) controlsBar.style.display = 'none';
   document.getElementById('cctv-video').style.display = isDefault ? 'block' : 'none';
   document.getElementById('cctv-img').style.display = isDefault ? 'none' : 'block';
 
@@ -10512,5 +11125,93 @@ function stopDatasetReplay() {
 }
 
 </script>
+<!-- ═══ MOBILE WEBRTC CAMERA MODAL ═══ -->
+<div class="modal-overlay" id="mobile-cam-modal" style="z-index:2000;">
+  <div class="modal" style="max-width:540px;background:var(--bg-panel);border:1.5px solid rgba(56,189,248,0.4);box-shadow:0 24px 60px rgba(0,0,0,0.8);border-radius:12px;padding:24px;">
+    
+    <!-- Modal Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+          <i data-feather="smartphone" style="color:var(--accent);width:18px;height:18px;"></i>
+          Mobile Camera Streamer (WebRTC)
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:3px;">
+          Wirelessly project any smartphone camera live into the Traffic AI Detection Engine
+        </div>
+      </div>
+      <button class="btn" style="padding:4px 8px;border-radius:4px;" onclick="closeMobileCamModal()"><i data-feather="x" style="width:14px;height:14px;"></i></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      
+      <!-- Connection Status Card -->
+      <div id="mobile-cam-modal-status-card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:6px;background:rgba(0,0,0,0.35);border:1px solid var(--border);font-family:var(--font-mono);font-size:11px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="mobile-modal-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--yellow);display:inline-block;"></span>
+          <span id="mobile-modal-status-text" style="color:var(--text);font-weight:600;">Waiting for mobile phone connection...</span>
+        </div>
+        <span id="mobile-modal-stream-stats" style="color:var(--text-dim);font-size:10px;">-- fps / -- ms</span>
+      </div>
+
+      <!-- QR Code & Instructions Grid -->
+      <div style="display:grid;grid-template-columns:176px 1fr;gap:18px;align-items:center;">
+        
+        <!-- Left: QR Code Box -->
+        <div style="background:#fff;border-radius:8px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.4);aspect-ratio:1;">
+          <div id="mobile-cam-qrcode" style="width:156px;height:156px;display:flex;align-items:center;justify-content:center;">
+            <div class="spinner" style="width:28px;height:28px;"></div>
+          </div>
+        </div>
+
+        <!-- Right: Step-by-Step Instructions -->
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--text);">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="background:rgba(2,132,199,0.2);color:var(--accent);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">1</span>
+            <div>Scan the QR code with your smartphone camera (iOS / Android). No native app required.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="background:rgba(2,132,199,0.2);color:var(--accent);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">2</span>
+            <div>Ensure phone and computer are on the same Wi-Fi network or hotspot.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span style="background:rgba(2,132,199,0.2);color:var(--accent);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">3</span>
+            <div>Tap <strong>START STREAMING</strong> on your phone. Video broadcasts live into detection!</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- URL Direct Copy Box -->
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <label style="font-size:11px;font-family:var(--font-mono);color:var(--text-dim);">Or open this URL directly in mobile browser:</label>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="mobile-cam-url-input" readonly value="Loading pairing URL..." style="flex:1;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:var(--font-mono);font-size:11px;color:#38bdf8;">
+          <button class="btn btn-accent" id="mobile-cam-copy-btn" onclick="copyMobileCamUrl()" style="padding:7px 14px;font-size:11px;display:flex;align-items:center;gap:6px;">
+            <i data-feather="copy" style="width:13px;height:13px;"></i> <span id="copy-btn-label">Copy URL</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dual Channel Protocol Note -->
+      <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:6px;padding:8px 12px;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:8px;">
+        <i data-feather="shield" style="color:var(--accent);width:14px;height:14px;flex-shrink:0;"></i>
+        <span><strong>Dual-Mode Transmission:</strong> P2P WebRTC Direct + zero-latency WebSocket frame relay fallback. Operates smoothly even on restrictive guest networks.</span>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
+      <button class="btn" onclick="testMobileCamDirectly()" style="font-size:11px;color:#38bdf8;border-color:rgba(56,189,248,0.3);">
+        <i data-feather="external-link" style="width:12px;height:12px;"></i> Open Mobile Streamer in New Tab
+      </button>
+      <button class="btn btn-accent" onclick="closeMobileCamModal()" style="padding:6px 20px;">Done</button>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>

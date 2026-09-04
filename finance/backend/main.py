@@ -24,6 +24,7 @@ import logging
 import random
 import uuid
 import time
+import socket
 import pandas as pd
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -32,6 +33,7 @@ from typing import Any, Optional, List, Dict, Union
 from fastapi import (
     Depends, FastAPI, HTTPException, WebSocket,
     WebSocketDisconnect, status, BackgroundTasks, Body, Request,
+    UploadFile, File,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -3554,6 +3556,175 @@ async def serve_favicon():
     if fav.exists():
         return FileResponse(str(fav))
     return {"status": "ok"}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MOBILE WEBRTC CAMERA & VIDEO UPLOAD EXTENSIONS
+# ══════════════════════════════════════════════════════════════════════════════
+def get_local_ip() -> str:
+    """Detect local LAN IP for seamless mobile device camera pairing."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+
+@app.get("/mobile-cam", include_in_schema=False)
+@app.get("/mobile-camera", include_in_schema=False)
+async def serve_mobile_cam():
+    """Serves the dedicated mobile browser camera streamer."""
+    mobile_html = FRONTEND_DIR / "mobile_cam.html"
+    if mobile_html.exists():
+        return FileResponse(str(mobile_html))
+    raise HTTPException(404, "Mobile camera streamer page not found.")
+
+
+@app.get("/api/traffic/mobile-cam-info", tags=["Traffic Camera WebRTC"])
+async def get_mobile_cam_info():
+    """Returns dynamic LAN IP and URL pairing details for scanning via mobile QR code."""
+    local_ip = get_local_ip()
+    return {
+        "status": "ONLINE",
+        "local_ip": local_ip,
+        "port": 8000,
+        "mobile_url": f"http://{local_ip}:8000/mobile-cam",
+        "webrtc_supported": True,
+        "ws_relay_url": f"ws://{local_ip}:8000/api/traffic/camera-relay-ws",
+        "description": "Scan the QR code or navigate to mobile_url on your phone to stream live video into the Traffic SOC."
+    }
+
+
+_webrtc_signals: dict[str, list] = {"traffic_cam": []}
+
+class WebRTCSignalRequest(BaseModel):
+    session_id: str = "traffic_cam"
+    type: str  # webrtc_offer | webrtc_answer | webrtc_ice
+    payload: dict
+
+@app.post("/api/webrtc/signal", tags=["Traffic Camera WebRTC"])
+async def handle_webrtc_signal(req: WebRTCSignalRequest):
+    """Stores and exchanges WebRTC SDP offers/answers and ICE candidates between desktop and phone."""
+    if req.session_id not in _webrtc_signals:
+        _webrtc_signals[req.session_id] = []
+    _webrtc_signals[req.session_id].append({
+        "type": req.type,
+        "payload": req.payload,
+        "timestamp": time.time()
+    })
+    _webrtc_signals[req.session_id] = _webrtc_signals[req.session_id][-50:]
+    return {"status": "ACK", "stored_signals": len(_webrtc_signals[req.session_id])}
+
+
+@app.get("/api/webrtc/signals/{session_id}", tags=["Traffic Camera WebRTC"])
+async def get_webrtc_signals(session_id: str = "traffic_cam"):
+    return {"signals": _webrtc_signals.get(session_id, [])}
+
+
+UPLOADS_DIR = FRONTEND_DIR / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True, parents=True)
+if (UPLOADS_DIR).exists():
+    app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploaded_videos")
+
+
+@app.post("/api/traffic/upload-video", tags=["Traffic Video AI"])
+async def upload_traffic_video(file: UploadFile = File(...)):
+    """Uploads a recorded CCTV or smartphone traffic video file for AI detection & playback."""
+    allowed = (".mp4", ".webm", ".avi", ".mov", ".mkv", ".m4v")
+    ext = Path(file.filename or "video.mp4").suffix.lower()
+    if ext not in allowed:
+        raise HTTPException(400, f"Unsupported video format. Allowed formats: {allowed}")
+
+    file_id = f"traffic_{uuid.uuid4().hex[:8]}{ext}"
+    target_path = UPLOADS_DIR / file_id
+    content = await file.read()
+    with open(target_path, "wb") as f:
+        f.write(content)
+
+    return {
+        "status": "SUCCESS",
+        "filename": file.filename,
+        "file_id": file_id,
+        "size_bytes": len(content),
+        "url": f"/uploads/{file_id}",
+        "message": f"Video '{file.filename}' uploaded successfully ({len(content)} bytes). Staged for AI detection."
+    }
+
+
+class CameraRelayManager:
+    def __init__(self):
+        self.broadcasters: set[WebSocket] = set()
+        self.receivers: set[WebSocket] = set()
+
+    async def connect(self, ws: WebSocket, role: str):
+        await ws.accept()
+        if role == "mobile":
+            self.broadcasters.add(ws)
+            await self.notify_receivers({"type": "mobile_connected", "timestamp": time.time()})
+        else:
+            self.receivers.add(ws)
+            has_mobile = len(self.broadcasters) > 0
+            await ws.send_text(json.dumps({
+                "type": "mobile_status",
+                "connected": has_mobile,
+                "count": len(self.broadcasters)
+            }))
+
+    def disconnect(self, ws: WebSocket):
+        if ws in self.broadcasters:
+            self.broadcasters.remove(ws)
+            asyncio.create_task(self.notify_receivers({"type": "mobile_disconnected", "timestamp": time.time()}))
+        self.receivers.discard(ws)
+
+    async def notify_receivers(self, payload: dict):
+        dead = set()
+        text = json.dumps(payload)
+        for r in self.receivers:
+            try:
+                await r.send_text(text)
+            except Exception:
+                dead.add(r)
+        for d in dead:
+            self.receivers.discard(d)
+
+    async def relay_frame(self, data: str, sender: WebSocket):
+        dead = set()
+        for r in self.receivers:
+            try:
+                await r.send_text(data)
+            except Exception:
+                dead.add(r)
+        for d in dead:
+            self.receivers.discard(d)
+
+
+relay_manager = CameraRelayManager()
+
+
+@app.websocket("/api/traffic/camera-relay-ws")
+async def camera_relay_ws(websocket: WebSocket, role: str = "receiver"):
+    """Low-latency WebSocket relay connecting mobile camera broadcaster with SOC operator consoles."""
+    await relay_manager.connect(websocket, role)
+    try:
+        while True:
+            msg = await websocket.receive_text()
+            if role == "mobile":
+                await relay_manager.relay_frame(msg, websocket)
+            else:
+                dead = set()
+                for b in relay_manager.broadcasters:
+                    try:
+                        await b.send_text(msg)
+                    except Exception:
+                        dead.add(b)
+                for d in dead:
+                    relay_manager.broadcasters.discard(d)
+    except WebSocketDisconnect:
+        relay_manager.disconnect(websocket)
+
 
 @app.get("/", include_in_schema=False)
 async def serve_index():

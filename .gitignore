@@ -36,3 +36,8 @@ backend/bin/
 # OS generated
 .DS_Store
 Thumbs.db
+
+# User Uploaded Media
+finance/frontend/uploads/*
+!finance/frontend/uploads/.gitkeep
+
