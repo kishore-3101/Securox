@@ -241,7 +241,7 @@ class DataStore:
         with self._connect() as conn:
             for username, role, full_name in [
                 ("admin", "admin", "Securox Administrator"),
-                ("analyst", "analyst", "SOC Analyst"),
+                ("analyst", "soc_analyst", "SOC Analyst"),
                 ("traffic", "traffic_operator", "Traffic Operator"),
                 ("finance", "finance_investigator", "Finance Investigator"),
                 ("emergency", "emergency_commander", "Emergency Commander"),

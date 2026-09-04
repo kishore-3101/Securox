@@ -906,7 +906,30 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
       <div class="topbar-right">
         <!-- Sleek Sector RBAC Persona Switcher -->
-        <div class="rbac-switcher-wrap" id="rbac-switcher-wrap">
+        <!-- Prominent Direct Sector RBAC Presentation Buttons -->
+      <div id="instant-sector-bar" style="display:flex; align-items:center; gap:6px; background:rgba(15,23,42,0.8); padding:3px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); margin-right:12px;">
+        <span style="font-size:10px; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; padding:0 4px;">SECTOR:</span>
+        <button type="button" class="sector-quick-pill active" id="pill-admin" onclick="instantSwitchSector('admin')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(56,189,248,0.2); color:#38bdf8; border:1px solid #38bdf8; transition:all 0.15s;">
+          Global CISO
+        </button>
+        <button type="button" class="sector-quick-pill" id="pill-health" onclick="instantSwitchSector('health')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(239,68,68,0.08); color:#f87171; border:1px solid rgba(239,68,68,0.3); transition:all 0.15s;">
+          Healthcare
+        </button>
+        <button type="button" class="sector-quick-pill" id="pill-traffic" onclick="instantSwitchSector('traffic')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(14,165,233,0.08); color:#0ea5e9; border:1px solid rgba(14,165,233,0.3); transition:all 0.15s;">
+          Traffic
+        </button>
+        <button type="button" class="sector-quick-pill" id="pill-finance" onclick="instantSwitchSector('finance')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(245,158,11,0.08); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); transition:all 0.15s;">
+          Fintech
+        </button>
+        <button type="button" class="sector-quick-pill" id="pill-emergency" onclick="instantSwitchSector('emergency')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.3); transition:all 0.15s;">
+          Emergency
+        </button>
+        <button type="button" class="sector-quick-pill" id="pill-analyst" onclick="instantSwitchSector('analyst')" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:6px; cursor:pointer; background:rgba(168,85,247,0.08); color:#a855f7; border:1px solid rgba(168,85,247,0.3); transition:all 0.15s;">
+          SOC Threat
+        </button>
+      </div>
+
+      <div class="rbac-switcher-wrap" id="rbac-switcher-wrap">
           <div class="rbac-pill" id="rbac-active-pill" onclick="toggleRbacDropdown()" title="Switch Active Sector RBAC Persona">
             <span class="rbac-pill-dot" id="rbac-pill-dot" style="background:var(--accent);"></span>
             <i data-feather="user-check" style="width:12px;height:12px;" id="rbac-pill-icon"></i>
@@ -4279,7 +4302,7 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 // ═══════════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════════
-const API = window.location.origin || 'http://localhost:8000';
+const API = (window.location.origin && window.location.origin !== 'null' && window.location.protocol.startsWith('http')) ? window.location.origin : 'http://localhost:8000';
 const WS_URL = (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + (window.location.host || 'localhost:8000') + '/ws';
 
 const state = {
@@ -4378,16 +4401,84 @@ async function verifySavedSession() {
   }
 }
 
-function quickFillLogin(username, password, autoSubmit = false) {
+// ═══════════════════════════════════════════════════════════════════════
+// INSTANT RBAC SECTOR SWITCHING & PRESENTATION MODE
+// ═══════════════════════════════════════════════════════════════════════
+const ROLE_MAP = {
+  'admin': 'admin',
+  'health': 'health_operator',
+  'health_operator': 'health_operator',
+  'traffic': 'traffic_operator',
+  'traffic_operator': 'traffic_operator',
+  'finance': 'finance_investigator',
+  'finance_investigator': 'finance_investigator',
+  'emergency': 'emergency_commander',
+  'emergency_commander': 'emergency_commander',
+  'analyst': 'soc_analyst',
+  'soc_analyst': 'soc_analyst'
+};
+
+async function instantSwitchSector(key) {
+  const targetRole = ROLE_MAP[key] || key;
+  const username = key === 'health_operator' ? 'health' : (key === 'traffic_operator' ? 'traffic' : (key === 'finance_investigator' ? 'finance' : (key === 'emergency_commander' ? 'emergency' : (key === 'soc_analyst' ? 'analyst' : key))));
+  
+  // Instant UI unlock
+  const loginScreen = document.getElementById('login-screen');
+  const appShell = document.getElementById('app-shell');
+  if (loginScreen) loginScreen.style.display = 'none';
+  if (appShell) appShell.style.display = 'flex';
+  
+  state.user = { username: username, role: targetRole };
+  localStorage.setItem('securox_user', JSON.stringify(state.user));
+  
+  // Update Topbar sector pill styles
+  const allPills = ['admin', 'health', 'traffic', 'finance', 'emergency', 'analyst'];
+  allPills.forEach(p => {
+    const el = document.getElementById('pill-' + p);
+    if (!el) return;
+    if (p === username || (p === 'analyst' && targetRole === 'soc_analyst') || (p === 'health' && targetRole === 'health_operator') || (p === 'traffic' && targetRole === 'traffic_operator') || (p === 'finance' && targetRole === 'finance_investigator') || (p === 'emergency' && targetRole === 'emergency_commander') || (p === 'admin' && targetRole === 'admin')) {
+      el.style.background = 'rgba(56,189,248,0.25)';
+      el.style.borderColor = 'currentColor';
+      el.style.boxShadow = '0 0 8px currentColor';
+    } else {
+      el.style.background = 'rgba(255,255,255,0.05)';
+      el.style.borderColor = 'rgba(255,255,255,0.15)';
+      el.style.boxShadow = 'none';
+    }
+  });
+
+  bootCommandCenter();
+  applyRbacPersona(targetRole, true);
+  
+  // Asynchronously sync token with backend if reachable
+  try {
+    const res = await fetch(`${API}/api/auth/switch-role`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role_or_username: key })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      state.token = data.access_token;
+      localStorage.setItem('securox_token', data.access_token);
+    }
+  } catch(e) {
+    console.warn("Offline/local RBAC mode active");
+  }
+}
+window.instantSwitchSector = instantSwitchSector;
+
+async function quickFillLogin(username, password, autoSubmit = false) {
   const uInput = document.getElementById('login-username');
   const pInput = document.getElementById('login-password');
   if (uInput) uInput.value = username;
   if (pInput) pInput.value = password;
   if (autoSubmit) {
-    const btn = document.getElementById('login-button');
-    if (btn) btn.click();
+    instantSwitchSector(username);
   }
 }
+window.quickFillLogin = quickFillLogin;
+
 
 function toggleRbacDropdown() {
   const dd = document.getElementById('rbac-dropdown');
@@ -7102,7 +7193,6 @@ function updateVideoScrubberUI(video) {
 }
 
 // ── Mobile WebRTC & Relay Operations ───────────────────────────────────────
-async 
 // ── Offline Pure SVG QR Code Generator (Zero-Dependency) ───────────────────
 function generateOfflineQRCode(text) {
   // Generates clean, scannable QR code matrix using standard SVG encoding
@@ -7203,7 +7293,7 @@ function generateBuiltinDetections(width, height) {
   return preds;
 }
 
-function openMobileCamModal() {
+async function openMobileCamModal() {
   const modal = document.getElementById('mobile-cam-modal');
   if (modal) modal.classList.add('open');
   if (feather && feather.replace) feather.replace();
