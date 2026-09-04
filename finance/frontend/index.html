@@ -734,98 +734,102 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
       </div>
     </div>
         <nav class="nav">
-      <div class="nav-section-title">OVERVIEW</div>
-      <div class="nav-item" onclick="showPage('overview')">
+      <div class="nav-section-title" data-roles="admin">OVERVIEW</div>
+      <div class="nav-item" data-roles="admin" onclick="showPage('overview')">
         <i data-feather="grid" class="nav-icon"></i> Global View
       </div>
-      <div class="nav-item" onclick="showPage('executive')">
+      <div class="nav-item" data-roles="admin,emergency_commander" onclick="showPage('executive')">
         <i data-feather="pie-chart" class="nav-icon" style="color:var(--accent)"></i> Executive View
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(2,132,199,0.2); color:var(--accent); margin-left:auto; font-weight:700;">CISO</span>
       </div>
-      <div class="nav-item active" onclick="showPage('fintech')">
-        <i data-feather="shield" class="nav-icon"></i> Live SOC Command
+      <div class="nav-item active" id="nav-fintech" data-roles="admin,finance_investigator" onclick="showPage('fintech')">
+        <i data-feather="credit-card" class="nav-icon" style="color:#38bdf8;"></i> FinTech Operations
         <div class="status-dot"></div>
       </div>
 
-      <div class="nav-section-title">THREAT OPERATIONS</div>
-      <div class="nav-item" onclick="showPage('alerts')">
+      <div class="nav-section-title" data-roles="all">THREAT OPERATIONS</div>
+      <div class="nav-item" data-roles="all" onclick="showPage('alerts')">
         <i data-feather="alert-triangle" class="nav-icon"></i> Active Incidents
         <span id="alert-badge" class="badge-count" style="display:none">0</span>
       </div>
-      <div class="nav-item" onclick="showPage('campaigns')">
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('campaigns')">
         <i data-feather="layers" class="nav-icon" style="color:#f59e0b"></i> Attack Campaigns
         <span id="campaign-badge" style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(245,158,11,0.2); color:#f59e0b; margin-left:auto; font-weight:700;">MULTI-STAGE</span>
       </div>
-      <div class="nav-item" onclick="showPage('investigation')">
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('investigation')">
         <i data-feather="search" class="nav-icon"></i> Incident Investigation
       </div>
-      <div class="nav-item" onclick="showPage('response')">
+      <div class="nav-item" data-roles="all" onclick="showPage('response')">
         <i data-feather="lock" class="nav-icon"></i> Cyber Response Center
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">6-ACTION</span>
       </div>
 
-      <div class="nav-section-title">SMART CITY INFRASTRUCTURE</div>
-      <div class="nav-item" onclick="showPage('twin')">
+      <div class="nav-section-title" data-roles="all">SMART CITY INFRASTRUCTURE</div>
+      <div class="nav-item" data-roles="all" onclick="showPage('twin')">
         <i data-feather="share-2" class="nav-icon"></i> Network Topology (Twin)
       </div>
-      <div class="nav-item" onclick="showPage('risk')">
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('risk')">
         <i data-feather="bar-chart-2" class="nav-icon"></i> Risk Telemetry
       </div>
-      <div class="nav-item" onclick="showPage('cctv')">
-        <i data-feather="camera" class="nav-icon"></i> Traffic &amp; CCTV AI
+      <div class="nav-item" id="nav-traffic" data-roles="admin,traffic_operator" onclick="showPage('traffic')">
+        <i data-feather="navigation" class="nav-icon" style="color:#38bdf8;"></i> Traffic Operations Center
+        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(56,189,248,0.2); color:#38bdf8; margin-left:auto; font-weight:700;">26-VIEW</span>
       </div>
-      <div class="nav-item" onclick="window.open('/traffic', '_blank')" style="cursor:pointer;" title="Launch Complete 26-View Traffic Management System in Separate Window">
-        <i data-feather="external-link" class="nav-icon" style="color:#38bdf8;"></i> Traffic SOC Portal
-        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(56,189,248,0.2); color:#38bdf8; margin-left:auto; font-weight:700;">26-VIEW ↗</span>
+      <div class="nav-item" data-roles="admin,traffic_operator" onclick="showPage('cctv')">
+        <i data-feather="camera" class="nav-icon"></i> Traffic CCTV Vision AI
       </div>
-      <div class="nav-item" id="nav-healthcare" onclick="showPage('healthcare')">
+      <div class="nav-item" data-roles="admin,traffic_operator" onclick="window.open('/traffic', '_blank')" style="cursor:pointer;" title="Launch Standalone 26-View Traffic Management System in Separate Window">
+        <i data-feather="external-link" class="nav-icon" style="color:#38bdf8;"></i> Standalone Traffic Page
+        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(56,189,248,0.1); color:#38bdf8; margin-left:auto; font-weight:700;">PORTAL</span>
+      </div>
+      <div class="nav-item" id="nav-healthcare" data-roles="admin,health_operator" onclick="showPage('healthcare')">
         <i data-feather="heart" class="nav-icon" style="color:#f87171;"></i> Healthcare Defense
         <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(239,68,68,0.2); color:#f87171; margin-left:auto; font-weight:700;">CAREGUARD</span>
       </div>
-      <div class="nav-item" onclick="window.open('/healthcare', '_blank')" style="cursor:pointer;" title="Launch Healthcare SOC Portal in Separate Window">
+      <div class="nav-item" data-roles="admin,health_operator" onclick="window.open('/healthcare', '_blank')" style="cursor:pointer;" title="Launch Healthcare SOC Portal in Separate Window">
         <i data-feather="activity" class="nav-icon" style="color:var(--green);"></i> Healthcare SOC Portal
-        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">SEPARATE ↗</span>
+        <span style="font-size:9px; padding:2px 6px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">STANDALONE</span>
       </div>
-      <div class="nav-item" onclick="showPage('vault')">
+      <div class="nav-item" data-roles="admin,finance_investigator" onclick="showPage('vault')">
         <i data-feather="key" class="nav-icon"></i> Crypto Vault
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">SECURED</span>
       </div>
-      <div class="nav-item" onclick="showPage('proactive')">
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('proactive')">
         <i data-feather="shield" class="nav-icon"></i> Proactive Pre-Breach
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(59,130,246,0.2); color:var(--accent); margin-left:auto; font-weight:700;">PRE-BREACH</span>
       </div>
 
-      <div class="nav-section-title">SIMULATION &amp; RESILIENCE</div>
-      <div class="nav-item" onclick="showPage('simlab')">
+      <div class="nav-section-title" data-roles="admin,emergency_commander,finance_investigator,soc_analyst">SIMULATION &amp; RESILIENCE</div>
+      <div class="nav-item" data-roles="admin,emergency_commander" onclick="showPage('simlab')">
         <i data-feather="zap" class="nav-icon" style="color:var(--yellow)"></i> Attack Sim Lab
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(245,158,11,0.2); color:var(--yellow); margin-left:auto; font-weight:700;">6 SCENARIOS</span>
       </div>
-      <div class="nav-item" onclick="showPage('whatif')">
+      <div class="nav-item" data-roles="admin,emergency_commander" onclick="showPage('whatif')">
         <i data-feather="git-branch" class="nav-icon" style="color:#a855f7"></i> What-If Simulator
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(168,85,247,0.2); color:#a855f7; margin-left:auto; font-weight:700;">CASCADE</span>
       </div>
-      <div class="nav-item" onclick="showPage('timeline')">
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('timeline')">
         <i data-feather="rewind" class="nav-icon"></i> Forensic Replay
       </div>
-      <div class="nav-item" onclick="showPage('flagship')">
+      <div class="nav-item" data-roles="admin" onclick="showPage('flagship')">
         <i data-feather="crosshair" class="nav-icon"></i> 12-Stage Flagship
       </div>
-      <div class="nav-item" onclick="showPage('decision')">
+      <div class="nav-item" data-roles="admin,finance_investigator" onclick="showPage('decision')">
         <i data-feather="git-commit" class="nav-icon"></i> Disparity &amp; Decision
       </div>
 
-      <div class="nav-section-title">DATA &amp; AI LAB</div>
-      <div class="nav-item" onclick="showPage('datalab')">
+      <div class="nav-section-title" data-roles="admin,soc_analyst">DATA &amp; AI LAB</div>
+      <div class="nav-item" data-roles="admin,soc_analyst" onclick="showPage('datalab')">
         <i data-feather="database" class="nav-icon" style="color:var(--green)"></i> Data &amp; Model Lab
         <span style="font-size:9px; padding:1px 5px; border-radius:3px; background:rgba(16,185,129,0.2); color:var(--green); margin-left:auto; font-weight:700;">REPLAY</span>
       </div>
-      <div class="nav-item" onclick="showPage('modelhealth')">
+      <div class="nav-item" data-roles="admin" onclick="showPage('modelhealth')">
         <i data-feather="cpu" class="nav-icon"></i> AI Model Health
       </div>
-      <div class="nav-item" onclick="showPage('sdg')">
+      <div class="nav-item" data-roles="admin" onclick="showPage('sdg')">
         <i data-feather="globe" class="nav-icon"></i> SDG 9 &amp; 11 Impact
       </div>
-      <div class="nav-item" onclick="showPage('team')">
+      <div class="nav-item" data-roles="admin" onclick="showPage('team')">
         <i data-feather="users" class="nav-icon"></i> 5-Member Team Hub
       </div>
     </nav>
@@ -930,11 +934,11 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
         <span id="ws-status" class="ws-badge disconnected">● Connecting…</span>
 
         <button class="btn btn-accent" id="btn-guided-tour" onclick="openGuidedTourModal()" style="background:linear-gradient(135deg, #0284c7, #7c3aed); border:1px solid #38bdf8; font-weight:700; box-shadow:0 0 10px rgba(124, 58, 237, 0.4);">
-          <i data-feather="compass" style="width:14px;height:14px;vertical-align:middle;"></i> ⚡ 13-Phase Demo Tour
+          <i data-feather="compass" style="width:14px;height:14px;vertical-align:middle;"></i> 13-Phase Demo Tour
         </button>
 
         <button class="btn btn-accent" id="btn-judge-demo" onclick="runJudgeDemoMode()" style="background:linear-gradient(135deg, #7c3aed, #2563eb); border:1px solid #a78bfa; color:#fff; font-weight:700;">
-          <i data-feather="play-circle" style="width:14px;height:14px;vertical-align:middle;"></i> 🚀 Competition Demo
+          <i data-feather="play-circle" style="width:14px;height:14px;vertical-align:middle;"></i> Competition Demo
         </button>
         <button class="btn" onclick="restoreNormalOperations()"><i data-feather="refresh-cw" style="width:14px;height:14px;vertical-align:middle"></i> Reset City</button>
         <button class="btn btn-danger" onclick="logout()"><i data-feather="log-out" style="width:14px;height:14px;vertical-align:middle"></i></button>
@@ -1772,6 +1776,44 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
         </div>
       </div>
 
+      <!-- ═══ MUNICIPAL TRAFFIC MANAGEMENT & OPERATIONS CENTER ═══ -->
+      <div id="page-traffic" style="display:none">
+        <div class="card" style="margin-bottom:16px; padding:14px 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.3); display:flex; align-items:center; justify-content:center; color:#38bdf8;">
+                <i data-feather="navigation" style="width:20px; height:20px;"></i>
+              </div>
+              <div>
+                <div style="font-size:15px; font-weight:700; color:var(--text); letter-spacing:-0.3px;">
+                  MUNICIPAL TRAFFIC OPERATIONS CENTER &amp; ADAPTIVE GRID
+                </div>
+                <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">
+                  Real-time SCATS Signal Intelligence · 26-View Adaptive Grid · ANPR Vision &amp; Fastag Audit
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn" style="border-color:rgba(16,185,129,0.3); color:var(--green); background:rgba(16,185,129,0.1);" onclick="triggerGreenCorridor()" title="Prioritize Emergency Vehicles on Active Corridors">
+                <i data-feather="zap" style="width:13px; height:13px;"></i> Green Corridor
+              </button>
+              <button class="btn" style="border-color:rgba(56,189,248,0.3); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="showPage('cctv')" title="Switch to Live CCTV Camera Feed & AI Object Detector">
+                <i data-feather="camera" style="width:13px; height:13px;"></i> CCTV Vision AI
+              </button>
+              <button class="btn" style="border-color:rgba(14,165,233,0.4); color:#38bdf8; background:rgba(14,165,233,0.15);" onclick="window.open('/traffic', '_blank')" title="Launch Standalone 26-View Traffic Portal in Separate Window">
+                <i data-feather="external-link" style="width:13px; height:13px;"></i> Open in Separate Window
+              </button>
+              <button class="btn" onclick="toggleTrafficIframeFullscreen()" title="Toggle Fullscreen View">
+                <i data-feather="maximize-2" style="width:13px; height:13px;"></i> Fullscreen
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="traffic-frame-container" style="position:relative; width:100%; height:calc(100vh - 190px); min-height:620px; border-radius:8px; overflow:hidden; border:1px solid var(--border); background:#070b14;">
+          <iframe id="traffic-frame" src="/traffic" style="width:100%; height:100%; border:none; display:block;" allow="camera; microphone; fullscreen"></iframe>
+        </div>
+      </div>
+
       <!-- ═══ CCTV / TRAFFIC AI PAGE ═══ -->
       <div id="page-cctv" style="display:none">
         <div style="display:grid;grid-template-columns: 2fr 1fr;gap:20px">
@@ -1786,7 +1828,7 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
                 <button class="btn" style="margin-left:12px" onclick="toggleCctvSource()" id="cctv-toggle-btn">Use Video File</button>
                 <button class="btn btn-accent" style="margin-left:8px" onclick="startCctv()" id="cctv-start-btn">Start Detection</button>
                 <button class="btn" style="margin-left:8px; border-color:rgba(56,189,248,0.4); color:#38bdf8; background:rgba(56,189,248,0.1);" onclick="window.open('/traffic', '_blank')" title="Open 26-View Standalone Traffic Management System in a separate window">
-                  <i data-feather="external-link" style="width:13px;height:13px;"></i> Standalone Traffic Center ↗
+                  <i data-feather="external-link" style="width:13px;height:13px;"></i> Standalone Traffic Center
                 </button>
               </div>
 
@@ -1863,7 +1905,7 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
 
                 <!-- Stream Hijack Overlay -->
                 <div id="cctv-hijack-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.9);display:none;pointer-events:none;align-items:center;justify-content:center;z-index:10;flex-direction:column;gap:8px">
-                  <div style="font-size:36px"><i data-feather="flag" style="width:14px;height:14px"></i>‍☠️</div>
+                  <div style="font-size:36px"><i data-feather="flag" style="width:14px;height:14px"></i></div>
                   <div style="color:var(--red);font-weight:700;font-size:15px;letter-spacing:1px">UNAUTHORIZED STREAM INJECTION</div>
                   <div style="color:var(--text-dim);font-size:11px">MITM SIGNATURE MATCH FAILURE</div>
                 </div>
@@ -2213,7 +2255,7 @@ table.cyber-table tbody tr:hover { background: var(--bg-hover); }
         <!-- Operational Advisory Alert Bar -->
         <div id="hc-advisory-banner" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:12px 16px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
           <div style="display:flex; align-items:center; gap:12px;">
-            <div style="font-size:22px; line-height:1;">⚠️</div>
+            <div style="font-size:22px; line-height:1;"><i data-feather="alert-triangle"></i></div>
             <div>
               <div style="font-size:11px; font-weight:700; color:#f87171; text-transform:uppercase; letter-spacing:0.5px;">Operational Clinical Advisory (NIST SP 800-30 Derivation)</div>
               <div style="font-size:12px; color:var(--text); margin-top:2px;" id="hc-advisory-text">
@@ -4313,9 +4355,9 @@ function applyRbacPersona(role, notify = true) {
       defaultPage: 'healthcare',
       toast: 'Switched to Healthcare Operator — CAREGUARD & Hospital Defense View',
       actions: [
-        { label: '🏥 CAREGUARD', page: 'healthcare' },
-        { label: '↗ Portal', url: '/healthcare' },
-        { label: '🚨 Incidents', page: 'alerts' }
+        { label: 'Healthcare Defense', page: 'healthcare' },
+        { label: 'Standalone Portal', url: '/healthcare' },
+        { label: 'Active Incidents', page: 'alerts' }
       ]
     },
     'traffic_operator': {
@@ -4323,12 +4365,13 @@ function applyRbacPersona(role, notify = true) {
       color: '#0ea5e9',
       roleText: 'TRAFFIC COMMAND',
       desc: 'STIG adaptive signal grid, ANPR sensors, CCTV AI, and 26-view Traffic SOC.',
-      defaultPage: 'cctv',
+      defaultPage: 'traffic',
       toast: 'Switched to Traffic & Mobility Operator — 26-View Command View',
       actions: [
-        { label: '🚦 CCTV AI', page: 'cctv' },
-        { label: '↗ 26-View SOC', url: '/traffic' },
-        { label: '🚑 Green Corridor', onclick: 'triggerGreenCorridor()' }
+        { label: 'Traffic Operations', page: 'traffic' },
+        { label: 'CCTV Vision AI', page: 'cctv' },
+        { label: 'Green Corridor', onclick: 'triggerGreenCorridor()' },
+        { label: 'Standalone Portal', url: '/traffic' }
       ]
     },
     'finance_investigator': {
@@ -4339,9 +4382,9 @@ function applyRbacPersona(role, notify = true) {
       defaultPage: 'fintech',
       toast: 'Switched to Fintech Investigator — Banking & Crypto Defense View',
       actions: [
-        { label: '💳 Financial SOC', page: 'fintech' },
-        { label: '🔐 Vault', page: 'vault' },
-        { label: '⚖️ Decision', page: 'decision' }
+        { label: 'FinTech SOC', page: 'fintech' },
+        { label: 'Crypto Key Vault', page: 'vault' },
+        { label: 'Fairness Decision', page: 'decision' }
       ]
     },
     'emergency_commander': {
@@ -4352,9 +4395,9 @@ function applyRbacPersona(role, notify = true) {
       defaultPage: 'executive',
       toast: 'Switched to Emergency Commander — Multi-Agency Command View',
       actions: [
-        { label: '🚨 Command', page: 'executive' },
-        { label: '🌐 Cascade Sim', page: 'whatif' },
-        { label: '🛡️ Response', page: 'response' }
+        { label: 'Civil Command', page: 'executive' },
+        { label: 'Cascade Simulator', page: 'whatif' },
+        { label: 'Response Center', page: 'response' }
       ]
     },
     'soc_analyst': {
@@ -4365,9 +4408,9 @@ function applyRbacPersona(role, notify = true) {
       defaultPage: 'campaigns',
       toast: 'Switched to SOC Threat Hunter — Campaign Dossiers & Forensics',
       actions: [
-        { label: '🎯 Campaigns', page: 'campaigns' },
-        { label: '🔍 Forensic XAI', page: 'investigation' },
-        { label: '🧪 Data Lab', page: 'datalab' }
+        { label: 'Campaigns', page: 'campaigns' },
+        { label: 'Forensic XAI', page: 'investigation' },
+        { label: 'Data Lab', page: 'datalab' }
       ]
     },
     'analyst': {
@@ -4378,9 +4421,9 @@ function applyRbacPersona(role, notify = true) {
       defaultPage: 'campaigns',
       toast: 'Switched to SOC Threat Hunter — Campaign Dossiers & Forensics',
       actions: [
-        { label: '🎯 Campaigns', page: 'campaigns' },
-        { label: '🔍 Forensic XAI', page: 'investigation' },
-        { label: '🧪 Data Lab', page: 'datalab' }
+        { label: 'Campaigns', page: 'campaigns' },
+        { label: 'Forensic XAI', page: 'investigation' },
+        { label: 'Data Lab', page: 'datalab' }
       ]
     }
   };
@@ -4412,16 +4455,72 @@ function applyRbacPersona(role, notify = true) {
     userChipText.textContent = `${state.user.username} · ${prof.title}`;
   }
 
+  // 1. Strict Sidebar Item Filtering by Role
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const rAttr = item.getAttribute('data-roles') || 'all';
+    const allowed = rAttr.split(',').map(s => s.trim());
+    if (role === 'admin' || allowed.includes('all') || allowed.includes(role)) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+
+  // 2. Hide Empty Section Headers
+  document.querySelectorAll('.nav-section-title').forEach(title => {
+    const rAttr = title.getAttribute('data-roles') || 'all';
+    const allowed = rAttr.split(',').map(s => s.trim());
+    if (role !== 'admin' && !allowed.includes('all') && !allowed.includes(role)) {
+      title.style.display = 'none';
+      return;
+    }
+    let next = title.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('nav-section-title')) {
+      if (next.classList.contains('nav-item') && next.style.display !== 'none') {
+        hasVisible = true;
+        break;
+      }
+      next = next.nextElementSibling;
+    }
+    title.style.display = (hasVisible || role === 'admin') ? 'block' : 'none';
+  });
+
+  // 3. Topbar Mode Switcher Adaptation
+  const modeGroup = document.querySelector('.mode-switch-group');
+  if (modeGroup) {
+    if (role === 'admin') {
+      modeGroup.innerHTML = `
+        <button class="mode-btn active" id="mode-btn-soc" onclick="switchSocMode('soc')">Live SOC</button>
+        <button class="mode-btn" id="mode-btn-simlab" onclick="switchSocMode('simlab')">Attack Sim Lab</button>
+        <button class="mode-btn" id="mode-btn-executive" onclick="switchSocMode('executive')">Executive View</button>
+        <button class="mode-btn" id="mode-btn-analyst" onclick="switchSocMode('analyst')">Analyst View</button>
+      `;
+    } else {
+      modeGroup.innerHTML = `
+        <div class="mode-btn active" style="pointer-events:none; border-color:${prof.color}; color:${prof.color}; background:${prof.color}15; font-weight:700; letter-spacing:0.5px;">
+          SECTOR CONSOLE: ${prof.roleText}
+        </div>
+      `;
+    }
+  }
+
+  // 4. Sector Risk Pill adaptation
+  const riskLabel = document.getElementById('topbar-risk-label');
+  if (riskLabel) {
+    riskLabel.textContent = role === 'admin' ? 'NOMINAL' : prof.roleText.split(' ')[0] + ' SECTOR';
+  }
+
   // Highlight specific sidebar navigation item for the active sector
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('sector-highlighted'));
   if (role === 'health_operator') {
     const el = document.getElementById('nav-healthcare');
     if (el) el.classList.add('sector-highlighted');
   } else if (role === 'traffic_operator') {
-    const el = document.querySelector('[onclick*="cctv"]');
+    const el = document.getElementById('nav-traffic') || document.querySelector('[onclick*="traffic"]');
     if (el) el.classList.add('sector-highlighted');
   } else if (role === 'finance_investigator') {
-    const el = document.querySelector('[onclick*="fintech"]');
+    const el = document.getElementById('nav-fintech') || document.querySelector('[onclick*="fintech"]');
     if (el) el.classList.add('sector-highlighted');
   } else if (role === 'soc_analyst' || role === 'analyst') {
     const el = document.querySelector('[onclick*="campaigns"]');
@@ -4435,6 +4534,10 @@ function applyRbacPersona(role, notify = true) {
   if (prof.defaultPage) {
     showPage(prof.defaultPage);
   }
+
+  // Re-fetch filtered data for this role
+  if (typeof fetchAlerts === 'function') fetchAlerts();
+  if (typeof fetchDigitalTwin === 'function') fetchDigitalTwin();
 
   if (notify && typeof showToast === 'function') {
     showToast(prof.toast, 'info');
@@ -4526,7 +4629,7 @@ async function runJudgeDemoMode() {
   showToast({
     severity: 'critical',
     asset: 'TRAFFIC_CONTROL',
-    explanation: '🚀 SH-FIN-05 Competition Demo Mode Started! Replaying 5 canonical smart city attack scenarios into live ML detection pipeline.'
+    explanation: '[SIMULATION] SH-FIN-05 Competition Demo Mode Started! Replaying 5 canonical smart city attack scenarios into live ML detection pipeline.'
   });
 
   try {
@@ -4534,12 +4637,12 @@ async function runJudgeDemoMode() {
     const data = await res.json();
     showPage('alerts');
     setTimeout(() => {
-      if (btn) btn.innerHTML = '<i data-feather="play-circle" style="width:14px;height:14px;vertical-align:middle;"></i> 🚀 Competition Demo Mode';
+      if (btn) btn.innerHTML = '<i data-feather="play-circle" style="width:14px;height:14px;vertical-align:middle;"></i> Competition Demo Mode';
       if (window.feather) feather.replace();
     }, 6000);
   } catch (err) {
     console.error('Demo run error:', err);
-    if (btn) btn.innerHTML = '🚀 Competition Demo Mode';
+    if (btn) btn.innerHTML = 'Competition Demo Mode';
   }
 }
 
@@ -4786,14 +4889,14 @@ function handleSimEnd(data) {
 // DIGITAL TWIN SVG
 // ═══════════════════════════════════════════════════════════════════════
 const TWIN_LAYOUT = {
-  power_grid:     {x:180, y:100, label:'Power Grid',          icon:'<i data-feather="zap" style="width:14px;height:14px"></i>'},
-  water_supply:   {x:560, y:80,  label:'Water Supply',        icon:'<i data-feather="droplet" style="width:14px;height:14px"></i>'},
-  healthcare:     {x:600, y:280, label:'Healthcare Billing',  icon:'<i data-feather="activity" style="width:14px;height:14px"></i>'},
-  traffic_system: {x:160, y:320, label:'Traffic Sys',         icon:'<i data-feather="navigation" style="width:14px;height:14px"></i>'},
-  communications: {x:380, y:200, label:'Tax Portals',         icon:'<i data-feather="server" style="width:14px;height:14px"></i>'},
-  finance:        {x:640, y:160, label:'Digital Payments',    icon:'<i data-feather="dollar-sign" style="width:14px;height:14px"></i>'},
-  emergency_svcs: {x:300, y:380, label:'Emergency',           icon:'<i data-feather="alert-octagon" style="width:16px;height:16px;color:var(--red);vertical-align:middle;"></i>'},
-  public_transit: {x:100, y:430, label:'Transport Ticketing', icon:'<i data-feather="compass" style="width:14px;height:14px"></i>'},
+  power_grid:     {x:180, y:100, label:'Power Grid',          icon:'zap', sector:'energy'},
+  water_supply:   {x:560, y:80,  label:'Water Supply',        icon:'droplet', sector:'water'},
+  healthcare:     {x:600, y:280, label:'Healthcare Billing',  icon:'activity', sector:'healthcare'},
+  traffic_system: {x:160, y:320, label:'Traffic Sys',         icon:'navigation', sector:'transport'},
+  communications: {x:380, y:200, label:'Tax Portals',         icon:'server', sector:'finance'},
+  finance:        {x:640, y:160, label:'Digital Payments',    icon:'dollar-sign', sector:'finance'},
+  emergency_svcs: {x:300, y:380, label:'Emergency',           icon:'alert-octagon', sector:'emergency'},
+  public_transit: {x:100, y:430, label:'Transport Ticketing', icon:'compass', sector:'transport'},
 };
 const CONNECTIONS = [
   ['power_grid','water_supply'],['power_grid','healthcare'],
@@ -4888,12 +4991,29 @@ function renderTwin(assets) {
     bg.setAttribute('filter', score >= 60 ? 'url(#glow)' : '');
     g.appendChild(bg);
 
-    // Icon
-    const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
-    icon.setAttribute('x','0'); icon.setAttribute('y','-6');
-    icon.setAttribute('text-anchor','middle'); icon.setAttribute('font-size','18');
-    icon.textContent = pos.icon;
-    g.appendChild(icon);
+    // Vector Icon
+    if (typeof feather !== 'undefined' && feather.icons && feather.icons[pos.icon]) {
+      const iconSvgStr = feather.icons[pos.icon].toSvg({
+        width: 18,
+        height: 18,
+        stroke: color,
+        'stroke-width': 2,
+        fill: 'none'
+      });
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(iconSvgStr, 'image/svg+xml');
+      const svgEl = doc.documentElement;
+      svgEl.setAttribute('x', '-9');
+      svgEl.setAttribute('y', '-16');
+      g.appendChild(svgEl);
+    } else {
+      const icon = document.createElementNS('http://www.w3.org/2000/svg','text');
+      icon.setAttribute('x','0'); icon.setAttribute('y','-4');
+      icon.setAttribute('text-anchor','middle'); icon.setAttribute('font-size','10');
+      icon.setAttribute('fill', color);
+      icon.textContent = (pos.label || '').slice(0, 3).toUpperCase();
+      g.appendChild(icon);
+    }
 
     // Score text
     const sc = document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -4910,18 +5030,41 @@ function renderTwin(assets) {
     lbl.textContent = pos.label;
     g.appendChild(lbl);
 
+    // RBAC sector focus check
+    const role = state.user?.role || state.currentRole;
+    let isSectorNode = true;
+    if (role === 'traffic_operator') {
+      isSectorNode = (id === 'traffic_system' || id === 'public_transit' || pos.sector === 'transport');
+    } else if (role === 'health_operator') {
+      isSectorNode = (id === 'healthcare' || id === 'hospital_sys' || pos.sector === 'healthcare');
+    } else if (role === 'finance_investigator') {
+      isSectorNode = (id === 'finance' || id === 'communications' || pos.sector === 'finance');
+    }
+    if (!isSectorNode && role !== 'admin' && role !== 'soc_analyst' && role !== 'emergency_commander') {
+      g.style.opacity = '0.15';
+      g.style.filter = 'grayscale(0.8)';
+    }
+
     svg.appendChild(g);
   });
 }
 
 function updateStatusBar(assets) {
   const bar = document.getElementById('twin-status-bar');
-  bar.innerHTML = Object.entries(assets).map(([id,a]) => {
+  if (!bar) return;
+  const role = state.user?.role || state.currentRole;
+  bar.innerHTML = Object.entries(assets).filter(([id]) => {
+    if (!role || role === 'admin' || role === 'soc_analyst' || role === 'emergency_commander') return true;
+    if (role === 'traffic_operator') return id === 'traffic_system' || id === 'public_transit';
+    if (role === 'health_operator') return id === 'healthcare' || id === 'hospital_sys';
+    if (role === 'finance_investigator') return id === 'finance' || id === 'communications';
+    return true;
+  }).map(([id,a]) => {
     const s = Math.round(a.risk_score || 0);
     const c = scoreColor(s);
     return `<div style="display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 10px;
       border-radius:6px;background:var(--bg-panel);border:1px solid ${c}40">
-      <span>${ASSET_ICONS[id]||'<i data-feather="layers" style="width:14px;height:14px"></i>'}</span>
+      <span style="font-size:10px;font-weight:700;color:${c}">${ASSET_ICONS[id]||'[NODE]'}</span>
       <span style="font-weight:600">${ASSET_NAMES[id]||id}</span>
       <span style="color:${c};font-weight:700">${s}</span>
       <span style="color:var(--text-dim)">${a.status||'ok'}</span>
@@ -4942,7 +5085,16 @@ function heatColor(score) {
 
 function updateHeatmap() {
   const hm = document.getElementById('heatmap');
-  const assets = Object.keys(ASSET_NAMES);
+  if (!hm) return;
+  const role = state.user?.role || state.currentRole;
+  let assets = Object.keys(ASSET_NAMES);
+  if (role === 'traffic_operator') {
+    assets = assets.filter(a => ['traffic_system', 'public_transit', 'power_grid', 'emergency_svcs'].includes(a));
+  } else if (role === 'health_operator') {
+    assets = assets.filter(a => ['healthcare', 'hospital_sys', 'water_supply', 'power_grid'].includes(a));
+  } else if (role === 'finance_investigator') {
+    assets = assets.filter(a => ['finance', 'communications', 'power_grid'].includes(a));
+  }
   hm.innerHTML = assets.map(a => {
     const hist = state.riskHistory[a] || [];
     const score = hist.length ? Math.round(hist[hist.length-1]) : 0;
@@ -4961,9 +5113,19 @@ function updateHeatmap() {
 // KPIs
 // ═══════════════════════════════════════════════════════════════════════
 function updateKPIs() {
-  // City risk = max of all latest asset risks
-  const allLatest = Object.values(state.riskHistory)
-    .map(h => h.length ? h[h.length-1] : 0);
+  const role = state.user?.role || state.currentRole;
+  let relevantAssets = Object.keys(state.riskHistory);
+  if (role === 'traffic_operator') {
+    relevantAssets = relevantAssets.filter(a => ['traffic_system', 'public_transit', 'emergency_svcs'].includes(a));
+  } else if (role === 'health_operator') {
+    relevantAssets = relevantAssets.filter(a => ['healthcare', 'hospital_sys'].includes(a));
+  } else if (role === 'finance_investigator') {
+    relevantAssets = relevantAssets.filter(a => ['finance', 'communications'].includes(a));
+  }
+  const allLatest = relevantAssets.map(a => {
+    const h = state.riskHistory[a] || [];
+    return h.length ? h[h.length-1] : 0;
+  });
   const cityRisk = allLatest.length ? Math.round(Math.max(...allLatest)) : 0;
   document.getElementById('kpi-city-risk').textContent = cityRisk;
   const cats = ['NOMINAL','LOW','MEDIUM','HIGH','CRITICAL'];
@@ -5138,6 +5300,13 @@ function updateLSTMChart() {
 function appendToFeed(feedId, alert) {
   const feed = document.getElementById(feedId);
   if (!feed) return;
+  const role = state.user?.role || state.currentRole;
+  if (role && role !== 'admin' && role !== 'soc_analyst' && role !== 'emergency_commander') {
+    const a = (alert.asset || '').toLowerCase();
+    if (role === 'traffic_operator' && !a.includes('traffic') && !a.includes('transit') && !a.includes('transport')) return;
+    if (role === 'health_operator' && !a.includes('health') && !a.includes('hospital') && !a.includes('careguard')) return;
+    if (role === 'finance_investigator' && !a.includes('fin') && !a.includes('pay') && !a.includes('tax') && !a.includes('bank') && !a.includes('vault')) return;
+  }
   const sev = alert.severity || 'low';
   const el  = document.createElement('div');
   el.className = `alert-item ${sev}`;
@@ -5320,7 +5489,7 @@ function showAlertModal(alert) {
 
   document.getElementById('modal-title').innerHTML =
     `<div style="display:flex; align-items:center; gap:8px;">
-       <span style="color:var(--red);font-size:20px;">🚨</span>
+       <i data-feather="alert-octagon" style="color:var(--red);width:18px;height:18px"></i>
        <span>[SH-FIN-05 XAI] Incident Audit: ${assetName}</span>
        <span class="tag" style="background:rgba(225,29,72,0.2);color:var(--red);border-color:var(--red);margin-left:auto;font-weight:700;">${severity}</span>
      </div>`;
@@ -5361,7 +5530,7 @@ function showAlertModal(alert) {
     cyberPhysicalHtml = `
       <div style="margin-top:14px; background:rgba(234,88,12,0.12); border:1px solid rgba(234,88,12,0.35); border-radius:6px; padding:12px;">
         <div style="font-weight:700; color:var(--orange); font-size:12px; display:flex; align-items:center; gap:6px;">
-          <span>🚦</span> CYBER-PHYSICAL MULTI-SIGNAL CORRELATION DETECTED
+          <i data-feather="activity" style="color:var(--yellow);width:14px;height:14px;vertical-align:middle;"></i> CYBER-PHYSICAL MULTI-SIGNAL CORRELATION DETECTED
         </div>
         <div style="font-size:12px; color:var(--text); margin-top:6px; line-height:1.5;">
           ${cp.fusion_impact || 'Physical Traffic Congestion synchronized with SCATS Signal Telemetry Tampering'}
@@ -5398,7 +5567,7 @@ function showAlertModal(alert) {
 
     <div style="background:var(--bg-deep); border:1px solid var(--border); border-radius:6px; padding:14px; margin-bottom:14px;">
       <div style="font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-        <span>🔍</span> WHY IS THIS HIGH RISK? (SHAP FEATURE ATTRIBUTION)
+        <i data-feather="help-circle" style="color:var(--accent);width:14px;height:14px;vertical-align:middle;"></i> WHY IS THIS HIGH RISK? (SHAP FEATURE ATTRIBUTION)
       </div>
       <ul style="font-size:12px; color:var(--text); padding-left:18px; line-height:1.6; margin-bottom:14px;">
         ${reasonsList}
@@ -5413,7 +5582,7 @@ function showAlertModal(alert) {
     ${depsHtml}
 
     <div style="margin-top:14px; padding:12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:6px;">
-      <div style="font-size:12px; font-weight:700; color:var(--green); margin-bottom:6px;">🛡️ Safe Mitigation Directives (Non-Destructive)</div>
+      <div style="font-size:12px; font-weight:700; color:var(--green); margin-bottom:6px;">Automated Mitigation Directives (Non-Destructive)</div>
       <ul style="font-size:12px; color:var(--text); padding-left:18px; line-height:1.5;">
         ${mitigationsList}
       </ul>
@@ -5673,6 +5842,7 @@ const PAGE_TITLES = {
   alerts:'Active Incidents', risk:'Risk Telemetry',
   simulate:'Threat Injection', response:'Cyber Response Center',
   timeline:'Forensic Replay', integrations: 'Integrations Hub',
+  traffic: 'Municipal Traffic Operations Center',
   cctv: 'CCTV / Traffic AI', liveviewer: 'Live Camera Viewer',
   flagship: '12-Stage Flagship Attack Scenario',
   decision: 'Cyber-Physical Disparity & 7-Decision Simulation',
@@ -5716,13 +5886,25 @@ function showPage(name) {
   if (feather && feather.replace) feather.replace();
 }
 
+function toggleTrafficIframeFullscreen() {
+  const container = document.getElementById('traffic-frame-container');
+  if (!container) return;
+  if (!document.fullscreenElement) {
+    if (container.requestFullscreen) container.requestFullscreen();
+    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // POLLING FALLBACK (when WS not available)
 // ═══════════════════════════════════════════════════════════════════════
 async function pollFallback() {
   if (state.wsConnected) return;
   try {
-    const alerts = await (await fetch(`${API}/api/alerts?limit=5`)).json();
+    const headers = state.token ? { 'Authorization': `Bearer ${state.token}` } : {};
+    const alerts = await (await fetch(`${API}/api/alerts?limit=5`, { headers })).json();
     if (Array.isArray(alerts)) {
       alerts.forEach(a => {
         if (!state.alerts.find(x=>x.id===a.id)) addAlertToState(a,true);

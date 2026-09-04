@@ -909,18 +909,36 @@ async def me(current_user: dict = Depends(get_current_user)):
     }
 
 
+def filter_by_sector_role(items: list, role: str, asset_key: str = "asset") -> list:
+    """Strictly filter telemetry, alerts, threats, and incidents by authenticated operator sector role."""
+    if not role or role in ("admin", "soc_analyst", "analyst", "emergency_commander", "viewer"):
+        return items
+    if role == "traffic_operator":
+        allowed = ("traffic", "transit", "transport", "stig")
+        return [i for i in items if any(k in str(i.get(asset_key, "")).lower() for k in allowed)]
+    if role == "health_operator":
+        allowed = ("health", "hospital", "careguard", "iomt", "mimic")
+        return [i for i in items if any(k in str(i.get(asset_key, "")).lower() for k in allowed)]
+    if role == "finance_investigator":
+        allowed = ("fin", "bank", "pay", "tax", "vault", "crypto", "communications")
+        return [i for i in items if any(k in str(i.get(asset_key, "")).lower() for k in allowed)]
+    return items
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # ALERTS
 # ══════════════════════════════════════════════════════════════════════════════
 @app.get("/api/alerts", tags=["Alerts"])
 async def get_alerts(limit: int = 50, severity: str | None = None,
-                     _=Depends(get_current_user)):
-    return await store.get_alerts(limit=limit, severity=severity)
+                     current_user: dict = Depends(get_current_user)):
+    alerts = await store.get_alerts(limit=limit, severity=severity)
+    return filter_by_sector_role(alerts, current_user.get("role", "admin"))
 
 
 @app.get("/api/alerts/stats", tags=["Alerts"])
-async def alert_stats(_=Depends(get_current_user)):
+async def alert_stats(current_user: dict = Depends(get_current_user)):
     alerts = await store.get_alerts(limit=500)
+    alerts = filter_by_sector_role(alerts, current_user.get("role", "admin"))
     by_sev = {}
     for a in alerts:
         s = a.get("severity", "info")
@@ -929,14 +947,16 @@ async def alert_stats(_=Depends(get_current_user)):
 
 
 @app.get("/api/threats", tags=["Threats"])
-async def threats(limit: int = 50, _=Depends(get_current_user)):
+async def threats(limit: int = 50, current_user: dict = Depends(get_current_user)):
     alerts = await store.get_alerts(limit=limit)
+    alerts = filter_by_sector_role(alerts, current_user.get("role", "admin"))
     return [a for a in alerts if a.get("severity") in ("critical", "high", "medium")]
 
 
 @app.get("/api/anomalies", tags=["Threats"])
-async def anomalies(limit: int = 100, _=Depends(get_current_user)):
+async def anomalies(limit: int = 100, current_user: dict = Depends(get_current_user)):
     alerts = await store.get_alerts(limit=limit)
+    alerts = filter_by_sector_role(alerts, current_user.get("role", "admin"))
     return [a for a in alerts if float(a.get("anomaly_score", 0) or 0) >= 0.7]
 
 
@@ -967,8 +987,9 @@ async def create_incident(req: IncidentCreateRequest, current_user: dict = Depen
 
 
 @app.get("/api/incidents", tags=["Incidents"])
-async def list_incidents(limit: int = 100, status: str | None = None, _=Depends(get_current_user)):
-    return await store.get_incidents(limit=limit, status=status)
+async def list_incidents(limit: int = 100, status: str | None = None, current_user: dict = Depends(get_current_user)):
+    incs = await store.get_incidents(limit=limit, status=status)
+    return filter_by_sector_role(incs, current_user.get("role", "admin"))
 
 
 class IncidentStatusRequest(BaseModel):
@@ -1034,8 +1055,19 @@ async def lstm_forecast(_=Depends(get_current_user)):
 # DIGITAL TWIN
 # ══════════════════════════════════════════════════════════════════════════════
 @app.get("/api/twin/state", tags=["Digital Twin"])
-async def twin_state(_=Depends(get_current_user)):
-    return await digital_twin.get_state()
+async def twin_state(current_user: dict = Depends(get_current_user)):
+    st = await digital_twin.get_state()
+    role = current_user.get("role", "admin")
+    if role == "traffic_operator":
+        assets = {k: v for k, v in st.get("assets", {}).items() if k in ("traffic_system", "public_transit", "emergency_svcs", "power_grid")}
+        return {**st, "assets": assets, "sector_filter": "transport"}
+    elif role == "health_operator":
+        assets = {k: v for k, v in st.get("assets", {}).items() if k in ("healthcare", "water_supply", "emergency_svcs", "power_grid")}
+        return {**st, "assets": assets, "sector_filter": "healthcare"}
+    elif role == "finance_investigator":
+        assets = {k: v for k, v in st.get("assets", {}).items() if k in ("finance", "communications", "power_grid")}
+        return {**st, "assets": assets, "sector_filter": "finance"}
+    return st
 
 
 @app.post("/api/twin/reset", tags=["Digital Twin"])
@@ -1048,8 +1080,9 @@ async def twin_reset(_=Depends(get_current_user)):
 # MITIGATIONS
 # ══════════════════════════════════════════════════════════════════════════════
 @app.get("/api/mitigations", tags=["Response"])
-async def get_mitigations(limit: int = 20, _=Depends(get_current_user)):
-    return await store.get_mitigations(limit=limit)
+async def get_mitigations(limit: int = 20, current_user: dict = Depends(get_current_user)):
+    mits = await store.get_mitigations(limit=limit)
+    return filter_by_sector_role(mits, current_user.get("role", "admin"))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
