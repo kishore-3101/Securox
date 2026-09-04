@@ -15,8 +15,14 @@ from typing import AsyncGenerator
 
 logger = logging.getLogger("securox.simulation")
 
-# ── scenario registry ─────────────────────────────────────────────────────────
 SCENARIOS = {
+    "SCENARIO_01": "DDoS Against Traffic Control Infrastructure",
+    "SCENARIO_02": "Power Grid Substation SCADA Intrusion",
+    "SCENARIO_03": "Financial & Municipal Treasury Cyber Attack",
+    "SCENARIO_04": "Healthcare & Hospital IoMT Telemetry Incursion",
+    "SCENARIO_05": "Water Reservoir SCADA & Pump Tampering",
+    "SCENARIO_06": "Coordinated Multi-Stage Smart City Attack Campaign (Showcase)",
+    "CUSTOM_BUILDER": "Interactive Custom Attack Scenario Builder",
     "FIN-001": "UPI Credential Stuffing & Rate Abuse",
     "FIN-002": "Account Takeover & High-Velocity Burst",
     "FIN-003": "FASTag Cloning & 6600 km/h Impossible Speed",
@@ -480,6 +486,404 @@ class AttackSimulator:
             }
             yield event
             await asyncio.sleep(0.03)
+
+    # ── SCENARIO 01: DDoS Against Traffic Control (SH-FIN-05 Section 4) ────────
+    async def scenario_01_traffic_ddos(self, duration_steps: int = 15, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 01: Network Flood -> Traffic Control Degradation ->
+        Signal Communication Failure -> Traffic Congestion -> Emergency Route Disruption.
+        """
+        logger.info("Executing Scenario 01: DDoS Against Traffic Control Infrastructure")
+        delay = max(0.01, 0.2 / speed_factor)
+        campaign_id = f"CAMPAIGN-SEC-2026-TRF-{uuid.uuid4().hex[:4].upper()}"
+
+        # Chain: TRAFFIC_CONTROL -> TRAFFIC_SIGNALS -> EMERGENCY_SERVICES
+        for step in range(duration_steps):
+            multiplier = 1.0 + (step / max(1, duration_steps - 1)) * 9.0
+            is_peak = step >= (duration_steps // 2)
+
+            # Target 1: Traffic Control Gateway (SYN Flood)
+            yield {
+                "event_id": f"EVT-01-TC-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": random.choice(ATTACKER_IPS),
+                "destination_ip": "10.40.0.1",
+                "source_port": random.randint(40000, 65000),
+                "destination_port": 80,
+                "protocol": "TCP",
+                "bytes_in": 800000.0 * multiplier,
+                "bytes_out": 1500.0,
+                "packets": int(1200 * multiplier),
+                "duration": 0.05,
+                "request_rate": 2400.0 * multiplier,
+                "error_rate": min(0.95, 0.40 + 0.05 * step),
+                "asset_id": "TRAFFIC_CONTROL",
+                "asset_type": "traffic_control",
+                "location": "Central ITMS Corridor",
+                "attack_type": "DDOS",
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_01",
+                "stage": "Traffic Control Flood" if not is_peak else "Signal Telemetry Failure",
+                "message": f"Volumetric SYN flood saturating SCATS traffic control ingress ({int(2400 * multiplier)} req/s).",
+                "is_cyber_physical": is_peak,
+                "physical_impact": {
+                    "junction": "majestic",
+                    "congestion_index": min(98.0, 45.0 + step * 3.5),
+                    "vehicle_queue_length": int(20 + step * 4),
+                    "emergency_corridor_blocked": is_peak
+                }
+            }
+
+            # Secondary cascading effect: Traffic Signals & Emergency Route
+            if is_peak:
+                yield {
+                    "event_id": f"EVT-01-SIG-{step}-{uuid.uuid4().hex[:4].upper()}",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "source_ip": "10.40.0.1",
+                    "destination_ip": "10.45.0.12",
+                    "source_port": 80,
+                    "destination_port": 502,
+                    "protocol": "TCP",
+                    "bytes_in": 450.0,
+                    "bytes_out": 200.0,
+                    "packets": 5,
+                    "duration": 0.8,
+                    "request_rate": 6.2,
+                    "error_rate": 0.90,
+                    "asset_id": "TRAFFIC_SIGNALS",
+                    "asset_type": "traffic_signals",
+                    "location": "Majestic & Silk Board Grid",
+                    "attack_type": "DOS",
+                    "label": 1,
+                    "campaign_id": campaign_id,
+                    "scenario": "SCENARIO_01",
+                    "stage": "Intersection Controller Failure",
+                    "message": "Traffic signals failing heartbeat checks; emergency green corridor disrupted."
+                }
+            await asyncio.sleep(delay)
+
+    # ── SCENARIO 02: Power Grid Substation SCADA Intrusion ────────────────────
+    async def scenario_02_power_grid(self, duration_steps: int = 15, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 02: External Access -> Credential Abuse -> SCADA Intrusion ->
+        Control System Compromise -> Power Grid Risk -> Downstream cascading (Hospitals, Traffic, Water, Telco).
+        """
+        logger.info("Executing Scenario 02: Power Grid Intrusion")
+        delay = max(0.01, 0.2 / speed_factor)
+        campaign_id = f"CAMPAIGN-SEC-2026-PWR-{uuid.uuid4().hex[:4].upper()}"
+
+        stages = [
+            ("Reconnaissance", "PORT_SCAN", 0.05),
+            ("Credential Abuse", "BRUTE_FORCE", 0.40),
+            ("SCADA Intrusion", "INFILTRATION", 0.75),
+            ("Control Manipulation", "DOS", 0.92),
+            ("Cascading Grid Failure", "DDOS", 0.98),
+        ]
+
+        for step in range(duration_steps):
+            st_idx = min(len(stages) - 1, int((step / max(1, duration_steps - 1)) * len(stages)))
+            stage_name, atk_type, err_rate = stages[st_idx]
+
+            yield {
+                "event_id": f"EVT-02-PWR-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": "198.51.100.42",
+                "destination_ip": "10.10.0.5",
+                "source_port": random.randint(49152, 65535),
+                "destination_port": 502,
+                "protocol": "TCP",
+                "bytes_in": 12000.0 * (st_idx + 1),
+                "bytes_out": 4500.0,
+                "packets": int(80 * (st_idx + 1)),
+                "duration": 0.08,
+                "request_rate": 500.0 * (st_idx + 1),
+                "error_rate": err_rate,
+                "asset_id": "POWER_GRID",
+                "asset_type": "power_grid",
+                "location": "Zone-0 Central Power Substation",
+                "attack_type": atk_type,
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_02",
+                "stage": stage_name,
+                "message": f"Modbus SCADA telemetry manipulation targeting Zone-0 220kV switchgear RTUs ({stage_name})."
+            }
+
+            # Downstream impact on Healthcare, Traffic, and Water
+            if st_idx >= 3:
+                yield {
+                    "event_id": f"EVT-02-DOWN-{step}-{uuid.uuid4().hex[:4].upper()}",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "source_ip": "10.10.0.5",
+                    "destination_ip": "10.30.0.2",
+                    "source_port": 502,
+                    "destination_port": 443,
+                    "protocol": "TCP",
+                    "bytes_in": 2500.0,
+                    "bytes_out": 800.0,
+                    "packets": 35,
+                    "duration": 0.12,
+                    "request_rate": 220.0,
+                    "error_rate": 0.75,
+                    "asset_id": "HEALTHCARE",
+                    "asset_type": "healthcare",
+                    "location": "Victoria Super-Speciality Hospital",
+                    "attack_type": "DOS",
+                    "label": 1,
+                    "campaign_id": campaign_id,
+                    "scenario": "SCENARIO_02",
+                    "stage": "Downstream Power Fluctuation",
+                    "message": "Hospital backup generator transfer switch activated due to upstream substation telemetry drop."
+                }
+            await asyncio.sleep(delay)
+
+    # ── SCENARIO 03: Financial Infrastructure Attack ─────────────────────────
+    async def scenario_03_financial_attack(self, duration_steps: int = 15, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 03: Reconnaissance -> Credential Attack -> Unauthorized Access ->
+        Suspicious Transaction Behaviour -> Financial Service Risk.
+        """
+        logger.info("Executing Scenario 03: Financial Infrastructure Attack")
+        delay = max(0.01, 0.2 / speed_factor)
+        campaign_id = f"CAMPAIGN-SEC-2026-FIN-{uuid.uuid4().hex[:4].upper()}"
+
+        for step in range(duration_steps):
+            is_late = step >= (duration_steps // 2)
+            atk_type = "BRUTE_FORCE" if not is_late else "INFILTRATION"
+
+            yield {
+                "event_id": f"EVT-03-FIN-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": "45.154.255.10",
+                "destination_ip": "10.70.0.1",
+                "source_port": random.randint(50000, 62000),
+                "destination_port": 443,
+                "protocol": "TCP",
+                "bytes_in": 150000.0 if is_late else 32000.0,
+                "bytes_out": 45000.0,
+                "packets": 450 if is_late else 180,
+                "duration": 0.15,
+                "request_rate": 1200.0 if is_late else 450.0,
+                "error_rate": 0.65 if not is_late else 0.88,
+                "asset_id": "FINANCIAL_SERVICES",
+                "asset_type": "financial_services",
+                "location": "Municipal Financial Clearinghouse",
+                "attack_type": atk_type,
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_03",
+                "stage": "Credential Abuse" if not is_late else "Unauthorized Treasury Disbursement",
+                "message": "High-velocity API credential stuffing targeting municipal escrow ledger."
+            }
+            await asyncio.sleep(delay)
+
+    # ── SCENARIO 04: Healthcare Infrastructure Attack ─────────────────────────
+    async def scenario_04_healthcare_attack(self, duration_steps: int = 15, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 04: Network Intrusion -> Hospital System -> Patient Infrastructure -> Critical Service Risk.
+        """
+        logger.info("Executing Scenario 04: Healthcare Infrastructure Attack")
+        delay = max(0.01, 0.2 / speed_factor)
+        campaign_id = f"CAMPAIGN-SEC-2026-HLT-{uuid.uuid4().hex[:4].upper()}"
+
+        for step in range(duration_steps):
+            yield {
+                "event_id": f"EVT-04-HLT-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": "185.220.101.99",
+                "destination_ip": "10.30.0.15",
+                "source_port": random.randint(45000, 60000),
+                "destination_port": 8443,
+                "protocol": "TCP",
+                "bytes_in": 68000.0,
+                "bytes_out": 22000.0,
+                "packets": 310,
+                "duration": 0.2,
+                "request_rate": 820.0,
+                "error_rate": 0.72,
+                "asset_id": "HEALTHCARE",
+                "asset_type": "healthcare",
+                "location": "Zone-2 Victoria Super-Speciality Hospital",
+                "attack_type": "WEB_ATTACK",
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_04",
+                "stage": "HL7 & Patient EHR Infiltration",
+                "message": "Unauthorized SQL/REST injection targeting intensive care infusion pump telemetry and EHR."
+            }
+            await asyncio.sleep(delay)
+
+    # ── SCENARIO 05: Water SCADA Attack ──────────────────────────────────────
+    async def scenario_05_water_scada(self, duration_steps: int = 15, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 05: Network Intrusion -> Water SCADA -> Control Manipulation -> Water Infrastructure Risk.
+        """
+        logger.info("Executing Scenario 05: Water SCADA Attack")
+        delay = max(0.01, 0.2 / speed_factor)
+        campaign_id = f"CAMPAIGN-SEC-2026-WTR-{uuid.uuid4().hex[:4].upper()}"
+
+        for step in range(duration_steps):
+            yield {
+                "event_id": f"EVT-05-WTR-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": "194.26.29.112",
+                "destination_ip": "10.60.0.8",
+                "source_port": random.randint(48000, 64000),
+                "destination_port": 502,
+                "protocol": "TCP",
+                "bytes_in": 14500.0,
+                "bytes_out": 3200.0,
+                "packets": 95,
+                "duration": 0.1,
+                "request_rate": 450.0,
+                "error_rate": 0.81,
+                "asset_id": "WATER_MANAGEMENT",
+                "asset_type": "water_management",
+                "location": "T.K. Halli Water Treatment Plant",
+                "attack_type": "INFILTRATION",
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_05",
+                "stage": "Reservoir PLC Manipulation",
+                "message": "Unauthorized Modbus command sequences modifying reservoir sluice gate pressure setpoints."
+            }
+            await asyncio.sleep(delay)
+
+    # ── SCENARIO 06: Multi-Stage Smart City Attack (SHOWCASE SCENARIO) ─────────
+    async def scenario_06_showcase_multi_stage(self, duration_steps: int = 21, speed_factor: float = 1.0) -> AsyncGenerator[dict, None]:
+        """
+        Scenario 06 Showcase: Reconnaissance -> Credential Abuse -> Network Intrusion ->
+        Lateral Movement -> Traffic Control -> Power Infrastructure -> Physical Traffic Anomaly.
+        Tied together as one coordinated attack campaign.
+        """
+        logger.info("Executing Scenario 06: Multi-Stage Smart City Attack (SHOWCASE)")
+        delay = max(0.01, 0.25 / speed_factor)
+        campaign_id = "CAMPAIGN-SEC-2026-SHOWCASE"
+
+        phases = [
+            ("Phase 1: External Reconnaissance", "PUBLIC_WIFI", "PORT_SCAN", "185.220.101.5", 80, 2500, 30, 0.05, "Port scanning civic Wi-Fi gateways to enumerate entrypoints."),
+            ("Phase 2: Credential Abuse", "CITIZEN_PORTAL", "BRUTE_FORCE", "185.220.101.5", 443, 35000, 240, 0.65, "Credential stuffing on civic authentication endpoints."),
+            ("Phase 3: Core Network Intrusion", "COMM_NETWORK", "INFILTRATION", "10.80.0.1", 22, 95000, 680, 0.78, "Compromised telco fiber ring gateway establishing reverse shell."),
+            ("Phase 4: Lateral Movement to OT", "TRAFFIC_CONTROL", "INFILTRATION", "10.20.0.5", 80, 240000, 1100, 0.82, "Lateral movement from telco management subnet into SCATS traffic controllers."),
+            ("Phase 5: Traffic Signal Disruption", "TRAFFIC_SIGNALS", "DOS", "10.40.0.1", 502, 500000, 3200, 0.89, "Adaptive traffic signals forced into fixed red / timing desync."),
+            ("Phase 6: Power SCADA Tampering", "POWER_GRID", "DOS", "10.20.0.5", 502, 380000, 2400, 0.91, "Substation load shedding tripped via rogue Modbus control frames."),
+            ("Phase 7: Cyber-Physical Sabotage", "EMERGENCY_SERVICES", "DDOS", "185.220.101.5", 80, 950000, 4800, 0.95, "Simultaneous physical traffic gridlock & emergency 112 dispatch incursion."),
+        ]
+
+        for step in range(duration_steps):
+            phase_idx = min(len(phases) - 1, (step * len(phases)) // duration_steps)
+            phase_name, asset, attack, src_ip, port, bytes_val, pkts, err_rate, desc = phases[phase_idx]
+
+            yield {
+                "event_id": f"EVT-06-SHOWCASE-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": src_ip,
+                "destination_ip": f"10.{phase_idx * 10 + 10}.0.1",
+                "source_port": random.randint(40000, 65000),
+                "destination_port": port,
+                "protocol": "TCP",
+                "bytes_in": float(bytes_val),
+                "bytes_out": float(bytes_val // 4),
+                "packets": pkts,
+                "duration": 0.05,
+                "request_rate": float(pkts * 15),
+                "error_rate": err_rate,
+                "asset_id": asset,
+                "asset_type": asset.lower(),
+                "location": "Smart City Core Grid",
+                "attack_type": attack,
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "SCENARIO_06",
+                "stage": phase_name,
+                "message": desc,
+                "is_cyber_physical": phase_idx >= 4,
+                "physical_impact": {
+                    "congestion_index": 88.5 if phase_idx >= 4 else 35.0,
+                    "affected_junctions": ["majestic", "silk_board"] if phase_idx >= 4 else [],
+                    "power_reserve_mw": 140.0 if phase_idx >= 5 else 480.0
+                }
+            }
+            await asyncio.sleep(delay)
+
+    # ── CUSTOM ATTACK SCENARIO BUILDER (SH-FIN-05 Section 5) ──────────────────
+    async def build_custom_scenario(
+        self,
+        target_asset: str,
+        attack_type: str,
+        source: str = "External Network",
+        intensity: float = 0.8,
+        duration: float = 20.0,
+        secondary_target: Optional[str] = None,
+        physical_impact: Optional[str] = None,
+    ) -> AsyncGenerator[dict, None]:
+        """
+        Executes a user-configured attack scenario and injects telemetry into
+        the actual production detection pipeline.
+        """
+        logger.info("Executing Custom Scenario Builder: %s -> %s (intensity=%.2f)", attack_type, target_asset, intensity)
+        steps = max(5, int(duration / 1.5))
+        delay = duration / float(steps)
+        campaign_id = f"CAMPAIGN-SEC-CUSTOM-{uuid.uuid4().hex[:4].upper()}"
+
+        src_ip = "198.51.100.88" if "External" in source else "10.90.0.45"
+        base_rate = int(500 * intensity)
+        base_bytes = 100000.0 * intensity
+
+        for step in range(steps):
+            cur_intensity = 0.5 + 0.5 * (step / max(1, steps - 1)) * intensity
+            yield {
+                "event_id": f"EVT-CUSTOM-{step}-{uuid.uuid4().hex[:4].upper()}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "source_ip": src_ip,
+                "destination_ip": "10.0.1.10",
+                "source_port": random.randint(45000, 65000),
+                "destination_port": 80 if attack_type.upper() in ("DDOS", "DOS") else 502,
+                "protocol": "TCP",
+                "bytes_in": base_bytes * cur_intensity,
+                "bytes_out": base_bytes * 0.2,
+                "packets": int(base_rate * cur_intensity),
+                "duration": 0.05,
+                "request_rate": float(base_rate * 2 * cur_intensity),
+                "error_rate": min(0.95, 0.30 + 0.60 * cur_intensity),
+                "asset_id": target_asset,
+                "asset_type": target_asset.lower(),
+                "location": "Configured Target Zone",
+                "attack_type": attack_type.upper(),
+                "label": 1,
+                "campaign_id": campaign_id,
+                "scenario": "CUSTOM_BUILDER",
+                "stage": f"Custom Attack ({attack_type})",
+                "message": f"Custom simulated attack on {target_asset} at {int(intensity*100)}% intensity."
+            }
+
+            if secondary_target and step >= (steps // 2):
+                yield {
+                    "event_id": f"EVT-CUSTOM-SEC-{step}-{uuid.uuid4().hex[:4].upper()}",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "source_ip": src_ip,
+                    "destination_ip": "10.0.2.20",
+                    "source_port": random.randint(45000, 65000),
+                    "destination_port": 443,
+                    "protocol": "TCP",
+                    "bytes_in": base_bytes * 0.4,
+                    "bytes_out": 2000.0,
+                    "packets": int(base_rate * 0.3),
+                    "duration": 0.08,
+                    "request_rate": float(base_rate * 0.5),
+                    "error_rate": 0.70,
+                    "asset_id": secondary_target,
+                    "asset_type": secondary_target.lower(),
+                    "location": "Secondary Impact Zone",
+                    "attack_type": attack_type.upper(),
+                    "label": 1,
+                    "campaign_id": campaign_id,
+                    "scenario": "CUSTOM_BUILDER",
+                    "stage": f"Secondary Propagation ({secondary_target})",
+                    "message": f"Secondary propagation to {secondary_target} resulting from {target_asset} compromise."
+                }
+            await asyncio.sleep(min(0.2, delay))
 
     def list_scenarios(self) -> dict:
         return {k: {"name": v, "id": k} for k, v in SCENARIOS.items()}

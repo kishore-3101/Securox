@@ -154,10 +154,51 @@ class DataStore:
                     payload TEXT NOT NULL
                 );
 
+                CREATE TABLE IF NOT EXISTS campaigns (
+                    id TEXT PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    stages TEXT NOT NULL,
+                    affected_assets TEXT NOT NULL,
+                    risk_score REAL NOT NULL,
+                    confidence REAL NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'ACTIVE',
+                    first_seen TEXT NOT NULL,
+                    last_seen TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS response_actions (
+                    id TEXT PRIMARY KEY,
+                    timestamp TEXT NOT NULL,
+                    action TEXT NOT NULL,
+                    target_asset TEXT,
+                    before_risk REAL,
+                    after_risk REAL,
+                    verification_metrics TEXT NOT NULL,
+                    actor TEXT,
+                    status TEXT NOT NULL DEFAULT 'VERIFIED',
+                    payload TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS simulations (
+                    id TEXT PRIMARY KEY,
+                    timestamp TEXT NOT NULL,
+                    scenario_id TEXT NOT NULL,
+                    target_asset TEXT,
+                    attack_type TEXT,
+                    intensity REAL,
+                    duration REAL,
+                    events_generated INTEGER,
+                    status TEXT NOT NULL,
+                    payload TEXT NOT NULL
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_alerts_timestamp ON alerts(timestamp DESC);
                 CREATE INDEX IF NOT EXISTS idx_events_timestamp ON event_stream(timestamp DESC);
                 CREATE INDEX IF NOT EXISTS idx_risk_timestamp ON risk_history(timestamp DESC);
                 CREATE INDEX IF NOT EXISTS idx_fraud_timestamp ON fraud_alerts(timestamp DESC);
+                CREATE INDEX IF NOT EXISTS idx_campaigns_timestamp ON campaigns(last_seen DESC);
+                CREATE INDEX IF NOT EXISTS idx_response_timestamp ON response_actions(timestamp DESC);
                 """
             )
             self._migrate_existing_tables(conn)
@@ -509,6 +550,158 @@ class DataStore:
             for row in rows
         ]
 
+    async def add_campaign(self, campaign: dict) -> dict:
+        cid = campaign.get("id") or f"CAMPAIGN-SEC-{uuid.uuid4().hex[:6].upper()}"
+        campaign["id"] = cid
+        first_seen = campaign.get("first_seen") or _utcnow()
+        last_seen = campaign.get("last_seen") or _utcnow()
+        campaign["first_seen"] = first_seen
+        campaign["last_seen"] = last_seen
+        async with self._lock:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO campaigns (id, title, stages, affected_assets, risk_score, confidence, status, first_seen, last_seen, payload)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET
+                        title=excluded.title,
+                        stages=excluded.stages,
+                        affected_assets=excluded.affected_assets,
+                        risk_score=excluded.risk_score,
+                        confidence=excluded.confidence,
+                        status=excluded.status,
+                        last_seen=excluded.last_seen,
+                        payload=excluded.payload
+                    """,
+                    (
+                        cid,
+                        campaign.get("title", "Smart City Attack Campaign"),
+                        _json(campaign.get("stages", [])),
+                        _json(campaign.get("affected_assets", [])),
+                        float(campaign.get("risk_score", 50.0)),
+                        float(campaign.get("confidence", 0.90)),
+                        campaign.get("status", "ACTIVE"),
+                        first_seen,
+                        last_seen,
+                        _json(campaign),
+                    )
+                )
+        return campaign
+
+    async def get_campaigns(self, limit: int = 50, status: str | None = None) -> list[dict]:
+        limit = max(1, min(int(limit), 200))
+        query = "SELECT payload FROM campaigns"
+        params: list = []
+        if status:
+            query += " WHERE status = ?"
+            params.append(status)
+        query += " ORDER BY last_seen DESC LIMIT ?"
+        params.append(limit)
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [_loads(r["payload"], {}) for r in rows]
+
+    async def get_campaign(self, campaign_id: str) -> dict | None:
+        with self._connect() as conn:
+            row = conn.execute("SELECT payload FROM campaigns WHERE id = ?", (campaign_id,)).fetchone()
+        return _loads(row["payload"], None) if row else None
+
+    async def add_response_action(self, action: dict) -> dict:
+        aid = action.get("id") or f"RESP-{uuid.uuid4().hex[:8].upper()}"
+        action["id"] = aid
+        ts = action.get("timestamp") or _utcnow()
+        action["timestamp"] = ts
+        async with self._lock:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO response_actions (id, timestamp, action, target_asset, before_risk, after_risk, verification_metrics, actor, status, payload)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        aid,
+                        ts,
+                        action.get("action", "MITIGATION"),
+                        action.get("target_asset", "UNKNOWN"),
+                        float(action.get("before_risk", 0.0)),
+                        float(action.get("after_risk", 0.0)),
+                        _json(action.get("verification_metrics", {})),
+                        action.get("actor", "SOC_ANALYST"),
+                        action.get("status", "VERIFIED"),
+                        _json(action),
+                    )
+                )
+        return action
+
+    async def get_response_actions(self, limit: int = 50) -> list[dict]:
+        limit = max(1, min(int(limit), 200))
+        with self._connect() as conn:
+            rows = conn.execute("SELECT payload FROM response_actions ORDER BY timestamp DESC LIMIT ?", (limit,)).fetchall()
+        return [_loads(r["payload"], {}) for r in rows]
+
+    async def add_simulation(self, sim: dict) -> dict:
+        sid = sim.get("id") or f"SIM-{uuid.uuid4().hex[:8].upper()}"
+        sim["id"] = sid
+        ts = sim.get("timestamp") or _utcnow()
+        sim["timestamp"] = ts
+        async with self._lock:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO simulations (id, timestamp, scenario_id, target_asset, attack_type, intensity, duration, events_generated, status, payload)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        sid,
+                        ts,
+                        sim.get("scenario_id", "CUSTOM"),
+                        sim.get("target_asset", "UNKNOWN"),
+                        sim.get("attack_type", "DDOS"),
+                        float(sim.get("intensity", 1.0)),
+                        float(sim.get("duration", 30.0)),
+                        int(sim.get("events_generated", 0)),
+                        sim.get("status", "COMPLETED"),
+                        _json(sim),
+                    )
+                )
+        return sim
+
+    async def get_simulations(self, limit: int = 50) -> list[dict]:
+        limit = max(1, min(int(limit), 200))
+        with self._connect() as conn:
+            rows = conn.execute("SELECT payload FROM simulations ORDER BY timestamp DESC LIMIT ?", (limit,)).fetchall()
+        return [_loads(r["payload"], {}) for r in rows]
+
+    async def search(self, query: str, limit: int = 50) -> dict:
+        q = f"%{query.strip().lower()}%"
+        limit = max(1, min(int(limit), 100))
+        with self._connect() as conn:
+            alert_rows = conn.execute(
+                "SELECT payload FROM alerts WHERE LOWER(asset) LIKE ? OR LOWER(scenario) LIKE ? OR LOWER(payload) LIKE ? ORDER BY timestamp DESC LIMIT ?",
+                (q, q, q, limit)
+            ).fetchall()
+            incident_rows = conn.execute(
+                "SELECT payload FROM incidents WHERE LOWER(title) LIKE ? OR LOWER(asset) LIKE ? OR LOWER(payload) LIKE ? ORDER BY timestamp DESC LIMIT ?",
+                (q, q, q, limit)
+            ).fetchall()
+            campaign_rows = conn.execute(
+                "SELECT payload FROM campaigns WHERE LOWER(title) LIKE ? OR LOWER(affected_assets) LIKE ? OR LOWER(payload) LIKE ? ORDER BY last_seen DESC LIMIT ?",
+                (q, q, q, limit)
+            ).fetchall()
+            audit_rows = conn.execute(
+                "SELECT * FROM audit_logs WHERE LOWER(action) LIKE ? OR LOWER(actor) LIKE ? OR LOWER(target) LIKE ? ORDER BY timestamp DESC LIMIT ?",
+                (q, q, q, limit)
+            ).fetchall()
+
+        return {
+            "query": query,
+            "alerts": [_loads(r["payload"], {}) for r in alert_rows],
+            "incidents": [_loads(r["payload"], {}) for r in incident_rows],
+            "campaigns": [_loads(r["payload"], {}) for r in campaign_rows],
+            "audit_logs": [{**dict(r), "payload": _loads(r["payload"], {})} for r in audit_rows],
+            "total_matches": len(alert_rows) + len(incident_rows) + len(campaign_rows) + len(audit_rows)
+        }
+
     async def stats(self) -> dict:
         with self._connect() as conn:
             tables = {
@@ -519,6 +712,9 @@ class DataStore:
                 "fraud_alerts": "fraud_alerts",
                 "users": "users",
                 "audit_logs": "audit_logs",
+                "campaigns": "campaigns",
+                "response_actions": "response_actions",
+                "simulations": "simulations",
             }
             return {
                 key: conn.execute(f"SELECT COUNT(*) AS n FROM {table}").fetchone()["n"]
@@ -527,3 +723,4 @@ class DataStore:
 
 
 store = DataStore()
+

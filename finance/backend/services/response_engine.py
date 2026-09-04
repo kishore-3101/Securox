@@ -137,5 +137,132 @@ class ResponseEngine:
         return 5
 
 
+    async def execute_action(
+        self,
+        action_type: str,
+        target_asset: str,
+        actor: str = "SOC_ANALYST",
+        incident_id: Any = None,
+        notes: str = ""
+    ) -> dict:
+        """
+        Executes a simulated mitigation action with real stateful impact
+        on asset risk, digital twin topology, and audit logs (SH-FIN-05 Section 25).
+        """
+        from database.store import store
+        try:
+            from backend.assets.registry import asset_registry
+        except ImportError:
+            from assets.registry import asset_registry
+        from services.digital_twin import digital_twin
+
+        canonical_asset = target_asset.strip().upper()
+
+        # Determine before risk
+        twin_state = await digital_twin.get_state()
+        before_risk = 88.0
+        if twin_state and "assets" in twin_state:
+            for k, v in twin_state["assets"].items():
+                if k.upper() == canonical_asset or k.lower() == canonical_asset.lower():
+                    before_risk = float(v.get("risk_score", 85.0))
+                    break
+
+        action_configs = {
+            "BLOCK_SOURCE": {
+                "name": "Block Malicious Source",
+                "reduction_ratio": 0.45,
+                "verification": "Hostile CIDR subnet and attacker IP null-routed at edge border gateway. Malicious traffic reduced by 88.4%.",
+                "traffic_reduction_pct": 88.4,
+                "latency_restored_ms": 1.4,
+            },
+            "ISOLATE_ASSET": {
+                "name": "Isolate Asset (Network Quarantine)",
+                "reduction_ratio": 0.65,
+                "verification": "Asset placed in isolated quarantine VLAN. Ingress/egress cut; lateral spread reduced to 0%.",
+                "traffic_reduction_pct": 98.0,
+                "latency_restored_ms": 1.1,
+            },
+            "RATE_LIMIT": {
+                "name": "Apply Rate Limiting",
+                "reduction_ratio": 0.35,
+                "verification": "Strict rate limit applied (100 req/s threshold). SYN flood absorbed; server response normalized.",
+                "traffic_reduction_pct": 74.2,
+                "latency_restored_ms": 2.2,
+            },
+            "ROTATE_CREDENTIALS": {
+                "name": "Rotate Credentials & Enforce MFA",
+                "reduction_ratio": 0.40,
+                "verification": "All active JWT/Kerberos sessions invalidated. Step-up hardware MFA enforced; rogue sessions severed.",
+                "traffic_reduction_pct": 65.0,
+                "latency_restored_ms": 1.8,
+            },
+            "SEGMENT_NETWORK": {
+                "name": "Segment Network Subnet",
+                "reduction_ratio": 0.50,
+                "verification": "Zero-trust microsegmentation enforced between IT gateway and OT SCADA controller rings.",
+                "traffic_reduction_pct": 82.0,
+                "latency_restored_ms": 1.5,
+            },
+            "START_ENHANCED_MONITORING": {
+                "name": "Start Enhanced Monitoring",
+                "reduction_ratio": 0.20,
+                "verification": "Full packet inspection (DPI) and high-frequency sensor telemetry activated for corridor.",
+                "traffic_reduction_pct": 45.0,
+                "latency_restored_ms": 2.0,
+            }
+        }
+
+        cfg = action_configs.get(action_type.upper(), {
+            "name": action_type,
+            "reduction_ratio": 0.35,
+            "verification": "Mitigation applied successfully. Service telemetry normalized.",
+            "traffic_reduction_pct": 60.0,
+            "latency_restored_ms": 2.5
+        })
+
+        # Calculate after risk
+        reduction = before_risk * cfg["reduction_ratio"]
+        after_risk = max(12.0, round(before_risk - reduction, 1))
+
+        # Update Asset Registry & Digital Twin
+        new_status = "healthy" if after_risk < 40.0 else "degraded"
+        if asset_registry:
+            asset_registry.update_status(canonical_asset, new_status)
+        await digital_twin.update_asset_risk(canonical_asset.lower(), after_risk)
+
+        # Audit & Response action persistence
+        verification_payload = {
+            "verification_statement": cfg["verification"],
+            "traffic_reduction_pct": cfg["traffic_reduction_pct"],
+            "latency_restored_ms": cfg["latency_restored_ms"],
+            "before_risk": before_risk,
+            "after_risk": after_risk,
+            "status_transition": f"{before_risk} -> {after_risk} ({new_status})"
+        }
+
+        resp_record = {
+            "id": f"RESP-{uuid.uuid4().hex[:8].upper()}",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "action": cfg["name"],
+            "target_asset": canonical_asset,
+            "before_risk": before_risk,
+            "after_risk": after_risk,
+            "verification_metrics": verification_payload,
+            "actor": actor,
+            "status": "VERIFIED",
+            "verification_status": "VERIFIED",
+            "merkle_hash": f"0x{uuid.uuid4().hex}",
+            "notes": notes or f"Manual trigger by {actor}."
+        }
+
+        await store.add_response_action(resp_record)
+        await store.audit(actor, f"response.{action_type.lower()}", canonical_asset, resp_record)
+
+        if incident_id:
+            await store.update_incident_status(str(incident_id), "MITIGATED", owner=actor)
+
+        return resp_record
+
+
 # ── singleton ─────────────────────────────────────────────────────────────────
 response_engine = ResponseEngine()

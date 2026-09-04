@@ -50,13 +50,18 @@ ATTACK_WEIGHT_MAP = {
 }
 
 
+import uuid
+
 @dataclass
 class CanonicalEvent:
     """
     Unified telemetry representation representing a single network flow
     or edge security event across smart city digital infrastructure.
     """
+    event_id: str = field(default_factory=lambda: f"EVT-{uuid.uuid4().hex[:10].upper()}")
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    source: str = "external_network"
+    source_type: str = "network_flow"
     source_ip: str = "192.168.1.100"
     destination_ip: str = "10.0.0.1"
     source_port: int = 44320
@@ -64,18 +69,31 @@ class CanonicalEvent:
     protocol: str = "TCP"                  # TCP, UDP, ICMP, HTTP, etc.
     bytes_in: float = 0.0                  # Payload or wire bytes received
     bytes_out: float = 0.0                 # Payload or wire bytes sent
+    bytes: float = 0.0                     # Total bytes
     packets: int = 1                       # Total packet count in flow
     duration: float = 0.001                # Flow duration in seconds
     request_rate: float = 1.0              # Inferred or measured requests/sec
     error_rate: float = 0.0                # Flow error or connection reset ratio
+    user: Optional[str] = None
+    user_id: Optional[str] = None
+    device_id: Optional[str] = None
     asset_id: str = "TRAFFIC_CTRL_ZONE1"   # Target smart city asset ID
     asset_type: str = "traffic_control"    # traffic_control, power_grid, hospital, etc.
     location: str = "Bengaluru Central"    # Municipal zone / coordinate name
-    user_id: Optional[str] = None
-    device_id: Optional[str] = None
+    event_type: str = "network_traffic"
     attack_type: str = "BENIGN"            # One of ATTACK_CLASSES
+    severity: str = "NORMAL"
+    behavior_score: float = 0.0
+    anomaly_score: float = 0.0
+    threat_intelligence: Dict[str, Any] = field(default_factory=dict)
     label: int = 0                         # 0 = Benign, 1 = Attack
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.bytes == 0.0 and (self.bytes_in > 0 or self.bytes_out > 0):
+            self.bytes = self.bytes_in + self.bytes_out
+        if not self.user and self.user_id:
+            self.user = self.user_id
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -106,7 +124,10 @@ class CanonicalEvent:
 
 class CanonicalEventModel(BaseModel):
     """Pydantic validation model for API ingestion."""
+    event_id: Optional[str] = None
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    source: str = "external_network"
+    source_type: str = "network_flow"
     source_ip: str
     destination_ip: str
     source_port: int = 0
@@ -114,15 +135,22 @@ class CanonicalEventModel(BaseModel):
     protocol: str = "TCP"
     bytes_in: float = 0.0
     bytes_out: float = 0.0
+    bytes: float = 0.0
     packets: int = 1
     duration: float = 0.001
     request_rate: float = 1.0
     error_rate: float = 0.0
+    user: Optional[str] = None
+    user_id: Optional[str] = None
+    device_id: Optional[str] = None
     asset_id: str = "TRAFFIC_CTRL_ZONE1"
     asset_type: str = "traffic_control"
     location: str = "Bengaluru Central"
-    user_id: Optional[str] = None
-    device_id: Optional[str] = None
+    event_type: str = "network_traffic"
     attack_type: str = "BENIGN"
+    severity: str = "NORMAL"
+    behavior_score: float = 0.0
+    anomaly_score: float = 0.0
+    threat_intelligence: Dict[str, Any] = Field(default_factory=dict)
     label: int = 0
     metadata: Dict[str, Any] = Field(default_factory=dict)

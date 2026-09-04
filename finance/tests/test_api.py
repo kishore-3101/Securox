@@ -1,24 +1,32 @@
+import os
+import sys
 import pytest
-import requests
+from fastapi.testclient import TestClient
 
-BASE_URL = "http://127.0.0.1:8000"
+backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend"))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
+from main import app
+
+client = TestClient(app)
 
 def test_api_assets():
-    resp = requests.get(f"{BASE_URL}/api/assets", timeout=5.0)
+    resp = client.get("/api/assets")
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, list)
     assert len(data) == 12
 
 def test_api_metrics():
-    resp = requests.get(f"{BASE_URL}/api/metrics", timeout=5.0)
+    resp = client.get("/api/metrics")
     assert resp.status_code == 200
     data = resp.json()
     assert "accuracy" in data
     assert "f1_macro" in data or "macro_f1" in data
 
 def test_api_threat_intel():
-    resp = requests.get(f"{BASE_URL}/api/threat-intel/lookup/185.220.101.5", timeout=5.0)
+    resp = client.get("/api/threat-intel/lookup/185.220.101.5")
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("is_threat") is True
@@ -39,7 +47,7 @@ def test_api_events_post():
         "attack_type": "DDOS",
         "label": 1
     }
-    resp = requests.post(f"{BASE_URL}/api/events", json=payload, timeout=5.0)
+    resp = client.post("/api/events", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert "alert_id" in data

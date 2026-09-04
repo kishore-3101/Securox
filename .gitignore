@@ -26,6 +26,7 @@ build/
 *.db-shm
 *.sqlite
 *.sqlite3
+database/
 
 # Binaries & Executables
 backend/bin/
