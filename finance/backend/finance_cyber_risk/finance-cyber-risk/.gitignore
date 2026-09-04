@@ -1,0 +1,44 @@
+# Data (raw datasets are large / sensitive - never commit)
+data/raw/**
+!data/raw/indian_banking/.gitkeep
+!data/raw/ulb/.gitkeep
+!data/raw/amlsim/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+data/external/**
+!data/external/.gitkeep
+
+# Model artifacts
+artifacts/models/**
+artifacts/preprocessors/**
+artifacts/explainers/**
+!artifacts/models/.gitkeep
+!artifacts/preprocessors/.gitkeep
+!artifacts/explainers/.gitkeep
+
+# Env / secrets
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+logs/

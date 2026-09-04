@@ -1,0 +1,1 @@
+from threat_intel.threat_intelligence import threat_intel_service, ThreatIntelService

@@ -1,0 +1,21 @@
+# Securox — Institutional Risk Scoring Configuration
+# Weights must sum to 1.0 (100%)
+
+weights:
+  ml_anomaly: 0.30            # Model A: Isolation Forest Anomaly Probability
+  attack_severity: 0.20       # Model B: Supervised Attack Classification Severity
+  asset_criticality: 0.20     # Smart City Asset Criticality (0.45 to 1.00)
+  propagation_impact: 0.15    # Digital Twin Dependency Graph Blast Radius
+  behavioral_anomaly: 0.10    # Model C: DBSCAN Entity Outlier Cluster Flag
+  threat_intelligence: 0.05   # Known Malicious IP, IOC, or Threat Feed Match
+
+thresholds:
+  critical: 75.0
+  high: 60.0
+  moderate: 40.0
+  low: 20.0
+
+confidence_weights:
+  base: 0.40
+  corroborating_source_factor: 0.15
+  ml_certainty_weight: 0.45

@@ -1,0 +1,38 @@
+# Core
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.1
+scikit-learn==1.5.1
+joblib==1.4.2
+
+# Imbalanced learning (used carefully, never blindly SMOTE'd onto temporal data)
+imbalanced-learn==0.12.3
+
+# Gradient boosting
+xgboost==2.1.0
+lightgbm==4.4.0
+
+# Graph / network features (AMLSim account graphs)
+networkx==3.3
+
+# Explainability
+shap==0.46.0
+
+# API
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+pydantic==2.8.2
+pydantic-settings==2.3.4
+
+# Config / env
+python-dotenv==1.0.1
+pyyaml==6.0.1
+
+# Testing
+pytest==8.2.2
+httpx==0.27.0
+
+# Notebooks / EDA
+jupyter==1.0.0
+matplotlib==3.9.0
+seaborn==0.13.2

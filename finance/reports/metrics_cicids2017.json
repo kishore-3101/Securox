@@ -1,0 +1,105 @@
+{
+  "dataset": "cicids2017",
+  "model_type": "XGBoost",
+  "test_samples": 3000,
+  "accuracy": 1.0,
+  "precision_macro": 1.0,
+  "precision_weighted": 1.0,
+  "recall_macro": 1.0,
+  "recall_weighted": 1.0,
+  "f1_macro": 1.0,
+  "f1_weighted": 1.0,
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "isolation_forest_accuracy": 0.3,
+  "total_inference_time_ms": 9.63,
+  "per_event_latency_ms": 0.0032,
+  "confusion_matrix": [
+    [
+      2100,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      120,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      300,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      240,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      60,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      180
+    ]
+  ],
+  "per_class_metrics": {
+    "BENIGN": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 2100
+    },
+    "BRUTE_FORCE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 120
+    },
+    "DDOS": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 300
+    },
+    "DOS": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 240
+    },
+    "INFILTRATION": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 60
+    },
+    "PORT_SCAN": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 180
+    }
+  }
+}

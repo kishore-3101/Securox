@@ -1,0 +1,81 @@
+{
+  "n_accounts": 1446,
+  "n_transactions_edges": 7977,
+  "n_alert_members_rows": 73,
+  "label_balance_is_sar": {
+    "false": 1373,
+    "true": 73
+  },
+  "label_balance_pct": {
+    "false": 94.952,
+    "true": 5.048
+  },
+  "alert_typologies": {
+    "cycle": 29,
+    "fan_in": 24,
+    "fan_out": 20
+  },
+  "account_type_distribution": {
+    "I": 1446
+  },
+  "country_distribution": {
+    "US": 1446
+  },
+  "init_balance_stats": {
+    "count": 1446.0,
+    "mean": 75187.78486168741,
+    "std": 14435.349808840583,
+    "min": 50008.7,
+    "25%": 62779.435,
+    "50%": 75351.23000000001,
+    "75%": 87723.045,
+    "max": 99972.5
+  },
+  "graph_degree_stats": {
+    "in_degree": {
+      "count": 1446.0,
+      "mean": 5.516597510373444,
+      "std": 14.507344558233791,
+      "min": 0.0,
+      "25%": 1.0,
+      "50%": 1.0,
+      "75%": 3.0,
+      "max": 100.0
+    },
+    "out_degree": {
+      "count": 1446.0,
+      "mean": 5.516597510373444,
+      "std": 14.395046765843837,
+      "min": 0.0,
+      "25%": 1.0,
+      "50%": 1.0,
+      "75%": 3.0,
+      "max": 105.0
+    },
+    "total_degree": {
+      "count": 1446.0,
+      "mean": 11.033195020746888,
+      "std": 28.79545339254716,
+      "min": 0.0,
+      "25%": 2.0,
+      "50%": 3.0,
+      "75%": 6.0,
+      "max": 203.0
+    }
+  },
+  "degree_stats_by_label": {
+    "in_degree": {
+      "false": 5.278,
+      "true": 10.0
+    },
+    "out_degree": {
+      "false": 5.277,
+      "true": 10.027
+    },
+    "total_degree": {
+      "false": 10.555,
+      "true": 20.027
+    }
+  },
+  "note": "transactions.csv (raw simulator output available here) has no amount/timestamp column, so no per-transaction amount/time EDA is possible for AMLSim in this workspace \u2014 only graph/account-level EDA."
+}

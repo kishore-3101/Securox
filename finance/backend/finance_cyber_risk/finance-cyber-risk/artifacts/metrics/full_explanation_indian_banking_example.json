@@ -1,0 +1,126 @@
+{
+  "1_what_happened": {
+    "transaction_id": "TXN000494862",
+    "transaction_amount": 720371.58,
+    "channel": "Mobile_App",
+    "transaction_type": "RTGS",
+    "merchant_category": "Insurance",
+    "transaction_datetime": "2023-07-02 07:25",
+    "actual_is_fraud_label_for_reference_only": false
+  },
+  "2_why_suspicious": [
+    "fraud = 45.7/100 (weight 0.67, contributed 30.5 points)",
+    "anomaly = 32.3/100 (weight 0.33, contributed 10.8 points)"
+  ],
+  "3_model_contributions": {
+    "AI_PREDICTION": {
+      "fraud_probability": 0.45708605647087097,
+      "aml_probability": null,
+      "anomaly_score_raw": -0.006465094376152558,
+      "shap_top_features": [
+        {
+          "feature": "num__transaction_amount",
+          "value": 5.0536062210127195,
+          "shap_value": 2.509770393371582,
+          "direction": "increases_fraud_risk",
+          "magnitude": 2.509770393371582,
+          "description": "raw transaction value"
+        },
+        {
+          "feature": "num__cust_channel_prior_count",
+          "value": 6.170310549948035,
+          "shap_value": 0.32368725538253784,
+          "direction": "increases_fraud_risk",
+          "magnitude": 0.32368725538253784,
+          "description": "prior uses of this channel by this customer"
+        },
+        {
+          "feature": "num__amount_to_balance_ratio",
+          "value": 11.012861766244434,
+          "shap_value": 0.29491448402404785,
+          "direction": "increases_fraud_risk",
+          "magnitude": 0.29491448402404785,
+          "description": "current amount / current balance"
+        },
+        {
+          "feature": "num__emi_amount",
+          "value": 2.2134801088892146,
+          "shap_value": 0.2729302644729614,
+          "direction": "increases_fraud_risk",
+          "magnitude": 0.2729302644729614,
+          "description": "EMI amount, 0 when no loan"
+        },
+        {
+          "feature": "num__cust_amount_mean_so_far",
+          "value": 1.2885595570619564,
+          "shap_value": 0.2223183810710907,
+          "direction": "increases_fraud_risk",
+          "magnitude": 0.2223183810710907,
+          "description": "expanding mean of past amounts"
+        }
+      ],
+      "shap_human_readable": "This transaction was flagged as FRAUD with a predicted fraud probability of 0.457 (decision threshold: 0.029).\nThe most influential factors were:\n  - num__transaction_amount = 5.054 pushed the risk UP (impact magnitude 2.5098). raw transaction value\n  - num__cust_channel_prior_count = 6.17 pushed the risk UP (impact magnitude 0.3237). prior uses of this channel by this customer\n  - num__amount_to_balance_ratio = 11.01 pushed the risk UP (impact magnitude 0.2949). current amount / current balance\n  - num__emi_amount = 2.213 pushed the risk UP (impact magnitude 0.2729). EMI amount, 0 when no loan\n  - num__cust_amount_mean_so_far = 1.289 pushed the risk UP (impact magnitude 0.2223). expanding mean of past amounts",
+      "note_on_ulb_features": "If any SHAP feature above is one of ULB's V1-V28, no semantic meaning is assigned to it \u2014 it is reported by name only, per the feature dictionary."
+    }
+  },
+  "4_graph_relationships": {
+    "GRAPH_SIMULATION": {
+      "note": "This entity is not part of any transaction graph in the current system."
+    }
+  },
+  "5_risk_propagation": {
+    "GRAPH_SIMULATION": {
+      "propagation_risk": null,
+      "affected_entities": [],
+      "propagation_paths": [],
+      "disclaimer": "This is a simulated estimate of which entities are structurally close enough to be worth extra scrutiny \u2014 it is NOT a prediction that fraud/AML activity will actually spread to them."
+    }
+  },
+  "6_financial_exposure": {
+    "FINANCIAL_EXPOSURE_ESTIMATE": {
+      "estimated_exposure": 74234.29,
+      "confidence": "high",
+      "explanation": "estimated_exposure = risk_probability (0.412) x financial_exposure (720371.58) x impact_factor (0.25, incident_type='anomaly_only') x propagation_factor (1.000). This is an engineering Cyber Exposure Estimate, not regulated financial VaR."
+    }
+  },
+  "7_recommended_response": {
+    "RECOMMENDED_RESPONSE": [
+      {
+        "action": "increase_monitoring",
+        "priority": "MEDIUM",
+        "reason": "Overall risk score falls in the MEDIUM band; warrants closer observation.",
+        "human_approval_required": true
+      },
+      {
+        "action": "additional_verification",
+        "priority": "MEDIUM",
+        "reason": "MEDIUM risk level \u2014 a lightweight secondary check (e.g. re-verify recent account activity) is proportionate.",
+        "human_approval_required": true
+      }
+    ]
+  },
+  "RISK_CALCULATION": {
+    "risk_score": 41.22,
+    "risk_level": "MEDIUM",
+    "risk_breakdown": {
+      "risk_score": 41.22,
+      "risk_level": "MEDIUM",
+      "components": {
+        "anomaly": 32.26,
+        "fraud": 45.71,
+        "aml": null,
+        "graph": null,
+        "propagation": null,
+        "criticality": null
+      },
+      "weights_used": {
+        "anomaly": 0.3333,
+        "fraud": 0.6667
+      },
+      "top_risk_factors": [
+        "fraud = 45.7/100 (weight 0.67, contributed 30.5 points)",
+        "anomaly = 32.3/100 (weight 0.33, contributed 10.8 points)"
+      ]
+    }
+  }
+}

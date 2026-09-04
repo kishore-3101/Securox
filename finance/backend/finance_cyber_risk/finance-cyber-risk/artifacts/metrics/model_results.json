@@ -1,0 +1,682 @@
+{
+  "indian_banking": {
+    "isolation_forest": {
+      "threshold": -0.02470585374603361,
+      "threshold_metric": "f1",
+      "test_metrics": {
+        "threshold": -0.02470585374603361,
+        "precision": 0.012671321437807085,
+        "recall": 0.06786703601108034,
+        "f1": 0.021355415123120506,
+        "f2": 0.03626943005181347,
+        "roc_auc": 0.5390831600097798,
+        "pr_auc": 0.010396719159625605,
+        "confusion_matrix": {
+          "tp": 49,
+          "fp": 3818,
+          "fn": 673,
+          "tn": 77960
+        },
+        "n_positive": 722,
+        "n_total": 82500
+      },
+      "val_metrics": {
+        "threshold": -0.02470585374603361,
+        "precision": 0.013813042081593318,
+        "recall": 0.058663028649386086,
+        "f1": 0.02236089443577743,
+        "f2": 0.03556658395368073,
+        "roc_auc": 0.528444039347755,
+        "pr_auc": 0.010022961918339443,
+        "confusion_matrix": {
+          "tp": 43,
+          "fp": 3070,
+          "fn": 690,
+          "tn": 78697
+        },
+        "n_positive": 733,
+        "n_total": 82500
+      },
+      "train_metrics": {
+        "threshold": -0.02470585374603361,
+        "precision": 0.014496608591568028,
+        "recall": 0.03188999414862493,
+        "f1": 0.019932339764103503,
+        "f2": 0.02571846538624888,
+        "roc_auc": 0.5312466322528857,
+        "pr_auc": 0.010286786262962658,
+        "confusion_matrix": {
+          "tp": 109,
+          "fp": 7410,
+          "fn": 3309,
+          "tn": 374172
+        },
+        "n_positive": 3418,
+        "n_total": 385000
+      }
+    },
+    "xgboost": {
+      "threshold": 0.029267022386193275,
+      "threshold_metric": "f1",
+      "scale_pos_weight_used": 1.0,
+      "scale_pos_weight_search": [
+        {
+          "name": "no_reweighting (scale_pos_weight=1)",
+          "scale_pos_weight": 1.0,
+          "val_pr_auc": 0.01781034498451113,
+          "val_roc_auc": 0.5273357092210788
+        },
+        {
+          "name": "sqrt_imbalance_ratio",
+          "scale_pos_weight": 10.565934419538442,
+          "val_pr_auc": 0.016363240943773453,
+          "val_roc_auc": 0.5134608686035993
+        },
+        {
+          "name": "full_imbalance_ratio",
+          "scale_pos_weight": 111.63897015798713,
+          "val_pr_auc": 0.01642290390180681,
+          "val_roc_auc": 0.5250635557118504
+        }
+      ],
+      "test_metrics": {
+        "threshold": 0.029267022386193275,
+        "precision": 0.06191950464396285,
+        "recall": 0.08310249307479224,
+        "f1": 0.0709639266706091,
+        "f2": 0.077780658542909,
+        "roc_auc": 0.5240766180773582,
+        "pr_auc": 0.015867476658499892,
+        "confusion_matrix": {
+          "tp": 60,
+          "fp": 909,
+          "fn": 662,
+          "tn": 80869
+        },
+        "n_positive": 722,
+        "n_total": 82500
+      },
+      "val_metrics": {
+        "threshold": 0.029267022386193275,
+        "precision": 0.06952965235173825,
+        "recall": 0.0927694406548431,
+        "f1": 0.07948568088836938,
+        "f2": 0.08695652173913043,
+        "roc_auc": 0.5273357092210788,
+        "pr_auc": 0.01781034498451113,
+        "confusion_matrix": {
+          "tp": 68,
+          "fp": 910,
+          "fn": 665,
+          "tn": 80857
+        },
+        "n_positive": 733,
+        "n_total": 82500
+      },
+      "train_metrics": {
+        "threshold": 0.029267022386193275,
+        "precision": 0.13331902103907256,
+        "recall": 0.18168519602106495,
+        "f1": 0.1537890044576523,
+        "f2": 0.16939443535188217,
+        "roc_auc": 0.8819750599962151,
+        "pr_auc": 0.15919255497186965,
+        "confusion_matrix": {
+          "tp": 621,
+          "fp": 4037,
+          "fn": 2797,
+          "tn": 377545
+        },
+        "n_positive": 3418,
+        "n_total": 385000
+      },
+      "false_negative_tradeoff": {
+        "chosen_threshold": {
+          "threshold": 0.029267022386193275,
+          "test_recall": 0.08310249307479224,
+          "test_precision": 0.06191950464396285,
+          "test_fn": 662,
+          "test_fp": 909
+        },
+        "recall_biased_threshold_from_val_f2": {
+          "threshold": 0.022570740431547165,
+          "test_recall": 0.0886426592797784,
+          "test_precision": 0.05328892589508743,
+          "test_fn": 658,
+          "test_fp": 1137
+        },
+        "note": "The 'recall_biased_threshold_from_val_f2' row uses the threshold that maximized F2 (recall weighted 2x precision) on validation \u2014 a meaningful alternative operating point, not the degenerate 'threshold=0' point that maximizing raw recall alone would always select. It catches more fraud (fewer false negatives) at the cost of more false positives (more legitimate transactions flagged for review). In a cybersecurity/fraud context a missed fraud (false negative) is usually costlier than an analyst review of a false positive, so this tradeoff is reported explicitly rather than silently optimizing for F1 alone."
+      }
+    },
+    "shap": {
+      "examples": {
+        "true_positive_example": {
+          "fraud_probability": 0.09419684112071991,
+          "predicted_class": 1,
+          "threshold_used": 0.029267022386193275,
+          "top_contributing_features": [
+            {
+              "feature": "num__transaction_amount",
+              "value": 4.692125327425968,
+              "shap_value": 2.300856113433838,
+              "direction": "increases_fraud_risk",
+              "magnitude": 2.300856113433838,
+              "description": "raw transaction value"
+            },
+            {
+              "feature": "num__emi_amount",
+              "value": 1.5854984475864378,
+              "shap_value": 0.2570021152496338,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.2570021152496338,
+              "description": "EMI amount, 0 when no loan"
+            },
+            {
+              "feature": "num__cust_amount_mean_so_far",
+              "value": -0.2532773859599885,
+              "shap_value": -0.1370915025472641,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.1370915025472641,
+              "description": "expanding mean of past amounts"
+            },
+            {
+              "feature": "num__transaction_hour",
+              "value": -0.9391613124210537,
+              "shap_value": -0.11447321623563766,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.11447321623563766,
+              "description": "hour of day"
+            },
+            {
+              "feature": "cat__channel_API",
+              "value": 1.0,
+              "shap_value": 0.06163286045193672,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.06163286045193672,
+              "description": "channel used"
+            }
+          ],
+          "human_readable_explanation": "This transaction was flagged as FRAUD with a predicted fraud probability of 0.094 (decision threshold: 0.029).\nThe most influential factors were:\n  - num__transaction_amount = 4.692 pushed the risk UP (impact magnitude 2.3009). raw transaction value\n  - num__emi_amount = 1.585 pushed the risk UP (impact magnitude 0.2570). EMI amount, 0 when no loan\n  - num__cust_amount_mean_so_far = -0.2533 pushed the risk DOWN (impact magnitude 0.1371). expanding mean of past amounts\n  - num__transaction_hour = -0.9392 pushed the risk DOWN (impact magnitude 0.1145). hour of day\n  - cat__channel_API = 1 pushed the risk UP (impact magnitude 0.0616). channel used"
+        },
+        "false_negative_example": {
+          "fraud_probability": 0.00896564219146967,
+          "predicted_class": 0,
+          "threshold_used": 0.029267022386193275,
+          "top_contributing_features": [
+            {
+              "feature": "num__transaction_amount",
+              "value": 0.3484708443794996,
+              "shap_value": -0.15682271122932434,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.15682271122932434,
+              "description": "raw transaction value"
+            },
+            {
+              "feature": "num__balance_change_vs_prev",
+              "value": -1.19334017961416,
+              "shap_value": 0.11231809109449387,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.11231809109449387,
+              "description": "account_balance - previous txn's balance"
+            },
+            {
+              "feature": "num__day_of_week",
+              "value": 1.4997923312350354,
+              "shap_value": 0.07924774289131165,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.07924774289131165,
+              "description": "0=Mon..6=Sun"
+            },
+            {
+              "feature": "num__seconds_since_prev_txn",
+              "value": 0.2512552921515817,
+              "shap_value": -0.07027574628591537,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.07027574628591537,
+              "description": "velocity: gap to customer's previous txn"
+            },
+            {
+              "feature": "cat__merchant_category_Retail",
+              "value": 1.0,
+              "shap_value": 0.04252338036894798,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.04252338036894798,
+              "description": "merchant category"
+            }
+          ],
+          "human_readable_explanation": "This transaction was NOT flagged as fraud with a predicted fraud probability of 0.009 (decision threshold: 0.029).\nThe most influential factors were:\n  - num__transaction_amount = 0.3485 pushed the risk DOWN (impact magnitude 0.1568). raw transaction value\n  - num__balance_change_vs_prev = -1.193 pushed the risk UP (impact magnitude 0.1123). account_balance - previous txn's balance\n  - num__day_of_week = 1.5 pushed the risk UP (impact magnitude 0.0792). 0=Mon..6=Sun\n  - num__seconds_since_prev_txn = 0.2513 pushed the risk DOWN (impact magnitude 0.0703). velocity: gap to customer's previous txn\n  - cat__merchant_category_Retail = 1 pushed the risk UP (impact magnitude 0.0425). merchant category"
+        },
+        "false_positive_example": {
+          "fraud_probability": 0.0391378290951252,
+          "predicted_class": 1,
+          "threshold_used": 0.029267022386193275,
+          "top_contributing_features": [
+            {
+              "feature": "num__cust_txn_count_so_far",
+              "value": 3.170032499665249,
+              "shap_value": 0.4860396385192871,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.4860396385192871,
+              "description": "count of this customer's txns strictly before current"
+            },
+            {
+              "feature": "num__cust_merchant_cat_prior_count",
+              "value": 4.0954830738118435,
+              "shap_value": 0.2849826216697693,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.2849826216697693,
+              "description": "prior txns in this merchant category"
+            },
+            {
+              "feature": "num__credit_score",
+              "value": -1.6553948503662996,
+              "shap_value": 0.19623780250549316,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.19623780250549316,
+              "description": "customer credit score"
+            },
+            {
+              "feature": "num__amount_ratio_vs_history_mean",
+              "value": -0.07813636143325829,
+              "shap_value": 0.16048657894134521,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.16048657894134521,
+              "description": "current amount / past mean amount"
+            },
+            {
+              "feature": "cat__state_Rajasthan",
+              "value": 1.0,
+              "shap_value": -0.13846054673194885,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.13846054673194885,
+              "description": "geographic state"
+            }
+          ],
+          "human_readable_explanation": "This transaction was flagged as FRAUD with a predicted fraud probability of 0.039 (decision threshold: 0.029).\nThe most influential factors were:\n  - num__cust_txn_count_so_far = 3.17 pushed the risk UP (impact magnitude 0.4860). count of this customer's txns strictly before current\n  - num__cust_merchant_cat_prior_count = 4.095 pushed the risk UP (impact magnitude 0.2850). prior txns in this merchant category\n  - num__credit_score = -1.655 pushed the risk UP (impact magnitude 0.1962). customer credit score\n  - num__amount_ratio_vs_history_mean = -0.07814 pushed the risk UP (impact magnitude 0.1605). current amount / past mean amount\n  - cat__state_Rajasthan = 1 pushed the risk DOWN (impact magnitude 0.1385). geographic state"
+        }
+      },
+      "global_top_features": [
+        {
+          "feature": "num__transaction_amount",
+          "mean_abs_shap": 0.11940019577741623
+        },
+        {
+          "feature": "num__seconds_since_prev_txn",
+          "mean_abs_shap": 0.0593164823949337
+        },
+        {
+          "feature": "num__credit_score",
+          "mean_abs_shap": 0.05369115248322487
+        },
+        {
+          "feature": "num__account_balance",
+          "mean_abs_shap": 0.05064554885029793
+        },
+        {
+          "feature": "num__cust_amount_max_so_far",
+          "mean_abs_shap": 0.047503240406513214
+        },
+        {
+          "feature": "num__balance_change_vs_prev",
+          "mean_abs_shap": 0.046847160905599594
+        },
+        {
+          "feature": "num__cust_amount_sum_past_24h",
+          "mean_abs_shap": 0.04640830680727959
+        },
+        {
+          "feature": "num__amount_to_balance_ratio",
+          "mean_abs_shap": 0.04252363368868828
+        },
+        {
+          "feature": "num__amount_ratio_vs_history_mean",
+          "mean_abs_shap": 0.03754853457212448
+        },
+        {
+          "feature": "num__cust_amount_std_so_far",
+          "mean_abs_shap": 0.03617396578192711
+        }
+      ]
+    }
+  },
+  "ulb": {
+    "isolation_forest": {
+      "threshold": 0.06690640512157531,
+      "threshold_metric": "f1",
+      "test_metrics": {
+        "threshold": 0.06690640512157531,
+        "precision": 0.0611353711790393,
+        "recall": 0.5384615384615384,
+        "f1": 0.10980392156862745,
+        "f2": 0.21021021021021022,
+        "roc_auc": 0.9383366984550486,
+        "pr_auc": 0.03943506949320338,
+        "confusion_matrix": {
+          "tp": 28,
+          "fp": 430,
+          "fn": 24,
+          "tn": 42240
+        },
+        "n_positive": 52,
+        "n_total": 42722
+      },
+      "val_metrics": {
+        "threshold": 0.06690640512157531,
+        "precision": 0.0449438202247191,
+        "recall": 0.5,
+        "f1": 0.08247422680412371,
+        "f2": 0.1652892561983471,
+        "roc_auc": 0.947722706802163,
+        "pr_auc": 0.031886930340626576,
+        "confusion_matrix": {
+          "tp": 28,
+          "fp": 595,
+          "fn": 28,
+          "tn": 42070
+        },
+        "n_positive": 56,
+        "n_total": 42721
+      },
+      "train_metrics": {
+        "threshold": 0.06690640512157531,
+        "precision": 0.10355419043440105,
+        "recall": 0.6145833333333334,
+        "f1": 0.17724371010138942,
+        "f2": 0.30930537352555704,
+        "roc_auc": 0.9511208334380339,
+        "pr_auc": 0.18347739583921036,
+        "confusion_matrix": {
+          "tp": 236,
+          "fp": 2043,
+          "fn": 148,
+          "tn": 196937
+        },
+        "n_positive": 384,
+        "n_total": 199364
+      }
+    },
+    "xgboost": {
+      "threshold": 0.5042714476585388,
+      "threshold_metric": "f1",
+      "scale_pos_weight_used": 1.0,
+      "scale_pos_weight_search": [
+        {
+          "name": "no_reweighting (scale_pos_weight=1)",
+          "scale_pos_weight": 1.0,
+          "val_pr_auc": 0.8598464840558545,
+          "val_roc_auc": 0.9907715424151613
+        },
+        {
+          "name": "sqrt_imbalance_ratio",
+          "scale_pos_weight": 22.763503318543332,
+          "val_pr_auc": 0.8551144786214214,
+          "val_roc_auc": 0.9909460749024795
+        },
+        {
+          "name": "full_imbalance_ratio",
+          "scale_pos_weight": 518.1770833333334,
+          "val_pr_auc": 0.8588791547127201,
+          "val_roc_auc": 0.9899804958899063
+        }
+      ],
+      "test_metrics": {
+        "threshold": 0.5042714476585388,
+        "precision": 0.8444444444444444,
+        "recall": 0.7307692307692307,
+        "f1": 0.7835051546391752,
+        "f2": 0.7509881422924901,
+        "roc_auc": 0.9803807394854969,
+        "pr_auc": 0.7580661360494774,
+        "confusion_matrix": {
+          "tp": 38,
+          "fp": 7,
+          "fn": 14,
+          "tn": 42663
+        },
+        "n_positive": 52,
+        "n_total": 42722
+      },
+      "val_metrics": {
+        "threshold": 0.5042714476585388,
+        "precision": 0.9782608695652174,
+        "recall": 0.8035714285714286,
+        "f1": 0.8823529411764706,
+        "f2": 0.8333333333333334,
+        "roc_auc": 0.9907715424151613,
+        "pr_auc": 0.8598464840558545,
+        "confusion_matrix": {
+          "tp": 45,
+          "fp": 1,
+          "fn": 11,
+          "tn": 42664
+        },
+        "n_positive": 56,
+        "n_total": 42721
+      },
+      "train_metrics": {
+        "threshold": 0.5042714476585388,
+        "precision": 1.0,
+        "recall": 0.9921875,
+        "f1": 0.996078431372549,
+        "f2": 0.9937402190923318,
+        "roc_auc": 0.99999998691242,
+        "pr_auc": 0.999993235930736,
+        "confusion_matrix": {
+          "tp": 381,
+          "fp": 0,
+          "fn": 3,
+          "tn": 198980
+        },
+        "n_positive": 384,
+        "n_total": 199364
+      },
+      "false_negative_tradeoff": {
+        "chosen_threshold": {
+          "threshold": 0.5042714476585388,
+          "test_recall": 0.7307692307692307,
+          "test_precision": 0.8444444444444444,
+          "test_fn": 14,
+          "test_fp": 7
+        },
+        "recall_biased_threshold_from_val_f2": {
+          "threshold": 0.22821062803268433,
+          "test_recall": 0.75,
+          "test_precision": 0.7358490566037735,
+          "test_fn": 13,
+          "test_fp": 14
+        },
+        "note": "The 'recall_biased_threshold_from_val_f2' row uses the threshold that maximized F2 (recall weighted 2x precision) on validation \u2014 a meaningful alternative operating point, not the degenerate 'threshold=0' point that maximizing raw recall alone would always select. It catches more fraud (fewer false negatives) at the cost of more false positives (more legitimate transactions flagged for review). In a cybersecurity/fraud context a missed fraud (false negative) is usually costlier than an analyst review of a false positive, so this tradeoff is reported explicitly rather than silently optimizing for F1 alone."
+      }
+    },
+    "shap": {
+      "examples": {
+        "true_positive_example": {
+          "fraud_probability": 0.9838129281997681,
+          "predicted_class": 1,
+          "threshold_used": 0.5042714476585388,
+          "top_contributing_features": [
+            {
+              "feature": "V14",
+              "value": -8.76069451926062,
+              "shap_value": 6.021742820739746,
+              "direction": "increases_fraud_risk",
+              "magnitude": 6.021742820739746,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V10",
+              "value": -3.99178463209724,
+              "shap_value": 1.2175278663635254,
+              "direction": "increases_fraud_risk",
+              "magnitude": 1.2175278663635254,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V12",
+              "value": -6.15018666957144,
+              "shap_value": 0.9830610752105713,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.9830610752105713,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V4",
+              "value": 3.6017196361428,
+              "shap_value": 0.823857307434082,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.823857307434082,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "time_hour_sin",
+              "value": -1.433880322918039,
+              "shap_value": 0.6312001943588257,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.6312001943588257,
+              "description": "cyclical encoding"
+            }
+          ],
+          "human_readable_explanation": "This transaction was flagged as FRAUD with a predicted fraud probability of 0.984 (decision threshold: 0.504).\nThe most influential factors were:\n  - V14 = -8.761 pushed the risk UP (impact magnitude 6.0217). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V10 = -3.992 pushed the risk UP (impact magnitude 1.2175). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V12 = -6.15 pushed the risk UP (impact magnitude 0.9831). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V4 = 3.602 pushed the risk UP (impact magnitude 0.8239). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - time_hour_sin = -1.434 pushed the risk UP (impact magnitude 0.6312). cyclical encoding"
+        },
+        "false_negative_example": {
+          "fraud_probability": 0.00012543806224130094,
+          "predicted_class": 0,
+          "threshold_used": 0.5042714476585388,
+          "top_contributing_features": [
+            {
+              "feature": "V12",
+              "value": 0.43554195900858,
+              "shap_value": -1.4492193460464478,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 1.4492193460464478,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V4",
+              "value": 2.62028192286183,
+              "shap_value": 1.2028430700302124,
+              "direction": "increases_fraud_risk",
+              "magnitude": 1.2028430700302124,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V10",
+              "value": 1.28016674259048,
+              "shap_value": -1.1402827501296997,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 1.1402827501296997,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V7",
+              "value": 1.08601442622803,
+              "shap_value": -0.5576877593994141,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.5576877593994141,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V14",
+              "value": -0.142098601080574,
+              "shap_value": -0.4906828701496124,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.4906828701496124,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            }
+          ],
+          "human_readable_explanation": "This transaction was NOT flagged as fraud with a predicted fraud probability of 0.000 (decision threshold: 0.504).\nThe most influential factors were:\n  - V12 = 0.4355 pushed the risk DOWN (impact magnitude 1.4492). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V4 = 2.62 pushed the risk UP (impact magnitude 1.2028). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V10 = 1.28 pushed the risk DOWN (impact magnitude 1.1403). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V7 = 1.086 pushed the risk DOWN (impact magnitude 0.5577). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V14 = -0.1421 pushed the risk DOWN (impact magnitude 0.4907). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+        },
+        "false_positive_example": {
+          "fraud_probability": 0.6363096833229065,
+          "predicted_class": 1,
+          "threshold_used": 0.5042714476585388,
+          "top_contributing_features": [
+            {
+              "feature": "V14",
+              "value": -4.58500798609057,
+              "shap_value": 6.066277027130127,
+              "direction": "increases_fraud_risk",
+              "magnitude": 6.066277027130127,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V10",
+              "value": -2.26532003406416,
+              "shap_value": 2.3085873126983643,
+              "direction": "increases_fraud_risk",
+              "magnitude": 2.3085873126983643,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "time_hour_sin",
+              "value": -1.4038049882295502,
+              "shap_value": 0.8419912457466125,
+              "direction": "increases_fraud_risk",
+              "magnitude": 0.8419912457466125,
+              "description": "cyclical encoding"
+            },
+            {
+              "feature": "V4",
+              "value": 0.715151618546994,
+              "shap_value": -0.6881401538848877,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.6881401538848877,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            },
+            {
+              "feature": "V5",
+              "value": 3.02876816835394,
+              "shap_value": -0.5047857761383057,
+              "direction": "decreases_fraud_risk",
+              "magnitude": 0.5047857761383057,
+              "description": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+            }
+          ],
+          "human_readable_explanation": "This transaction was flagged as FRAUD with a predicted fraud probability of 0.636 (decision threshold: 0.504).\nThe most influential factors were:\n  - V14 = -4.585 pushed the risk UP (impact magnitude 6.0663). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V10 = -2.265 pushed the risk UP (impact magnitude 2.3086). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - time_hour_sin = -1.404 pushed the risk UP (impact magnitude 0.8420). cyclical encoding\n  - V4 = 0.7152 pushed the risk DOWN (impact magnitude 0.6881). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed\n  - V5 = 3.029 pushed the risk DOWN (impact magnitude 0.5048). PCA-anonymized feature from publisher \u2014 no semantic meaning assumed"
+        }
+      },
+      "global_top_features": [
+        {
+          "feature": "V4",
+          "mean_abs_shap": 1.4062541723251343
+        },
+        {
+          "feature": "V12",
+          "mean_abs_shap": 0.8721321225166321
+        },
+        {
+          "feature": "V10",
+          "mean_abs_shap": 0.7485201358795166
+        },
+        {
+          "feature": "V14",
+          "mean_abs_shap": 0.7271792888641357
+        },
+        {
+          "feature": "time_hour_sin",
+          "mean_abs_shap": 0.4282599091529846
+        },
+        {
+          "feature": "V8",
+          "mean_abs_shap": 0.3606264293193817
+        },
+        {
+          "feature": "V11",
+          "mean_abs_shap": 0.3067461848258972
+        },
+        {
+          "feature": "amount_log1p",
+          "mean_abs_shap": 0.27245640754699707
+        },
+        {
+          "feature": "V22",
+          "mean_abs_shap": 0.24224214255809784
+        },
+        {
+          "feature": "V7",
+          "mean_abs_shap": 0.23238879442214966
+        }
+      ]
+    }
+  }
+}

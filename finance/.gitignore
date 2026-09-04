@@ -1,0 +1,45 @@
+# Python environment & caches
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Environment variables & secrets
+.env
+*.key
+*.pem
+*.secret
+
+# Logs & temporary files
+*.log
+*.tmp
+scratch/tmp/
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+
+# Raw large datasets & captures (download on demand via data/download_datasets.py)
+*.pcap
+*.pcapng
+data/raw/
+data/*.zip
+data/*.tar.gz
+data/*.7z
+!data/.gitkeep
+
+# Large serialized models (reproducible via ml/train.py)
+models/*.bin
+models/*.onnx
+!models/.gitkeep
+
+# SQLite local working DBs
+*.db-shm
+*.db-wal

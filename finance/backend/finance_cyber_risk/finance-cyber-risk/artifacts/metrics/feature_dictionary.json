@@ -1,0 +1,597 @@
+{
+  "indian_banking": {
+    "target": "is_fraud",
+    "identifiers": [
+      "transaction_id",
+      "customer_id"
+    ],
+    "original_features": {
+      "transaction_amount": {
+        "dtype": "float64",
+        "purpose": "raw transaction value",
+        "temporal": false,
+        "historical": false
+      },
+      "account_balance": {
+        "dtype": "float64",
+        "purpose": "account balance at time of txn",
+        "temporal": false,
+        "historical": false
+      },
+      "credit_score": {
+        "dtype": "int64",
+        "purpose": "customer credit score",
+        "temporal": false,
+        "historical": false
+      },
+      "has_loan": {
+        "dtype": "int64",
+        "purpose": "loan flag",
+        "temporal": false,
+        "historical": false
+      },
+      "loan_type": {
+        "dtype": "category",
+        "purpose": "loan category; null split into two explicit categories: 'NoLoan' when has_loan==0 (structural), 'UnknownLoanType' when has_loan==1 but type missing (data-quality gap, verified via crosstab, not assumed)",
+        "temporal": false,
+        "historical": false
+      },
+      "emi_amount": {
+        "dtype": "float64",
+        "purpose": "EMI amount, 0 when no loan",
+        "temporal": false,
+        "historical": false
+      },
+      "account_type": {
+        "dtype": "category",
+        "purpose": "account type",
+        "temporal": false,
+        "historical": false
+      },
+      "transaction_type": {
+        "dtype": "category",
+        "purpose": "payment rail used",
+        "temporal": false,
+        "historical": false
+      },
+      "transaction_direction": {
+        "dtype": "category",
+        "purpose": "debit/credit",
+        "temporal": false,
+        "historical": false
+      },
+      "merchant_category": {
+        "dtype": "category",
+        "purpose": "merchant category",
+        "temporal": false,
+        "historical": false
+      },
+      "state": {
+        "dtype": "category",
+        "purpose": "geographic state",
+        "temporal": false,
+        "historical": false
+      },
+      "transaction_status": {
+        "dtype": "category",
+        "purpose": "txn outcome status",
+        "temporal": false,
+        "historical": false
+      },
+      "channel": {
+        "dtype": "category",
+        "purpose": "channel used",
+        "temporal": false,
+        "historical": false
+      },
+      "kyc_status": {
+        "dtype": "category",
+        "purpose": "KYC status",
+        "temporal": false,
+        "historical": false
+      },
+      "transaction_hour": {
+        "dtype": "int64",
+        "purpose": "hour of day",
+        "temporal": true,
+        "historical": false
+      }
+    },
+    "generated_features": {
+      "hour_sin": {
+        "dtype": "float64",
+        "purpose": "cyclical encoding of hour",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "hour_cos": {
+        "dtype": "float64",
+        "purpose": "cyclical encoding of hour",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "time_of_day_bucket": {
+        "dtype": "category",
+        "purpose": "morning/afternoon/evening/night bucket",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "day_of_week": {
+        "dtype": "int64",
+        "purpose": "0=Mon..6=Sun",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "is_weekend": {
+        "dtype": "int64",
+        "purpose": "weekend flag",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "seconds_since_prev_txn": {
+        "dtype": "float64",
+        "purpose": "velocity: gap to customer's previous txn",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none (uses only the prior txn's timestamp)"
+      },
+      "cust_txn_count_so_far": {
+        "dtype": "int64",
+        "purpose": "count of this customer's txns strictly before current",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none (shift(1) applied before counting)"
+      },
+      "cust_amount_mean_so_far": {
+        "dtype": "float64",
+        "purpose": "expanding mean of past amounts",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_amount_std_so_far": {
+        "dtype": "float64",
+        "purpose": "expanding std of past amounts",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_amount_max_so_far": {
+        "dtype": "float64",
+        "purpose": "expanding max of past amounts",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_txn_count_past_24h": {
+        "dtype": "float64",
+        "purpose": "rolling count, trailing 24h, excludes current txn",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none (amount series shifted before rolling)"
+      },
+      "cust_amount_sum_past_24h": {
+        "dtype": "float64",
+        "purpose": "rolling amount sum, trailing 24h, excludes current txn",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_txn_count_past_7d": {
+        "dtype": "float64",
+        "purpose": "rolling count, trailing 7 days, excludes current txn",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "amount_zscore_vs_history": {
+        "dtype": "float64",
+        "purpose": "deviation of current amount from past baseline",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "amount_ratio_vs_history_mean": {
+        "dtype": "float64",
+        "purpose": "current amount / past mean amount",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_channel_prior_count": {
+        "dtype": "int64",
+        "purpose": "prior uses of this channel by this customer",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_channel_prior_share": {
+        "dtype": "float64",
+        "purpose": "share of past txns using this channel",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_txn_type_prior_count": {
+        "dtype": "int64",
+        "purpose": "prior uses of this transaction_type",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_txn_type_prior_share": {
+        "dtype": "float64",
+        "purpose": "share of past txns of this type",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_merchant_cat_prior_count": {
+        "dtype": "int64",
+        "purpose": "prior txns in this merchant category",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "cust_merchant_cat_prior_share": {
+        "dtype": "float64",
+        "purpose": "share of past txns in this category",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "balance_change_vs_prev": {
+        "dtype": "float64",
+        "purpose": "account_balance - previous txn's balance",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "none"
+      },
+      "amount_to_balance_ratio": {
+        "dtype": "float64",
+        "purpose": "current amount / current balance",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none (uses only current-row fields, not the label)"
+      },
+      "cust_past_fraud_count": {
+        "dtype": "float64",
+        "purpose": "count of PAST fraud-flagged txns for this customer",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "uses past is_fraud values only, via shift(1) before the expanding sum; current row's own label never included"
+      },
+      "cust_past_fraud_rate": {
+        "dtype": "float64",
+        "purpose": "past fraud count / past txn count",
+        "temporal": true,
+        "historical": true,
+        "leakage_risk": "same as above"
+      }
+    },
+    "final_processed_feature_count": 97
+  },
+  "ulb": {
+    "target": "Class",
+    "identifiers": [
+      "row_id (synthetic, positional)"
+    ],
+    "original_features": {
+      "V1": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V2": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V3": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V4": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V5": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V6": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V7": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V8": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V9": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V10": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V11": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V12": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V13": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V14": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V15": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V16": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V17": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V18": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V19": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V20": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V21": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V22": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V23": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V24": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V25": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V26": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V27": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "V28": {
+        "dtype": "float64",
+        "purpose": "PCA-anonymized feature from publisher \u2014 no semantic meaning assumed",
+        "temporal": false,
+        "historical": false
+      },
+      "Amount": {
+        "dtype": "float64",
+        "purpose": "transaction amount",
+        "temporal": false,
+        "historical": false
+      },
+      "Time": {
+        "dtype": "float64",
+        "purpose": "seconds since first transaction in dataset (not wall clock)",
+        "temporal": true,
+        "historical": false
+      }
+    },
+    "generated_features": {
+      "amount_log1p": {
+        "dtype": "float64",
+        "purpose": "log1p(Amount) to reduce skew",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "time_day_index": {
+        "dtype": "int64",
+        "purpose": "Time // 86400",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "time_hour_of_day": {
+        "dtype": "float64",
+        "purpose": "(Time % 86400)/3600",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "time_hour_sin": {
+        "dtype": "float64",
+        "purpose": "cyclical encoding",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "time_hour_cos": {
+        "dtype": "float64",
+        "purpose": "cyclical encoding",
+        "temporal": true,
+        "historical": false,
+        "leakage_risk": "none"
+      }
+    },
+    "no_customer_identifier": "This dataset has no account/customer ID, so no cross-transaction rolling/behavioral features are possible or attempted.",
+    "final_processed_feature_count": 32
+  },
+  "amlsim": {
+    "target": "is_sar (accounts.csv IS_SAR, account-level)",
+    "identifiers": [
+      "ACCOUNT_ID"
+    ],
+    "original_features": {
+      "INIT_BALANCE": {
+        "dtype": "float64",
+        "purpose": "starting account balance",
+        "temporal": false,
+        "historical": false
+      },
+      "ACCOUNT_TYPE": {
+        "dtype": "category",
+        "purpose": "account type",
+        "temporal": false,
+        "historical": false
+      },
+      "COUNTRY": {
+        "dtype": "category",
+        "purpose": "account country",
+        "temporal": false,
+        "historical": false
+      }
+    },
+    "generated_features": {
+      "in_degree": {
+        "dtype": "int64",
+        "purpose": "count of incoming transaction edges",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none \u2014 derived purely from transaction graph structure"
+      },
+      "out_degree": {
+        "dtype": "int64",
+        "purpose": "count of outgoing transaction edges",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "total_degree": {
+        "dtype": "int64",
+        "purpose": "in_degree + out_degree",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "degree_ratio": {
+        "dtype": "float64",
+        "purpose": "in_degree / total_degree",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "unique_senders": {
+        "dtype": "int64",
+        "purpose": "distinct accounts that sent to this account",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "unique_receivers": {
+        "dtype": "int64",
+        "purpose": "distinct accounts this account sent to",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "account_type_encoded": {
+        "dtype": "int64",
+        "purpose": "category code of ACCOUNT_TYPE",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      },
+      "country_encoded": {
+        "dtype": "int64",
+        "purpose": "category code of COUNTRY",
+        "temporal": false,
+        "historical": false,
+        "leakage_risk": "none"
+      }
+    },
+    "excluded_as_leakage": {
+      "is_alert_member": "True iff account appears in alert_members.csv \u2014 near-perfectly correlated with the label by construction of the simulator; kept as metadata only, never a model input.",
+      "alert_reason": "The alert typology (fan_in/fan_out/etc) \u2014 only defined for already-labeled SAR accounts; metadata only."
+    },
+    "no_transaction_level_timestamp": "The raw tmp/1K/transactions.csv we have access to contains only id/src/dst/ttype \u2014 no amount or step/time column \u2014 so this is an account-level static graph problem here, not a per-transaction temporal one. A chronological split was therefore not possible; a stratified split on the label was used instead (see splitting.py).",
+    "not_reused_from_reference": "aml_detection/ bundled inside the same zip was NOT read, imported, or used to derive any of the above.",
+    "final_processed_feature_count": 9
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "CAM_TRAFFIC_01": {
+    "id": "CAM_TRAFFIC_01",
+    "name": "Smart Highway CCTV - Sector 4",
+    "ip": "192.168.45.10",
+    "port": 8554,
+    "protocol": "rtsp",
+    "username": "admin",
+    "encrypted_password": "gAAAAABqDHXNM6X7GUmQ78Zm3m1A5WlHASrPuLI9NIDxaf_oVIYnCyto7Rb1epoN-A4Mlac0kuLMGP0Vg3yV1fWSgdsRwDB0-Q==",
+    "created_at": "2026-05-19T14:38:05.727008+00:00"
+  },
+  "CAM_F5CFD1A8": {
+    "id": "CAM_F5CFD1A8",
+    "name": "cam1",
+    "ip": "192.168.0.8",
+    "port": 80,
+    "protocol": "rtsp",
+    "username": "aishwaryamcam1",
+    "encrypted_password": "gAAAAABqDHq4-o8CUc4HOV5Wok45ptSXB87ZkvqbcgNOAONFKNmHBjpXpG6M90iQsoZJTyho7dEX6Zn9XyWWMHkb7u3Z5TAtZVdpvhZiwFxtn2lIkDVEJzE=",
+    "created_at": "2026-05-19T14:59:04.234317+00:00"
+  },
+  "CAM_71275381": {
+    "id": "CAM_71275381",
+    "name": "am1",
+    "ip": "192.168.0.8",
+    "port": 80,
+    "protocol": "rtsp",
+    "username": "admin123",
+    "encrypted_password": "gAAAAABqDH_1B4gAwjTlh1LLwS12DK_UA5FrR2kDC4qiiAFEpqolWySvALeOJJwWkoKvHKyxabtK08zSTfmU4qdKQ_N8rImmLA==",
+    "created_at": "2026-05-19T15:21:25.426537+00:00"
+  },
+  "CAM_6E62783B": {
+    "id": "CAM_6E62783B",
+    "name": "Living Room Tapo",
+    "ip": "192.168.1.108",
+    "port": 554,
+    "protocol": "rtsp",
+    "brand": "tapo",
+    "username": "admin",
+    "encrypted_password": "gAAAAABqDIV6aWHUdIpePeg8CnMnrg4UlTzwMYWaOhe4puVK14rv7QcMbiOgvBuowf11Hd1ARYHUvfaWzX6mJ4nvoaaZ8YYNwQ==",
+    "created_at": "2026-05-19T15:44:58.371645+00:00"
+  },
+  "CAM_6DE7C1E6": {
+    "id": "CAM_6DE7C1E6",
+    "name": "192.168.0.8:22",
+    "ip": "192.168.0.8",
+    "port": 22,
+    "protocol": "rtsp",
+    "brand": "tapo",
+    "username": "admin123",
+    "encrypted_password": "gAAAAABqDUUrd0HzWOMDEhKRhGsNjKCvUThAV2hKLK8n81rGv0JHjAQ5mhnYdnv6T6cZmfDaJvPZLr85oWmnt26wbIkqtUNP-Q==",
+    "created_at": "2026-05-20T05:22:51.544122+00:00"
+  },
+  "CAM_F7482B4E": {
+    "id": "CAM_F7482B4E",
+    "name": "cam road",
+    "ip": "192.168.0.13",
+    "port": 554,
+    "protocol": "rtsp",
+    "brand": "generic",
+    "username": "admin123",
+    "serial_number": "",
+    "connection_type": "ip",
+    "encrypted_password": "gAAAAABqDZMIEWM1ew72hU7_oUy0Ph9G05q-gSD1f42VY6xR5MSLrV9RqrIfdhuB9DHXF7GXyfbhGLHMFcktOYD1pAZwzjlnGQ==",
+    "created_at": "2026-05-20T10:55:04.287505+00:00"
+  },
+  "CAM_46CEDBCB": {
+    "id": "CAM_46CEDBCB",
+    "name": "Not mine",
+    "ip": "",
+    "port": 0,
+    "protocol": "rtsp",
+    "brand": "generic",
+    "username": "admin",
+    "serial_number": "8M083CAPCABB21E",
+    "connection_type": "p2p",
+    "encrypted_password": "gAAAAABqDp6SDPJPG_yx5PqJw_8ktwu4V9d_V9-sd9pn3QW307fFtYpiolRiGqWbGaAF89G5pzIkNuG95j11bv5C2vktOGWG6A==",
+    "created_at": "2026-05-21T05:56:34.430451+00:00"
+  },
+  "CAM_2137181D": {
+    "id": "CAM_2137181D",
+    "name": "gfhgj",
+    "ip": "172.51.147.232",
+    "port": 8080,
+    "protocol": "mjpeg",
+    "brand": "generic",
+    "username": "admin",
+    "serial_number": "",
+    "connection_type": "ip",
+    "encrypted_password": "gAAAAABqmY6--TP8mtfkpLrHiqLsES9qHPVwxXuNjDQ297b-vZ2Bv3HRY5AVlTwK_O1lAc4UFv5LrGurj1lADlqPy0SJUhS7hw==",
+    "created_at": "2026-09-03T15:14:06.906310+00:00"
+  }
+}

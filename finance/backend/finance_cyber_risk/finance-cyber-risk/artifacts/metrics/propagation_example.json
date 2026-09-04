@@ -1,0 +1,2848 @@
+{
+  "source_entity": 25,
+  "source_risk": 53.54,
+  "affected_entities": [
+    {
+      "entity_id": 19,
+      "propagated_risk": 40.02,
+      "depth": 1,
+      "path": [
+        25,
+        19
+      ]
+    },
+    {
+      "entity_id": 20,
+      "propagated_risk": 39.89,
+      "depth": 1,
+      "path": [
+        25,
+        20
+      ]
+    },
+    {
+      "entity_id": 17,
+      "propagated_risk": 39.76,
+      "depth": 1,
+      "path": [
+        25,
+        17
+      ]
+    },
+    {
+      "entity_id": 21,
+      "propagated_risk": 39.76,
+      "depth": 1,
+      "path": [
+        25,
+        21
+      ]
+    },
+    {
+      "entity_id": 16,
+      "propagated_risk": 39.69,
+      "depth": 1,
+      "path": [
+        25,
+        16
+      ]
+    },
+    {
+      "entity_id": 15,
+      "propagated_risk": 39.5,
+      "depth": 1,
+      "path": [
+        25,
+        15
+      ]
+    },
+    {
+      "entity_id": 24,
+      "propagated_risk": 39.5,
+      "depth": 1,
+      "path": [
+        25,
+        24
+      ]
+    },
+    {
+      "entity_id": 18,
+      "propagated_risk": 39.36,
+      "depth": 1,
+      "path": [
+        25,
+        18
+      ]
+    },
+    {
+      "entity_id": 26,
+      "propagated_risk": 39.17,
+      "depth": 1,
+      "path": [
+        25,
+        26
+      ]
+    },
+    {
+      "entity_id": 22,
+      "propagated_risk": 38.84,
+      "depth": 1,
+      "path": [
+        25,
+        22
+      ]
+    },
+    {
+      "entity_id": 34,
+      "propagated_risk": 38.7,
+      "depth": 1,
+      "path": [
+        25,
+        34
+      ]
+    },
+    {
+      "entity_id": 30,
+      "propagated_risk": 38.44,
+      "depth": 1,
+      "path": [
+        25,
+        30
+      ]
+    },
+    {
+      "entity_id": 35,
+      "propagated_risk": 38.31,
+      "depth": 1,
+      "path": [
+        25,
+        35
+      ]
+    },
+    {
+      "entity_id": 29,
+      "propagated_risk": 38.18,
+      "depth": 1,
+      "path": [
+        25,
+        29
+      ]
+    },
+    {
+      "entity_id": 23,
+      "propagated_risk": 38.11,
+      "depth": 1,
+      "path": [
+        25,
+        23
+      ]
+    },
+    {
+      "entity_id": 27,
+      "propagated_risk": 38.11,
+      "depth": 1,
+      "path": [
+        25,
+        27
+      ]
+    },
+    {
+      "entity_id": 33,
+      "propagated_risk": 38.11,
+      "depth": 1,
+      "path": [
+        25,
+        33
+      ]
+    },
+    {
+      "entity_id": 32,
+      "propagated_risk": 38.05,
+      "depth": 1,
+      "path": [
+        25,
+        32
+      ]
+    },
+    {
+      "entity_id": 31,
+      "propagated_risk": 37.98,
+      "depth": 1,
+      "path": [
+        25,
+        31
+      ]
+    },
+    {
+      "entity_id": 28,
+      "propagated_risk": 37.39,
+      "depth": 1,
+      "path": [
+        25,
+        28
+      ]
+    },
+    {
+      "entity_id": 12,
+      "propagated_risk": 37.32,
+      "depth": 1,
+      "path": [
+        25,
+        12
+      ]
+    },
+    {
+      "entity_id": 14,
+      "propagated_risk": 37.19,
+      "depth": 1,
+      "path": [
+        25,
+        14
+      ]
+    },
+    {
+      "entity_id": 11,
+      "propagated_risk": 36.92,
+      "depth": 1,
+      "path": [
+        25,
+        11
+      ]
+    },
+    {
+      "entity_id": 13,
+      "propagated_risk": 36.73,
+      "depth": 1,
+      "path": [
+        25,
+        13
+      ]
+    },
+    {
+      "entity_id": 38,
+      "propagated_risk": 36.07,
+      "depth": 1,
+      "path": [
+        25,
+        38
+      ]
+    },
+    {
+      "entity_id": 40,
+      "propagated_risk": 35.94,
+      "depth": 1,
+      "path": [
+        25,
+        40
+      ]
+    },
+    {
+      "entity_id": 41,
+      "propagated_risk": 35.8,
+      "depth": 1,
+      "path": [
+        25,
+        41
+      ]
+    },
+    {
+      "entity_id": 42,
+      "propagated_risk": 35.54,
+      "depth": 1,
+      "path": [
+        25,
+        42
+      ]
+    },
+    {
+      "entity_id": 39,
+      "propagated_risk": 35.41,
+      "depth": 1,
+      "path": [
+        25,
+        39
+      ]
+    },
+    {
+      "entity_id": 43,
+      "propagated_risk": 35.41,
+      "depth": 1,
+      "path": [
+        25,
+        43
+      ]
+    },
+    {
+      "entity_id": 37,
+      "propagated_risk": 35.41,
+      "depth": 1,
+      "path": [
+        25,
+        37
+      ]
+    },
+    {
+      "entity_id": 36,
+      "propagated_risk": 35.34,
+      "depth": 1,
+      "path": [
+        25,
+        36
+      ]
+    },
+    {
+      "entity_id": 44,
+      "propagated_risk": 35.21,
+      "depth": 1,
+      "path": [
+        25,
+        44
+      ]
+    },
+    {
+      "entity_id": 7,
+      "propagated_risk": 34.95,
+      "depth": 1,
+      "path": [
+        25,
+        7
+      ]
+    },
+    {
+      "entity_id": 9,
+      "propagated_risk": 34.88,
+      "depth": 1,
+      "path": [
+        25,
+        9
+      ]
+    },
+    {
+      "entity_id": 6,
+      "propagated_risk": 34.68,
+      "depth": 1,
+      "path": [
+        25,
+        6
+      ]
+    },
+    {
+      "entity_id": 8,
+      "propagated_risk": 34.09,
+      "depth": 1,
+      "path": [
+        25,
+        8
+      ]
+    },
+    {
+      "entity_id": 53,
+      "propagated_risk": 33.36,
+      "depth": 1,
+      "path": [
+        25,
+        53
+      ]
+    },
+    {
+      "entity_id": 50,
+      "propagated_risk": 33.3,
+      "depth": 1,
+      "path": [
+        25,
+        50
+      ]
+    },
+    {
+      "entity_id": 51,
+      "propagated_risk": 33.3,
+      "depth": 1,
+      "path": [
+        25,
+        51
+      ]
+    },
+    {
+      "entity_id": 52,
+      "propagated_risk": 33.1,
+      "depth": 1,
+      "path": [
+        25,
+        52
+      ]
+    },
+    {
+      "entity_id": 46,
+      "propagated_risk": 32.97,
+      "depth": 1,
+      "path": [
+        25,
+        46
+      ]
+    },
+    {
+      "entity_id": 45,
+      "propagated_risk": 32.9,
+      "depth": 1,
+      "path": [
+        25,
+        45
+      ]
+    },
+    {
+      "entity_id": 47,
+      "propagated_risk": 32.77,
+      "depth": 1,
+      "path": [
+        25,
+        47
+      ]
+    },
+    {
+      "entity_id": 49,
+      "propagated_risk": 32.77,
+      "depth": 1,
+      "path": [
+        25,
+        49
+      ]
+    },
+    {
+      "entity_id": 54,
+      "propagated_risk": 32.57,
+      "depth": 1,
+      "path": [
+        25,
+        54
+      ]
+    },
+    {
+      "entity_id": 55,
+      "propagated_risk": 32.51,
+      "depth": 1,
+      "path": [
+        25,
+        55
+      ]
+    },
+    {
+      "entity_id": 58,
+      "propagated_risk": 32.44,
+      "depth": 1,
+      "path": [
+        25,
+        58
+      ]
+    },
+    {
+      "entity_id": 57,
+      "propagated_risk": 32.24,
+      "depth": 1,
+      "path": [
+        25,
+        57
+      ]
+    },
+    {
+      "entity_id": 4,
+      "propagated_risk": 32.11,
+      "depth": 1,
+      "path": [
+        25,
+        4
+      ]
+    },
+    {
+      "entity_id": 63,
+      "propagated_risk": 32.11,
+      "depth": 1,
+      "path": [
+        25,
+        63
+      ]
+    },
+    {
+      "entity_id": 3,
+      "propagated_risk": 31.98,
+      "depth": 1,
+      "path": [
+        25,
+        3
+      ]
+    },
+    {
+      "entity_id": 64,
+      "propagated_risk": 31.98,
+      "depth": 1,
+      "path": [
+        25,
+        64
+      ]
+    },
+    {
+      "entity_id": 56,
+      "propagated_risk": 31.52,
+      "depth": 1,
+      "path": [
+        25,
+        56
+      ]
+    },
+    {
+      "entity_id": 69,
+      "propagated_risk": 30.26,
+      "depth": 1,
+      "path": [
+        25,
+        69
+      ]
+    },
+    {
+      "entity_id": 77,
+      "propagated_risk": 30.26,
+      "depth": 1,
+      "path": [
+        25,
+        77
+      ]
+    },
+    {
+      "entity_id": 67,
+      "propagated_risk": 30.13,
+      "depth": 1,
+      "path": [
+        25,
+        67
+      ]
+    },
+    {
+      "entity_id": 72,
+      "propagated_risk": 30.13,
+      "depth": 1,
+      "path": [
+        25,
+        72
+      ]
+    },
+    {
+      "entity_id": 70,
+      "propagated_risk": 30.07,
+      "depth": 1,
+      "path": [
+        25,
+        70
+      ]
+    },
+    {
+      "entity_id": 79,
+      "propagated_risk": 30.07,
+      "depth": 1,
+      "path": [
+        25,
+        79
+      ]
+    },
+    {
+      "entity_id": 68,
+      "propagated_risk": 30.0,
+      "depth": 1,
+      "path": [
+        25,
+        68
+      ]
+    },
+    {
+      "entity_id": 71,
+      "propagated_risk": 30.0,
+      "depth": 1,
+      "path": [
+        25,
+        71
+      ]
+    },
+    {
+      "entity_id": 84,
+      "propagated_risk": 30.0,
+      "depth": 1,
+      "path": [
+        25,
+        84
+      ]
+    },
+    {
+      "entity_id": 80,
+      "propagated_risk": 29.87,
+      "depth": 1,
+      "path": [
+        25,
+        80
+      ]
+    },
+    {
+      "entity_id": 89,
+      "propagated_risk": 29.8,
+      "depth": 1,
+      "path": [
+        25,
+        89
+      ]
+    },
+    {
+      "entity_id": 96,
+      "propagated_risk": 29.41,
+      "depth": 1,
+      "path": [
+        25,
+        96
+      ]
+    },
+    {
+      "entity_id": 91,
+      "propagated_risk": 29.34,
+      "depth": 1,
+      "path": [
+        25,
+        91
+      ]
+    },
+    {
+      "entity_id": 92,
+      "propagated_risk": 29.34,
+      "depth": 1,
+      "path": [
+        25,
+        92
+      ]
+    },
+    {
+      "entity_id": 95,
+      "propagated_risk": 29.34,
+      "depth": 1,
+      "path": [
+        25,
+        95
+      ]
+    },
+    {
+      "entity_id": 98,
+      "propagated_risk": 29.34,
+      "depth": 1,
+      "path": [
+        25,
+        98
+      ]
+    },
+    {
+      "entity_id": 100,
+      "propagated_risk": 29.21,
+      "depth": 1,
+      "path": [
+        25,
+        100
+      ]
+    },
+    {
+      "entity_id": 102,
+      "propagated_risk": 29.21,
+      "depth": 1,
+      "path": [
+        25,
+        102
+      ]
+    },
+    {
+      "entity_id": 106,
+      "propagated_risk": 29.21,
+      "depth": 1,
+      "path": [
+        25,
+        106
+      ]
+    },
+    {
+      "entity_id": 109,
+      "propagated_risk": 29.14,
+      "depth": 1,
+      "path": [
+        25,
+        109
+      ]
+    },
+    {
+      "entity_id": 111,
+      "propagated_risk": 29.14,
+      "depth": 1,
+      "path": [
+        25,
+        111
+      ]
+    },
+    {
+      "entity_id": 105,
+      "propagated_risk": 28.95,
+      "depth": 1,
+      "path": [
+        25,
+        105
+      ]
+    },
+    {
+      "entity_id": 2,
+      "propagated_risk": 28.29,
+      "depth": 1,
+      "path": [
+        25,
+        2
+      ]
+    },
+    {
+      "entity_id": 124,
+      "propagated_risk": 28.29,
+      "depth": 1,
+      "path": [
+        25,
+        124
+      ]
+    },
+    {
+      "entity_id": 134,
+      "propagated_risk": 28.29,
+      "depth": 1,
+      "path": [
+        25,
+        134
+      ]
+    },
+    {
+      "entity_id": 135,
+      "propagated_risk": 28.29,
+      "depth": 1,
+      "path": [
+        25,
+        135
+      ]
+    },
+    {
+      "entity_id": 128,
+      "propagated_risk": 28.22,
+      "depth": 1,
+      "path": [
+        25,
+        128
+      ]
+    },
+    {
+      "entity_id": 157,
+      "propagated_risk": 27.89,
+      "depth": 1,
+      "path": [
+        25,
+        157
+      ]
+    },
+    {
+      "entity_id": 162,
+      "propagated_risk": 27.89,
+      "depth": 1,
+      "path": [
+        25,
+        162
+      ]
+    },
+    {
+      "entity_id": 159,
+      "propagated_risk": 27.69,
+      "depth": 1,
+      "path": [
+        25,
+        159
+      ]
+    },
+    {
+      "entity_id": 161,
+      "propagated_risk": 27.69,
+      "depth": 1,
+      "path": [
+        25,
+        161
+      ]
+    },
+    {
+      "entity_id": 168,
+      "propagated_risk": 27.69,
+      "depth": 1,
+      "path": [
+        25,
+        168
+      ]
+    },
+    {
+      "entity_id": 325,
+      "propagated_risk": 27.69,
+      "depth": 1,
+      "path": [
+        25,
+        325
+      ]
+    },
+    {
+      "entity_id": 327,
+      "propagated_risk": 27.69,
+      "depth": 1,
+      "path": [
+        25,
+        327
+      ]
+    },
+    {
+      "entity_id": 332,
+      "propagated_risk": 27.63,
+      "depth": 1,
+      "path": [
+        25,
+        332
+      ]
+    },
+    {
+      "entity_id": 350,
+      "propagated_risk": 27.63,
+      "depth": 1,
+      "path": [
+        25,
+        350
+      ]
+    },
+    {
+      "entity_id": 156,
+      "propagated_risk": 27.56,
+      "depth": 1,
+      "path": [
+        25,
+        156
+      ]
+    },
+    {
+      "entity_id": 165,
+      "propagated_risk": 27.56,
+      "depth": 1,
+      "path": [
+        25,
+        165
+      ]
+    },
+    {
+      "entity_id": 188,
+      "propagated_risk": 27.56,
+      "depth": 1,
+      "path": [
+        25,
+        188
+      ]
+    },
+    {
+      "entity_id": 150,
+      "propagated_risk": 27.5,
+      "depth": 1,
+      "path": [
+        25,
+        150
+      ]
+    },
+    {
+      "entity_id": 301,
+      "propagated_risk": 27.5,
+      "depth": 1,
+      "path": [
+        25,
+        301
+      ]
+    },
+    {
+      "entity_id": 306,
+      "propagated_risk": 27.5,
+      "depth": 1,
+      "path": [
+        25,
+        306
+      ]
+    },
+    {
+      "entity_id": 348,
+      "propagated_risk": 27.5,
+      "depth": 1,
+      "path": [
+        25,
+        348
+      ]
+    },
+    {
+      "entity_id": 138,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        138
+      ]
+    },
+    {
+      "entity_id": 183,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        183
+      ]
+    },
+    {
+      "entity_id": 207,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        207
+      ]
+    },
+    {
+      "entity_id": 232,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        232
+      ]
+    },
+    {
+      "entity_id": 309,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        309
+      ]
+    },
+    {
+      "entity_id": 318,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        318
+      ]
+    },
+    {
+      "entity_id": 351,
+      "propagated_risk": 27.43,
+      "depth": 1,
+      "path": [
+        25,
+        351
+      ]
+    },
+    {
+      "entity_id": 240,
+      "propagated_risk": 27.36,
+      "depth": 1,
+      "path": [
+        25,
+        240
+      ]
+    },
+    {
+      "entity_id": 196,
+      "propagated_risk": 27.3,
+      "depth": 1,
+      "path": [
+        25,
+        196
+      ]
+    },
+    {
+      "entity_id": 199,
+      "propagated_risk": 27.3,
+      "depth": 1,
+      "path": [
+        25,
+        199
+      ]
+    },
+    {
+      "entity_id": 234,
+      "propagated_risk": 27.3,
+      "depth": 1,
+      "path": [
+        25,
+        234
+      ]
+    },
+    {
+      "entity_id": 450,
+      "propagated_risk": 27.3,
+      "depth": 1,
+      "path": [
+        25,
+        450
+      ]
+    },
+    {
+      "entity_id": 225,
+      "propagated_risk": 27.23,
+      "depth": 1,
+      "path": [
+        25,
+        225
+      ]
+    },
+    {
+      "entity_id": 279,
+      "propagated_risk": 27.23,
+      "depth": 1,
+      "path": [
+        25,
+        279
+      ]
+    },
+    {
+      "entity_id": 543,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        543
+      ]
+    },
+    {
+      "entity_id": 637,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        637
+      ]
+    },
+    {
+      "entity_id": 639,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        639
+      ]
+    },
+    {
+      "entity_id": 213,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        213
+      ]
+    },
+    {
+      "entity_id": 262,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        262
+      ]
+    },
+    {
+      "entity_id": 973,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        973
+      ]
+    },
+    {
+      "entity_id": 993,
+      "propagated_risk": 27.17,
+      "depth": 1,
+      "path": [
+        25,
+        993
+      ]
+    },
+    {
+      "entity_id": 640,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        640
+      ]
+    },
+    {
+      "entity_id": 656,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        656
+      ]
+    },
+    {
+      "entity_id": 217,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        217
+      ]
+    },
+    {
+      "entity_id": 747,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        747
+      ]
+    },
+    {
+      "entity_id": 263,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        263
+      ]
+    },
+    {
+      "entity_id": 268,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        268
+      ]
+    },
+    {
+      "entity_id": 278,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        278
+      ]
+    },
+    {
+      "entity_id": 966,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        966
+      ]
+    },
+    {
+      "entity_id": 974,
+      "propagated_risk": 27.1,
+      "depth": 1,
+      "path": [
+        25,
+        974
+      ]
+    },
+    {
+      "entity_id": 1028,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        1028
+      ]
+    },
+    {
+      "entity_id": 1030,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        1030
+      ]
+    },
+    {
+      "entity_id": 1046,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        1046
+      ]
+    },
+    {
+      "entity_id": 661,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        661
+      ]
+    },
+    {
+      "entity_id": 744,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        744
+      ]
+    },
+    {
+      "entity_id": 752,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        752
+      ]
+    },
+    {
+      "entity_id": 763,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        763
+      ]
+    },
+    {
+      "entity_id": 384,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        384
+      ]
+    },
+    {
+      "entity_id": 421,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        421
+      ]
+    },
+    {
+      "entity_id": 957,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        957
+      ]
+    },
+    {
+      "entity_id": 988,
+      "propagated_risk": 27.03,
+      "depth": 1,
+      "path": [
+        25,
+        988
+      ]
+    },
+    {
+      "entity_id": 1045,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        1045
+      ]
+    },
+    {
+      "entity_id": 1159,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        1159
+      ]
+    },
+    {
+      "entity_id": 1198,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        1198
+      ]
+    },
+    {
+      "entity_id": 1204,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        1204
+      ]
+    },
+    {
+      "entity_id": 707,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        707
+      ]
+    },
+    {
+      "entity_id": 708,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        708
+      ]
+    },
+    {
+      "entity_id": 716,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        716
+      ]
+    },
+    {
+      "entity_id": 842,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        842
+      ]
+    },
+    {
+      "entity_id": 393,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        393
+      ]
+    },
+    {
+      "entity_id": 960,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        960
+      ]
+    },
+    {
+      "entity_id": 1021,
+      "propagated_risk": 26.97,
+      "depth": 1,
+      "path": [
+        25,
+        1021
+      ]
+    },
+    {
+      "entity_id": 577,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        577
+      ]
+    },
+    {
+      "entity_id": 1240,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        1240
+      ]
+    },
+    {
+      "entity_id": 1362,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        1362
+      ]
+    },
+    {
+      "entity_id": 870,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        870
+      ]
+    },
+    {
+      "entity_id": 876,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        876
+      ]
+    },
+    {
+      "entity_id": 1407,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        1407
+      ]
+    },
+    {
+      "entity_id": 917,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        917
+      ]
+    },
+    {
+      "entity_id": 410,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        410
+      ]
+    },
+    {
+      "entity_id": 490,
+      "propagated_risk": 26.9,
+      "depth": 1,
+      "path": [
+        25,
+        490
+      ]
+    },
+    {
+      "entity_id": 1090,
+      "propagated_risk": 26.84,
+      "depth": 1,
+      "path": [
+        25,
+        1090
+      ]
+    },
+    {
+      "entity_id": 1106,
+      "propagated_risk": 26.84,
+      "depth": 1,
+      "path": [
+        25,
+        1106
+      ]
+    },
+    {
+      "entity_id": 1108,
+      "propagated_risk": 26.84,
+      "depth": 1,
+      "path": [
+        25,
+        1108
+      ]
+    },
+    {
+      "entity_id": 62,
+      "propagated_risk": 19.42,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        62
+      ]
+    },
+    {
+      "entity_id": 65,
+      "propagated_risk": 19.3,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        65
+      ]
+    },
+    {
+      "entity_id": 61,
+      "propagated_risk": 19.14,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        61
+      ]
+    },
+    {
+      "entity_id": 5,
+      "propagated_risk": 19.1,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        5
+      ]
+    },
+    {
+      "entity_id": 60,
+      "propagated_risk": 19.02,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        60
+      ]
+    },
+    {
+      "entity_id": 76,
+      "propagated_risk": 18.12,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        76
+      ]
+    },
+    {
+      "entity_id": 90,
+      "propagated_risk": 17.84,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        90
+      ]
+    },
+    {
+      "entity_id": 103,
+      "propagated_risk": 17.53,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        103
+      ]
+    },
+    {
+      "entity_id": 117,
+      "propagated_risk": 17.49,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        117
+      ]
+    },
+    {
+      "entity_id": 48,
+      "propagated_risk": 17.45,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        48
+      ]
+    },
+    {
+      "entity_id": 113,
+      "propagated_risk": 17.41,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        113
+      ]
+    },
+    {
+      "entity_id": 115,
+      "propagated_risk": 17.41,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        115
+      ]
+    },
+    {
+      "entity_id": 116,
+      "propagated_risk": 17.41,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        116
+      ]
+    },
+    {
+      "entity_id": 133,
+      "propagated_risk": 16.9,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        133
+      ]
+    },
+    {
+      "entity_id": 125,
+      "propagated_risk": 16.86,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        125
+      ]
+    },
+    {
+      "entity_id": 180,
+      "propagated_risk": 16.5,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        180
+      ]
+    },
+    {
+      "entity_id": 322,
+      "propagated_risk": 16.46,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        322
+      ]
+    },
+    {
+      "entity_id": 163,
+      "propagated_risk": 16.46,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        163
+      ]
+    },
+    {
+      "entity_id": 144,
+      "propagated_risk": 16.42,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        144
+      ]
+    },
+    {
+      "entity_id": 358,
+      "propagated_risk": 16.34,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        358
+      ]
+    },
+    {
+      "entity_id": 275,
+      "propagated_risk": 16.27,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        275
+      ]
+    },
+    {
+      "entity_id": 238,
+      "propagated_risk": 16.27,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        238
+      ]
+    },
+    {
+      "entity_id": 357,
+      "propagated_risk": 16.23,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        357
+      ]
+    },
+    {
+      "entity_id": 655,
+      "propagated_risk": 16.23,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        655
+      ]
+    },
+    {
+      "entity_id": 969,
+      "propagated_risk": 16.23,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        969
+      ]
+    },
+    {
+      "entity_id": 530,
+      "propagated_risk": 16.19,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        530
+      ]
+    },
+    {
+      "entity_id": 968,
+      "propagated_risk": 16.19,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        968
+      ]
+    },
+    {
+      "entity_id": 1024,
+      "propagated_risk": 16.15,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        1024
+      ]
+    },
+    {
+      "entity_id": 1153,
+      "propagated_risk": 16.11,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        1153
+      ]
+    },
+    {
+      "entity_id": 389,
+      "propagated_risk": 16.11,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        389
+      ]
+    },
+    {
+      "entity_id": 1161,
+      "propagated_risk": 16.11,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        1161
+      ]
+    },
+    {
+      "entity_id": 1367,
+      "propagated_risk": 16.07,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        1367
+      ]
+    },
+    {
+      "entity_id": 946,
+      "propagated_risk": 16.07,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        946
+      ]
+    },
+    {
+      "entity_id": 474,
+      "propagated_risk": 16.07,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        474
+      ]
+    },
+    {
+      "entity_id": 1254,
+      "propagated_risk": 16.03,
+      "depth": 2,
+      "path": [
+        25,
+        3,
+        1254
+      ]
+    },
+    {
+      "entity_id": 88,
+      "propagated_risk": 15.78,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        88
+      ]
+    },
+    {
+      "entity_id": 99,
+      "propagated_risk": 15.5,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        99
+      ]
+    },
+    {
+      "entity_id": 126,
+      "propagated_risk": 14.91,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        126
+      ]
+    },
+    {
+      "entity_id": 333,
+      "propagated_risk": 14.63,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        333
+      ]
+    },
+    {
+      "entity_id": 328,
+      "propagated_risk": 14.6,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        328
+      ]
+    },
+    {
+      "entity_id": 768,
+      "propagated_risk": 14.32,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        768
+      ]
+    },
+    {
+      "entity_id": 766,
+      "propagated_risk": 14.32,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        766
+      ]
+    },
+    {
+      "entity_id": 432,
+      "propagated_risk": 14.25,
+      "depth": 2,
+      "path": [
+        25,
+        2,
+        432
+      ]
+    }
+  ],
+  "propagation_paths": [
+    [
+      25,
+      19
+    ],
+    [
+      25,
+      20
+    ],
+    [
+      25,
+      17
+    ],
+    [
+      25,
+      21
+    ],
+    [
+      25,
+      16
+    ],
+    [
+      25,
+      15
+    ],
+    [
+      25,
+      24
+    ],
+    [
+      25,
+      18
+    ],
+    [
+      25,
+      26
+    ],
+    [
+      25,
+      22
+    ],
+    [
+      25,
+      34
+    ],
+    [
+      25,
+      30
+    ],
+    [
+      25,
+      35
+    ],
+    [
+      25,
+      29
+    ],
+    [
+      25,
+      23
+    ],
+    [
+      25,
+      27
+    ],
+    [
+      25,
+      33
+    ],
+    [
+      25,
+      32
+    ],
+    [
+      25,
+      31
+    ],
+    [
+      25,
+      28
+    ],
+    [
+      25,
+      12
+    ],
+    [
+      25,
+      14
+    ],
+    [
+      25,
+      11
+    ],
+    [
+      25,
+      13
+    ],
+    [
+      25,
+      38
+    ],
+    [
+      25,
+      40
+    ],
+    [
+      25,
+      41
+    ],
+    [
+      25,
+      42
+    ],
+    [
+      25,
+      39
+    ],
+    [
+      25,
+      43
+    ],
+    [
+      25,
+      37
+    ],
+    [
+      25,
+      36
+    ],
+    [
+      25,
+      44
+    ],
+    [
+      25,
+      7
+    ],
+    [
+      25,
+      9
+    ],
+    [
+      25,
+      6
+    ],
+    [
+      25,
+      8
+    ],
+    [
+      25,
+      53
+    ],
+    [
+      25,
+      50
+    ],
+    [
+      25,
+      51
+    ],
+    [
+      25,
+      52
+    ],
+    [
+      25,
+      46
+    ],
+    [
+      25,
+      45
+    ],
+    [
+      25,
+      47
+    ],
+    [
+      25,
+      49
+    ],
+    [
+      25,
+      54
+    ],
+    [
+      25,
+      55
+    ],
+    [
+      25,
+      58
+    ],
+    [
+      25,
+      57
+    ],
+    [
+      25,
+      4
+    ],
+    [
+      25,
+      63
+    ],
+    [
+      25,
+      3
+    ],
+    [
+      25,
+      64
+    ],
+    [
+      25,
+      56
+    ],
+    [
+      25,
+      69
+    ],
+    [
+      25,
+      77
+    ],
+    [
+      25,
+      67
+    ],
+    [
+      25,
+      72
+    ],
+    [
+      25,
+      70
+    ],
+    [
+      25,
+      79
+    ],
+    [
+      25,
+      68
+    ],
+    [
+      25,
+      71
+    ],
+    [
+      25,
+      84
+    ],
+    [
+      25,
+      80
+    ],
+    [
+      25,
+      89
+    ],
+    [
+      25,
+      96
+    ],
+    [
+      25,
+      91
+    ],
+    [
+      25,
+      92
+    ],
+    [
+      25,
+      95
+    ],
+    [
+      25,
+      98
+    ],
+    [
+      25,
+      100
+    ],
+    [
+      25,
+      102
+    ],
+    [
+      25,
+      106
+    ],
+    [
+      25,
+      109
+    ],
+    [
+      25,
+      111
+    ],
+    [
+      25,
+      105
+    ],
+    [
+      25,
+      2
+    ],
+    [
+      25,
+      124
+    ],
+    [
+      25,
+      134
+    ],
+    [
+      25,
+      135
+    ],
+    [
+      25,
+      128
+    ],
+    [
+      25,
+      157
+    ],
+    [
+      25,
+      162
+    ],
+    [
+      25,
+      159
+    ],
+    [
+      25,
+      161
+    ],
+    [
+      25,
+      168
+    ],
+    [
+      25,
+      325
+    ],
+    [
+      25,
+      327
+    ],
+    [
+      25,
+      332
+    ],
+    [
+      25,
+      350
+    ],
+    [
+      25,
+      156
+    ],
+    [
+      25,
+      165
+    ],
+    [
+      25,
+      188
+    ],
+    [
+      25,
+      150
+    ],
+    [
+      25,
+      301
+    ],
+    [
+      25,
+      306
+    ],
+    [
+      25,
+      348
+    ],
+    [
+      25,
+      138
+    ],
+    [
+      25,
+      183
+    ],
+    [
+      25,
+      207
+    ],
+    [
+      25,
+      232
+    ],
+    [
+      25,
+      309
+    ],
+    [
+      25,
+      318
+    ],
+    [
+      25,
+      351
+    ],
+    [
+      25,
+      240
+    ],
+    [
+      25,
+      196
+    ],
+    [
+      25,
+      199
+    ],
+    [
+      25,
+      234
+    ],
+    [
+      25,
+      450
+    ],
+    [
+      25,
+      225
+    ],
+    [
+      25,
+      279
+    ],
+    [
+      25,
+      543
+    ],
+    [
+      25,
+      637
+    ],
+    [
+      25,
+      639
+    ],
+    [
+      25,
+      213
+    ],
+    [
+      25,
+      262
+    ],
+    [
+      25,
+      973
+    ],
+    [
+      25,
+      993
+    ],
+    [
+      25,
+      640
+    ],
+    [
+      25,
+      656
+    ],
+    [
+      25,
+      217
+    ],
+    [
+      25,
+      747
+    ],
+    [
+      25,
+      263
+    ],
+    [
+      25,
+      268
+    ],
+    [
+      25,
+      278
+    ],
+    [
+      25,
+      966
+    ],
+    [
+      25,
+      974
+    ],
+    [
+      25,
+      1028
+    ],
+    [
+      25,
+      1030
+    ],
+    [
+      25,
+      1046
+    ],
+    [
+      25,
+      661
+    ],
+    [
+      25,
+      744
+    ],
+    [
+      25,
+      752
+    ],
+    [
+      25,
+      763
+    ],
+    [
+      25,
+      384
+    ],
+    [
+      25,
+      421
+    ],
+    [
+      25,
+      957
+    ],
+    [
+      25,
+      988
+    ],
+    [
+      25,
+      1045
+    ],
+    [
+      25,
+      1159
+    ],
+    [
+      25,
+      1198
+    ],
+    [
+      25,
+      1204
+    ],
+    [
+      25,
+      707
+    ],
+    [
+      25,
+      708
+    ],
+    [
+      25,
+      716
+    ],
+    [
+      25,
+      842
+    ],
+    [
+      25,
+      393
+    ],
+    [
+      25,
+      960
+    ],
+    [
+      25,
+      1021
+    ],
+    [
+      25,
+      577
+    ],
+    [
+      25,
+      1240
+    ],
+    [
+      25,
+      1362
+    ],
+    [
+      25,
+      870
+    ],
+    [
+      25,
+      876
+    ],
+    [
+      25,
+      1407
+    ],
+    [
+      25,
+      917
+    ],
+    [
+      25,
+      410
+    ],
+    [
+      25,
+      490
+    ],
+    [
+      25,
+      1090
+    ],
+    [
+      25,
+      1106
+    ],
+    [
+      25,
+      1108
+    ],
+    [
+      25,
+      3,
+      62
+    ],
+    [
+      25,
+      3,
+      65
+    ],
+    [
+      25,
+      3,
+      61
+    ],
+    [
+      25,
+      3,
+      5
+    ],
+    [
+      25,
+      3,
+      60
+    ],
+    [
+      25,
+      3,
+      76
+    ],
+    [
+      25,
+      3,
+      90
+    ],
+    [
+      25,
+      3,
+      103
+    ],
+    [
+      25,
+      3,
+      117
+    ],
+    [
+      25,
+      2,
+      48
+    ],
+    [
+      25,
+      3,
+      113
+    ],
+    [
+      25,
+      3,
+      115
+    ],
+    [
+      25,
+      3,
+      116
+    ],
+    [
+      25,
+      3,
+      133
+    ],
+    [
+      25,
+      3,
+      125
+    ],
+    [
+      25,
+      3,
+      180
+    ],
+    [
+      25,
+      3,
+      322
+    ],
+    [
+      25,
+      3,
+      163
+    ],
+    [
+      25,
+      3,
+      144
+    ],
+    [
+      25,
+      3,
+      358
+    ],
+    [
+      25,
+      3,
+      275
+    ],
+    [
+      25,
+      3,
+      238
+    ],
+    [
+      25,
+      3,
+      357
+    ],
+    [
+      25,
+      3,
+      655
+    ],
+    [
+      25,
+      3,
+      969
+    ],
+    [
+      25,
+      3,
+      530
+    ],
+    [
+      25,
+      3,
+      968
+    ],
+    [
+      25,
+      3,
+      1024
+    ],
+    [
+      25,
+      3,
+      1153
+    ],
+    [
+      25,
+      3,
+      389
+    ],
+    [
+      25,
+      3,
+      1161
+    ],
+    [
+      25,
+      3,
+      1367
+    ],
+    [
+      25,
+      3,
+      946
+    ],
+    [
+      25,
+      3,
+      474
+    ],
+    [
+      25,
+      3,
+      1254
+    ],
+    [
+      25,
+      2,
+      88
+    ],
+    [
+      25,
+      2,
+      99
+    ],
+    [
+      25,
+      2,
+      126
+    ],
+    [
+      25,
+      2,
+      333
+    ],
+    [
+      25,
+      2,
+      328
+    ],
+    [
+      25,
+      2,
+      768
+    ],
+    [
+      25,
+      2,
+      766
+    ],
+    [
+      25,
+      2,
+      432
+    ]
+  ],
+  "propagation_depth": 2,
+  "blast_radius": 204,
+  "highest_risk_downstream_entities": [
+    {
+      "entity_id": 19,
+      "propagated_risk": 40.02,
+      "depth": 1,
+      "path": [
+        25,
+        19
+      ]
+    },
+    {
+      "entity_id": 20,
+      "propagated_risk": 39.89,
+      "depth": 1,
+      "path": [
+        25,
+        20
+      ]
+    },
+    {
+      "entity_id": 17,
+      "propagated_risk": 39.76,
+      "depth": 1,
+      "path": [
+        25,
+        17
+      ]
+    },
+    {
+      "entity_id": 21,
+      "propagated_risk": 39.76,
+      "depth": 1,
+      "path": [
+        25,
+        21
+      ]
+    },
+    {
+      "entity_id": 16,
+      "propagated_risk": 39.69,
+      "depth": 1,
+      "path": [
+        25,
+        16
+      ]
+    },
+    {
+      "entity_id": 15,
+      "propagated_risk": 39.5,
+      "depth": 1,
+      "path": [
+        25,
+        15
+      ]
+    },
+    {
+      "entity_id": 24,
+      "propagated_risk": 39.5,
+      "depth": 1,
+      "path": [
+        25,
+        24
+      ]
+    },
+    {
+      "entity_id": 18,
+      "propagated_risk": 39.36,
+      "depth": 1,
+      "path": [
+        25,
+        18
+      ]
+    },
+    {
+      "entity_id": 26,
+      "propagated_risk": 39.17,
+      "depth": 1,
+      "path": [
+        25,
+        26
+      ]
+    },
+    {
+      "entity_id": 22,
+      "propagated_risk": 38.84,
+      "depth": 1,
+      "path": [
+        25,
+        22
+      ]
+    }
+  ],
+  "config": {
+    "max_depth": 3,
+    "decay_per_hop": 0.5,
+    "min_risk_to_propagate": 5.0,
+    "criticality_boost_cap": 1.5,
+    "max_affected_entities": 200
+  },
+  "disclaimer": "This is a simulated risk-propagation ESTIMATE based on graph structure and configurable decay assumptions. It does NOT predict that fraud, money-laundering, or an attack will actually spread to these entities \u2014 it estimates which entities are structurally close enough to the source that elevated scrutiny may be warranted."
+}
