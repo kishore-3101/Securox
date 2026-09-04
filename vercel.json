@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "buildCommand": "cd securox/frontend && npm install && npm run build",
+  "outputDirectory": "securox/frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://securox.onrender.com/api/:path*"
+    },
+    {
+      "source": "/ws/:path*",
+      "destination": "https://securox.onrender.com/ws/:path*"
+    },
+    {
+      "source": "/docs",
+      "destination": "https://securox.onrender.com/docs"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "https://securox.onrender.com/openapi.json"
+    },
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
