@@ -158,7 +158,7 @@ The startup script verifies Python, checks dependencies, launches the backend on
 
 ---
 
-## 🧪 Automated Testing Suite (100% Pass)
+## Automated Testing Suite (100% Pass)
 
 SECurox includes a comprehensive test suite running entirely in-process without external network dependencies:
 
@@ -186,6 +186,6 @@ python -m pytest finance/tests -v
 
 ---
 
-## 🛡️ License & Acknowledgments
+## License & Acknowledgments
 
 SECurox is developed for Smart City Cyber Defense under problem statement **SH-FIN-05**. All benchmark datasets (CIC-IDS-2017, UNSW-NB15, ToN-IoT, NSL-KDD, MIMIC-IV-ED) are utilized under academic and research licensing.
