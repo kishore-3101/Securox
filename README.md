@@ -1,11 +1,11 @@
-# 🛡️ SECurox — Next-Gen Smart City Cyber Operations Center (SOC)
+# SECurox — Next-Gen Smart City Cyber Operations Center (SOC)
 
 > **Problem Statement Target**: **SH-FIN-05 — AI-Driven Cyber Risk Detection for Smart City Digital Infrastructure**  
 > **Platform Status**: Production-Grade SOC Architecture · 100% Offline-First · 35/35 Automated Tests Passing (100%)
 
 ---
 
-## 🌟 Executive Overview
+## Executive Overview
 
 **SECurox** is an end-to-end Smart City Cyber Risk Detection, Intelligence, Cascading Simulation, Visualization, and Verifiable Response Operations Center (SOC) platform.
 
@@ -20,7 +20,7 @@ Unlike traditional dashboards that show isolated alerts, SECurox delivers:
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -66,7 +66,7 @@ flowchart TD
 
 ---
 
-## 🏙️ Canonical 12-Asset Smart City Infrastructure
+## Canonical 12-Asset Smart City Infrastructure
 
 SECurox models and protects the authoritative 12 critical smart-city digital infrastructure assets:
 
@@ -87,7 +87,7 @@ SECurox models and protects the authoritative 12 critical smart-city digital inf
 
 ---
 
-## ⚡ 6 Canonical Attack Scenarios (1-Click Injection)
+## Canonical Attack Scenarios (1-Click Injection)
 
 The platform includes 6 canonical, production-grade attack scenarios flowing through the live detection pipeline:
 
@@ -108,7 +108,7 @@ The platform includes 6 canonical, production-grade attack scenarios flowing thr
 
 ---
 
-## 🔒 Verifiable Cyber Response Center
+## Verifiable Cyber Response Center
 
 SECurox features 6 authoritative mitigation actions that produce quantifiable, verifiable state changes:
 
@@ -125,7 +125,7 @@ accompanied by a tamper-evident SHA-256 Merkle audit hash.
 
 ---
 
-## 🔬 Hybrid AI & ML Models
+## Hybrid AI & ML Models
 
 SECurox combines multiple machine learning paradigms into a layered defense:
 
@@ -136,7 +136,7 @@ SECurox combines multiple machine learning paradigms into a layered defense:
 
 ---
 
-## 🚀 Quickstart & One-Click Launch
+## Quickstart & One-Click Launch
 
 ### Windows (1-Click)
 ```cmd
@@ -176,7 +176,7 @@ python -m pytest finance/tests -v
 
 ---
 
-## 📚 Technical Documentation & Evaluation
+## Technical Documentation & Evaluation
 
 - [Architecture Audit & Deep Dive](finance/docs/ARCHITECTURE_AUDIT.md)
 - [SH-FIN-05 Requirements Mapping Matrix](finance/docs/SH_FIN_05_REQUIREMENTS_MAPPING.md)
